@@ -19,8 +19,10 @@ logger = logging.getLogger(__name__)
 
 # 常量定义
 TOKEN_MANAGER_HELPER = "0xF251F83e40a78868FcfA3FA4599Dad6494E46034"
+# KNOWN_QUOTE_ASSETS is re-exported here on purpose: callers (and tests) import it
+# from this module, so it must stay even though this file does not use it directly.
 from src.data.fourmeme_quote import (
-    KNOWN_QUOTE_ASSETS,
+    KNOWN_QUOTE_ASSETS,  # noqa: F401 - re-exported for callers and tests
     NATIVE_QUOTE_ADDRESS,
     classify_quote,
 )
@@ -41,6 +43,27 @@ def compute_buy_min_amount(
         return max(1, minimum)
     except (TypeError, ValueError, OverflowError):
         return None
+
+
+# Four.meme's manager reverts with "Gw" unless the sell amount is a whole multiple of this
+# step. It is a 1-wei-scale rule, so it is only harmless for 18-decimal tokens: on a
+# 6-decimal token one step would be 1000 whole tokens.
+SELL_AMOUNT_ALIGNMENT_WEI = 10 ** 9
+
+
+def align_sell_amount(raw_amount: int) -> int:
+    """Round a sell amount down to the step the Four.meme manager accepts.
+
+    Returns 0 when the balance is smaller than one step. Callers must treat 0 as
+    "cannot sell" and say so loudly rather than silently dropping the position.
+    """
+    try:
+        amount = int(raw_amount)
+    except (TypeError, ValueError):
+        return 0
+    if amount <= 0:
+        return 0
+    return (amount // SELL_AMOUNT_ALIGNMENT_WEI) * SELL_AMOUNT_ALIGNMENT_WEI
 
 
 def compute_sell_min_out(expected_out: int, slippage_percent: int) -> Optional[int]:
@@ -302,7 +325,7 @@ class TradeExecutor:
                 logger.info(f"✅ Transaction confirmed in block {receipt['blockNumber']}")
                 return True
             else:
-                logger.error(f"❌ Transaction failed (reverted)")
+                logger.error("❌ Transaction failed (reverted)")
                 return False
         except Exception as e:
             logger.error(f"❌ Error waiting for transaction {tx_hash}: {e}")
@@ -517,7 +540,7 @@ class TradeExecutor:
 
             tx = await func.build_transaction({
                 'from': self.wallet_address, 'value': value_wei, 'gas': gas_limit,
-                'gasPrice': gas_price, 'nonce': nonce, 'chainId': 56
+                'gasPrice': gas_price, 'nonce': nonce, 'chainId': TradingConfig.CHAIN_ID
             })
 
             signed = self.account.sign_transaction(tx)
@@ -586,10 +609,16 @@ class TradeExecutor:
 
     async def sell_token(self, token_address: str, amount: int) -> Optional[str]:
         """卖出代币（带重试，逐次加gas）"""
-        # 对齐到 GWEI 精度 (1e9)，否则合约 revert "Gw"
-        amount = (int(amount) // 10**9) * 10**9
+        # The manager requires a 1e9-wei multiple (see SELL_AMOUNT_ALIGNMENT_WEI).
+        raw_amount = int(amount)
+        amount = align_sell_amount(raw_amount)
         if amount <= 0:
-            logger.warning(f"⚠️ Amount too small after GWEI alignment, skip sell")
+            logger.error(
+                "❌ Sell amount %s is below the 1e9-wei step the Four.meme manager requires; "
+                "refusing to sell instead of rounding the position to zero "
+                "(FOURMEME_TOKEN_DECIMALS=%s)",
+                raw_amount, TradingConfig.FOURMEME_TOKEN_DECIMALS,
+            )
             return None
 
         if not TradingConfig.ENABLE_TRADING:
@@ -642,7 +671,7 @@ class TradeExecutor:
 
                 tx = await func.build_transaction({
                     'from': self.wallet_address, 'gas': gas_limit,
-                    'gasPrice': gas_price, 'nonce': nonce, 'chainId': 56
+                    'gasPrice': gas_price, 'nonce': nonce, 'chainId': TradingConfig.CHAIN_ID
                 })
 
                 signed = self.account.sign_transaction(tx)
@@ -691,7 +720,7 @@ class TradeExecutor:
 
                     tx = await token.functions.approve(self.contract_address, 2**256 - 1).build_transaction({
                         'from': self.wallet_address, 'gas': 100000,
-                        'gasPrice': gas_price, 'nonce': nonce, 'chainId': 56
+                        'gasPrice': gas_price, 'nonce': nonce, 'chainId': TradingConfig.CHAIN_ID
                     })
                     tx_hash_bytes = await self.w3.eth.send_raw_transaction(self._get_raw_tx(self.account.sign_transaction(tx)))
                     tx_hash = tx_hash_bytes.hex()
@@ -766,7 +795,7 @@ class TradeExecutor:
 
             tx = await func.build_transaction({
                 'from': self.wallet_address, 'gas': gas_limit,
-                'gasPrice': gas_price, 'nonce': nonce, 'chainId': 56
+                'gasPrice': gas_price, 'nonce': nonce, 'chainId': TradingConfig.CHAIN_ID
             })
 
             signed = self.account.sign_transaction(tx)
@@ -798,7 +827,7 @@ class TradeExecutor:
             gas_price = self.w3.to_wei(TradingConfig.BASE_GAS_PRICE_GWEI, 'gwei')
             tx = await token.functions.approve(spender_addr, 2**256 - 1).build_transaction({
                 'from': self.wallet_address, 'gas': 100000,
-                'gasPrice': gas_price, 'nonce': nonce, 'chainId': 56
+                'gasPrice': gas_price, 'nonce': nonce, 'chainId': TradingConfig.CHAIN_ID
             })
             tx_hash = await self.w3.eth.send_raw_transaction(self._get_raw_tx(self.account.sign_transaction(tx)))
             logger.info(f"🔓 PancakeSwap approve sent: {tx_hash.hex()}")

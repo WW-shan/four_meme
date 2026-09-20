@@ -1,5 +1,6 @@
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 from config.trading_config import TradingConfig
 from src.core.trader import (
@@ -117,3 +118,47 @@ class QuoteAssetModuleTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class SellAmountAlignmentTests(unittest.TestCase):
+    """The Four.meme manager only accepts 1e9-wei multiples, which must not zero a position."""
+
+    def test_rounds_down_to_the_contract_step(self):
+        from src.core.trader import align_sell_amount
+
+        self.assertEqual(1_000_000_000, align_sell_amount(1_999_999_999))
+        self.assertEqual(2_000_000_000, align_sell_amount(2_000_000_000))
+
+    def test_returns_zero_when_the_balance_is_below_one_step(self):
+        from src.core.trader import align_sell_amount
+
+        # 500 tokens with 6 decimals is a real position, but it is smaller than one step.
+        self.assertEqual(0, align_sell_amount(500 * 10 ** 6))
+        self.assertEqual(0, align_sell_amount(0))
+        self.assertEqual(0, align_sell_amount(-5))
+        self.assertEqual(0, align_sell_amount("not-a-number"))
+
+    def test_eighteen_decimal_balance_only_loses_sub_wei_dust(self):
+        from src.core.trader import align_sell_amount
+
+        raw = 1_234_567_890_123_456_789
+        aligned = align_sell_amount(raw)
+        self.assertLessEqual(raw - aligned, 10 ** 9 - 1)
+
+
+class ChainIdConfigTests(unittest.TestCase):
+    def test_chain_id_defaults_to_bsc(self):
+        self.assertEqual(56, TradingConfig.CHAIN_ID)
+
+    def test_chain_id_must_be_positive(self):
+        # Patch the class attribute instead of reloading config.trading_config: a reload
+        # would rebind the module to a new class object while modules that already imported
+        # TradingConfig keep the stale one, which silently breaks unrelated tests.
+        with patch.object(TradingConfig, "CHAIN_ID", 0):
+            with self.assertRaisesRegex(ValueError, "MEME_CHAIN_ID"):
+                TradingConfig.validate()
+
+    def test_executor_does_not_hardcode_chain_id(self):
+        source = (Path(__file__).resolve().parents[2] / "src" / "core" / "trader.py").read_text()
+        self.assertNotIn("'chainId': 56", source)
+        self.assertIn("'chainId': TradingConfig.CHAIN_ID", source)

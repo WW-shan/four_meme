@@ -5,7 +5,6 @@ Trading Configuration
 
 import os
 import math
-from typing import List
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -58,6 +57,11 @@ class TradingConfig:
 
     # ========== 钱包配置 ==========
     PRIVATE_KEY = os.getenv('PRIVATE_KEY', '')
+
+    # ========== 链 ==========
+    # The executor signs raw transactions, so the chain id must be explicit instead of
+    # baked into every build_transaction call. Defaults to BSC.
+    CHAIN_ID = int(os.getenv('MEME_CHAIN_ID', '56'))
 
     # ========== 交易开关 ==========
     ENABLE_TRADING = os.getenv('ENABLE_TRADING', 'false').lower() == 'true'
@@ -286,6 +290,8 @@ class TradingConfig:
             raise ValueError("FOURMEME_TOKEN_DECIMALS must be between 0 and 36")
         if cls.BUY_MIN_AMOUNT_FLOOR < 0:
             raise ValueError("BUY_MIN_AMOUNT_FLOOR must be non-negative")
+        if cls.CHAIN_ID <= 0:
+            raise ValueError("MEME_CHAIN_ID must be a positive chain id")
 
         if cls.BUY_CONFIRM_TIMEOUT_SECONDS <= 0:
             raise ValueError("BUY_CONFIRM_TIMEOUT_SECONDS must be positive")
