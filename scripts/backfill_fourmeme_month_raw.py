@@ -30,8 +30,8 @@ if str(PROJECT_ROOT) not in sys.path:
 from config.config import Config  # noqa: E402
 from src.data.collector import DataCollector  # noqa: E402
 from src.data.fourmeme_log_decoder import (  # noqa: E402
-    TOPIC_CREATE,
-    TOPIC_STOP,
+    TOPIC_CREATE,  # noqa: F401 - re-exported: tests import it from this script
+    TOPIC_STOP,  # noqa: F401 - re-exported: tests import it from this script
     TRADE_TOPICS,
     decode_fourmeme_log,
 )

@@ -9,7 +9,6 @@ import json
 import hashlib
 import inspect
 import math
-import pandas as pd
 import numpy as np
 import sys
 import os
@@ -3154,6 +3153,8 @@ class MemeBot:
                 token_contract = self.executor.w3.eth.contract(address=token_address, abi=abi)
 
                 token_balance = 0
+                balance_poll_errors = 0
+                last_balance_poll_error = None
                 poll_interval = float(self.buy_confirm_poll_interval_seconds)
                 buy_confirm_poll_interval_used = poll_interval
                 max_polls = max(1, int(math.ceil(self.buy_confirm_timeout_seconds / poll_interval)))
@@ -3168,8 +3169,13 @@ class MemeBot:
                             elapsed = buy_token_detect_seconds
                             logger.info(f"✅ Token received after {elapsed:.1f}s: {token_balance / 1e18:.2f} tokens")
                             break
-                    except Exception:
-                        pass
+                    except Exception as exc:
+                        # One failed eth_call is a normal RPC hiccup, but a persistent failure
+                        # would hide the tokens we just paid for. Count them and warn below.
+                        balance_poll_errors += 1
+                        last_balance_poll_error = exc
+                        if balance_poll_errors == 1:
+                            logger.debug(f"balanceOf poll failed for {symbol}: {exc}")
 
                     # 同时检查交易是否 revert
                     if poll % receipt_poll_every == receipt_poll_every - 1:
@@ -3190,8 +3196,10 @@ class MemeBot:
                                 })
                                 self.failed_buys[token_address] = now + 5
                                 return
-                        except Exception:
-                            pass
+                        except Exception as exc:
+                            # Expected while the tx is still pending; keep a trace so a broken
+                            # receipt provider is not completely invisible.
+                            logger.debug(f"receipt poll failed for {tx_hash}: {exc}")
 
                     if poll < max_polls - 1:
                         await asyncio.sleep(poll_interval)
@@ -3207,6 +3215,11 @@ class MemeBot:
                         logger.info(f"🏷️ Entry Price: {price:.10g} BNB (Cost: {actual_size_bnb:.6f} / Tokens: {tokens_received:.2f})")
                 else:
                     # 120s 没收到 token，但钱可能已出去，保守记录持仓
+                    if balance_poll_errors:
+                        logger.warning(
+                            f"⚠️ balanceOf polling failed {balance_poll_errors}/{max_polls} times "
+                            f"while confirming {symbol} (last error: {last_balance_poll_error})"
+                        )
                     logger.warning(f"⚠️ No tokens detected after {max_polls*poll_interval:.1f}s, recording position to avoid fund loss")
                     actual_size_bnb = size_bnb
                 if token_balance > 0 and hasattr(self.executor, "schedule_sell_approval"):
@@ -3656,14 +3669,26 @@ class MemeBot:
             logger.error(f"Error processing post-sell stats for {pos['symbol']}: {e}")
 
     def _save_state(self):
+        """Persist open positions atomically.
+
+        Writing straight to the state file means a crash mid-write leaves a truncated file,
+        and the next start would silently forget every open position. Write to a sibling temp
+        file, flush it to disk, then rename over the real path.
+        """
         try:
             state = {
                 'balance': self.balance,
                 'positions': self.positions,
                 'closed_tokens': sorted(self.closed_tokens),
             }
-            with open(self.state_file, 'w', encoding='utf-8') as f:
+            target = Path(self.state_file)
+            target.parent.mkdir(parents=True, exist_ok=True)
+            tmp_path = target.with_name(target.name + ".tmp")
+            with tmp_path.open('w', encoding='utf-8') as f:
                 json.dump(state, f, default=str, indent=2)
+                f.flush()
+                os.fsync(f.fileno())
+            os.replace(tmp_path, target)
         except Exception as e:
             logger.error(f"Failed to save state: {e}")
 
@@ -3697,7 +3722,13 @@ class MemeBot:
                 logger.info(f"📂 Loaded {len(self.positions)} positions from saved state")
 
         except Exception as e:
-            logger.error(f"Failed to load state: {e}")
+            # Refusing to start is safer than starting with no positions while the wallet
+            # still holds tokens: the bot would not manage or exit them.
+            logger.critical(f"Failed to load state from {self.state_file}: {e}")
+            raise RuntimeError(
+                f"state file {self.state_file} exists but could not be parsed; refusing to start "
+                f"with unknown open positions (restore or remove it explicitly)"
+            ) from e
 
     async def sell_all_positions(self, timeout: int = 45):
         """清仓所有持仓，带总超时保护"""
@@ -3983,7 +4014,7 @@ class MemeBot:
             await asyncio.sleep(1) # 1s refresh rate
 
     async def start(self):
-        logger.info(f"🤖 Starting MemeBot")
+        logger.info("🤖 Starting MemeBot")
 
         # 同步链上余额
         await self._sync_balance()
@@ -4061,8 +4092,8 @@ async def _cleanup_bot_runtime(bot, ws_manager=None, *, sell_timeout: int = 35, 
     if ws_manager:
         try:
             await ws_manager.disconnect()
-        except Exception:
-            pass
+        except Exception as exc:
+            logger.debug(f"Failed to close websocket manager: {exc}")
 
     logger.info("✅ Cleanup complete")
 

@@ -20,22 +20,18 @@ import numpy as np
 from src.pipeline.tail_capture_strategy import (
     TAIL_FEATURES,
     TailReplayConfig,
-    _effective_buy_price,
     _feature_frame,
     _fit_classifier,
     _fit_ranker,
     _finite,
-    _group_ids,
     _expanding_walk_forward,
     _portfolio_backtest,
     _score_thresholds,
     _tail_utility,
     _token,
     _token_time_splits,
-    _ordered_group_indices,
     build_tail_candidates,
-    simulate_tail_path,
-)
+    simulate_tail_path)
 
 
 @dataclass(frozen=True)
@@ -97,7 +93,6 @@ def simulate_confirmed_entry(
         return {"status": "no_dex_confirmation", "entry_available": False, "complete": False}
     selected = bars[: int(config.confirmation_bars)]
     first_price = float(selected[0][1])
-    last_price = float(selected[-1][1])
     min_price = min(float(row[1]) for row in selected)
     first_volume = float(selected[0][2])
     later_volumes = [float(row[2]) for row in selected[1:] if float(row[2]) >= 0.0]

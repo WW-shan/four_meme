@@ -10,7 +10,7 @@ import os
 from pathlib import Path
 import shutil
 import tempfile
-from typing import Dict, Iterable, Optional, Tuple
+from typing import Dict, Optional, Tuple
 
 
 LIFECYCLE_PREFIXES = ("lifecycle_", "lifecycle_incremental_")
@@ -388,7 +388,6 @@ def build_latest_window(
     output_parent.mkdir(parents=True, exist_ok=True)
     temp_dir = Path(tempfile.mkdtemp(prefix=f".{output_dir.name}.tmp-", dir=output_parent))
     try:
-        stamp = datetime.fromtimestamp(as_of_timestamp, timezone.utc).strftime("%Y%m%d_%H%M%S")
         split_count = min(int(split_files), max(1, len(ordered)))
         chunk_size = max(1, (len(ordered) + split_count - 1) // split_count)
         lifecycle_paths = []

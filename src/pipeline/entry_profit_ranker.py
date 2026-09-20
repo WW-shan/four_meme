@@ -27,10 +27,8 @@ from src.pipeline.target_barrier_profile import (
     BarrierReplayConfig,
     DEFAULT_FEATURES,
     build_entry_candidates,
-    chronological_splits,
     simulate_barrier,
-    summarize_outcomes,
-)
+    summarize_outcomes)
 
 
 DEFAULT_MODEL_PARAMS = {
@@ -472,7 +470,6 @@ def train_profit_ranker_experiment(
     splits = _split_indices(candidates, purge_seconds=int(horizon_seconds))
     train_indices = splits["train"]
     validation_indices = splits["validation"]
-    final_indices = splits["final"]
     if len(set(y_hit[train_indices])) < 2:
         raise ValueError("training barrier labels contain only one class")
     classifier = _fit_classifier(

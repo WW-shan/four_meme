@@ -532,7 +532,9 @@ class ContinuousCollector:
                 try:
                     current_block = await self.listener.w3.eth.block_number
                     block_lag = current_block - listener_stats['last_block_processed']
-                except:
+                except Exception as exc:
+                    # A failed block_number call only affects this status line.
+                    logger.debug(f"block_number unavailable for the status report: {exc}")
                     current_block = 0
                     block_lag = 0
                 

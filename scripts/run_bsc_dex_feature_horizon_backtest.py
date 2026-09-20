@@ -11,7 +11,6 @@ a live model selector.
 from __future__ import annotations
 
 import argparse
-from collections import defaultdict
 from datetime import datetime, timezone
 import json
 import math
@@ -189,7 +188,6 @@ def _feature_accepts(mode: str, episode: Mapping[str, Any], thresholds: Mapping[
     bar_range = float(episode["range_1h"])
     volume = float(episode["volume_1h"])
     positive_momentum = momentum > 0.0
-    high_momentum = momentum >= float(thresholds.get("momentum_median", 0.0))
     high_range = bar_range >= float(thresholds.get("range_median", 0.0))
     high_volume = volume >= float(thresholds.get("volume_median", 0.0))
     if mode == "none":

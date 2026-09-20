@@ -20,7 +20,7 @@ from src.pipeline.leader_follow_strategy import (  # noqa: E402
     simulate_leader_follow,
 )
 from src.pipeline.runner_reserve_profile import load_lifecycles_from_paths  # noqa: E402
-from src.pipeline.tail_capture_strategy import _portfolio_backtest, _token_time_splits, TailReplayConfig, build_tail_candidates, simulate_tail_path  # noqa: E402
+from src.pipeline.tail_capture_strategy import _portfolio_backtest, _token_time_splits  # noqa: E402
 
 
 def _ints(raw: str) -> list[int]:

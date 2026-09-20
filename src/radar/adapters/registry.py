@@ -6,7 +6,6 @@ from dataclasses import dataclass, field
 import json
 from pathlib import Path
 import re
-from typing import Iterable
 
 from src.radar.adapters.base import ChainAdapter
 

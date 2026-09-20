@@ -424,11 +424,12 @@ class FourMemeListener:
         if not self.contract_address:
             raise ValueError("Contract address not configured")
 
-        # Ensure Checksum Address
+        # Ensure Checksum Address. A malformed address must fail loudly: silently keeping
+        # the raw string would make every later contract call raise somewhere far away.
         try:
             self.contract_address = self.w3.to_checksum_address(self.contract_address)
-        except:
-            pass
+        except (ValueError, TypeError) as exc:
+            raise ValueError(f"invalid contract address {self.contract_address!r}: {exc}") from exc
 
         # Load ABI from config and combine with internal version to ensure
         # all possible event signatures are covered
@@ -1100,7 +1101,7 @@ class FourMemeListener:
         # Use _process_block_range to handle large ranges and rate limits safely
         await self._process_block_range(from_block, to_block)
 
-        logger.info(f"Finished polling historical events")
+        logger.info("Finished polling historical events")
 
     def get_stats(self) -> Dict:
         """Get listener statistics"""

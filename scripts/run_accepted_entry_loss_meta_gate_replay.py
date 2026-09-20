@@ -469,7 +469,6 @@ def main(argv=None):
     validation_baseline_summary = _summary((validation_baseline_report or {}).get("evaluation") or {})
     final_baseline_summary = _summary((final_baseline_report or {}).get("evaluation") or {})
 
-    train_model_path = context["manifest"].get("model_dir")
     scorer_kwargs = {
         "trade_rows": train_trade_log,
         "train_samples": train_samples,

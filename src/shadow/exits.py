@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Iterable
 
 DEFAULT_TP_LADDER = ((0.50, 0.25), (1.00, 0.25), (3.00, 0.25), (9.00, 0.15))
 

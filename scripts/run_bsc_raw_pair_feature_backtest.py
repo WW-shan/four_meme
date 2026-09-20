@@ -17,19 +17,17 @@ import math
 from pathlib import Path
 import statistics
 import sys
-from typing import Any, Iterable, Mapping, Sequence
+from typing import Any, Mapping, Sequence
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 from scripts.run_bsc_dex_feature_horizon_backtest import (  # noqa: E402
-    _distribution,
     _feature_thresholds,
     _split_episodes,
     simulate_episode,
-    summarize_outcomes,
-)
+    summarize_outcomes)
 
 
 DEFAULT_LIFECYCLE_DIR = "data/training/bsc_month_latest_20260911_run7"

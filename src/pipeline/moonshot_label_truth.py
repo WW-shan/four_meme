@@ -254,8 +254,8 @@ def _profile_name(source_hint: object, raw_source: object = None) -> str:
 
 def _aliases_for_profile(profile_name: str) -> Dict[str, Tuple[str, ...]]:
     aliases = {key: tuple(value) for key, value in BASE_FIELD_ALIASES.items()}
-    for field, extra_aliases in SOURCE_PROFILE_ALIASES.get(profile_name, {}).items():
-        aliases[field] = tuple(extra_aliases) + aliases.get(field, ())
+    for field_name, extra_aliases in SOURCE_PROFILE_ALIASES.get(profile_name, {}).items():
+        aliases[field_name] = tuple(extra_aliases) + aliases.get(field_name, ())
     return aliases
 
 

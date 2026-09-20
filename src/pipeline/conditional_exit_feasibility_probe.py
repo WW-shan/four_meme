@@ -359,14 +359,6 @@ def to_markdown_text(report: Mapping[str, Any]) -> str:
         )
 
     symbols = _as_mapping(report.get("live_symbols_by_bucket"))
-    post_target_check = next(
-        (
-            row
-            for row in bucket_checks
-            if row.get("bucket") == "post_target_collapse_or_live_mfe_giveback"
-        ),
-        {},
-    )
     generated_at = report.get("generated_at")
     active_model = report.get("active_model")
     lines = [

@@ -99,7 +99,7 @@ def _window_flow_metrics(*, buys: list[dict[str, Any]], sells: list[dict[str, An
     buy_volume = sum(_event_bnb_amount(row) for row in buys)
     sell_volume = sum(_event_bnb_amount(row) for row in sells)
     total_volume = buy_volume + sell_volume
-    prefix = f"flow_"
+    prefix = "flow_"
     suffix = f"_{int(window_seconds)}s"
     metrics = {
         f"{prefix}buy_volume{suffix}": float(buy_volume),

@@ -5,7 +5,7 @@ Formats and outputs event data to terminal and files
 
 import json
 import logging
-from typing import Dict, Any
+from typing import Dict
 from pathlib import Path
 from datetime import datetime
 from colorama import Fore, Style, init

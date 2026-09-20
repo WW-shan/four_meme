@@ -8,10 +8,9 @@ token's future outcome is never used to define the leader score.
 
 from __future__ import annotations
 
-from bisect import bisect_left
 from collections import defaultdict
 from dataclasses import dataclass
-from typing import Any, Iterable, Mapping, Sequence
+from typing import Any, Iterable, Mapping
 
 from src.data.feature_extractor import extract_features
 from src.pipeline.tail_capture_strategy import (
@@ -19,10 +18,7 @@ from src.pipeline.tail_capture_strategy import (
     _finite,
     _point_at_or_before,
     _price_path,
-    _portfolio_backtest,
     _token,
-    _token_time_splits,
-    build_tail_candidates,
     simulate_tail_path,
 )
 
