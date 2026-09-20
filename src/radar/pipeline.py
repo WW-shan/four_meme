@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+import json
+from pathlib import Path
 import time
 from typing import Callable, Mapping
 
@@ -15,6 +17,40 @@ from src.safety.orchestrator import SafetyReport, build_report
 from src.safety.snapshot import build_snapshot
 
 
+# Fallback chain ids, used only when config/chains.json cannot be read. Provider endpoints
+# are keyed by chain id, so guessing one would score a token with another chain's data.
+DEFAULT_CHAIN_IDS = {
+    "bsc": 56,
+    "eth": 1,
+    "base": 8453,
+    "arbitrum": 42161,
+    "robinhood": 4663,
+    "arc": 5042,
+    "stable": 988,
+}
+
+
+def load_chain_ids(path: str | Path | None = None) -> dict[str, int]:
+    """Map chain name -> chain id from config/chains.json, falling back to DEFAULT_CHAIN_IDS."""
+    ids = dict(DEFAULT_CHAIN_IDS)
+    target = Path(path) if path is not None else Path(__file__).resolve().parents[2] / "config" / "chains.json"
+    try:
+        payload = json.loads(Path(target).read_text(encoding="utf-8"))
+    except Exception:
+        return ids
+    for item in payload.get("chains") or []:
+        name, chain_id = item.get("chain"), item.get("chain_id")
+        if not name:
+            continue
+        try:
+            value = int(chain_id)
+        except (TypeError, ValueError):
+            continue
+        if value > 0:
+            ids[str(name)] = value
+    return ids
+
+
 @dataclass
 class ScannerPipeline:
     store: ScannerStore
@@ -23,15 +59,21 @@ class ScannerPipeline:
     onchain_reader: Callable[[str], Mapping] | None = None
     clock: Callable[[], float] = time.time
     chain: str = "bsc"
+    chain_id: int | None = None
 
     def __post_init__(self):
+        if self.chain_id is None:
+            # An unknown chain stays None so every chain-keyed fetcher fails closed instead
+            # of querying BSC for a token that lives somewhere else.
+            self.chain_id = load_chain_ids().get(self.chain)
         self.radar = RadarCollector(self.store, chain=self.chain)
 
     async def handle_event(self, event_name: str, event_data: dict) -> bool:
         return await self.radar.handle_event(event_name, event_data)
 
     def snapshot(self, token: str, *, override: Mapping | None = None) -> dict:
-        fetched = self.fetcher.fetch_all(token) if self.fetcher is not None else {}
+        fetched = (self.fetcher.fetch_all(token, chain_id=self.chain_id, chain=self.chain)
+                   if self.fetcher is not None else {})
         onchain = self.onchain_reader(token) if self.onchain_reader is not None else {}
         snapshot = build_snapshot(token, fetched, onchain=onchain)
         snapshot["chain"] = self.chain

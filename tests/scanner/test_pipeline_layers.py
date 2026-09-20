@@ -364,3 +364,37 @@ class ScannerDashboardServingTests(unittest.TestCase):
         self.assertTrue(content_type.startswith("application/json"))
         import json
         self.assertIn("chains", json.loads(body))
+
+
+class ScannerPipelineChainIdTests(unittest.TestCase):
+    """Provider endpoints are chain-keyed, so the pipeline must resolve the real chain id."""
+
+    def _pipeline(self, chain):
+        import tempfile
+        from config.scanner_config import ScannerConfig
+        from src.radar.pipeline import ScannerPipeline
+        from src.radar.store import ScannerStore
+
+        self._tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self._tmp.cleanup)
+        store = ScannerStore(Path(self._tmp.name) / "scanner.sqlite")
+        return ScannerPipeline(store, ScannerConfig(mode="safe"), chain=chain)
+
+    def test_chain_name_resolves_to_the_declared_chain_id(self):
+        self.assertEqual(56, self._pipeline("bsc").chain_id)
+        self.assertEqual(8453, self._pipeline("base").chain_id)
+        self.assertEqual(4663, self._pipeline("robinhood").chain_id)
+
+    def test_unknown_chain_stays_unresolved_so_fetchers_fail_closed(self):
+        self.assertIsNone(self._pipeline("hyperevm").chain_id)
+
+    def test_explicit_chain_id_wins(self):
+        import tempfile
+        from config.scanner_config import ScannerConfig
+        from src.radar.pipeline import ScannerPipeline
+        from src.radar.store import ScannerStore
+
+        with tempfile.TemporaryDirectory() as tmp:
+            store = ScannerStore(Path(tmp) / "scanner.sqlite")
+            pipeline = ScannerPipeline(store, ScannerConfig(mode="safe"), chain="bsc", chain_id=1)
+        self.assertEqual(1, pipeline.chain_id)

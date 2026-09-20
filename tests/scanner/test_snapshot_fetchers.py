@@ -105,3 +105,73 @@ class DexScreenerListPayloadTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class ChainRoutingTests(unittest.TestCase):
+    """Safety sources are keyed by chain; a non-BSC token must never be scored with BSC data."""
+
+    def test_goplus_puts_the_chain_in_the_path(self):
+        session = FakeSession({"token_security": FakeResponse({"result": {}})})
+        fetcher = SnapshotFetcher(session=session, min_intervals={"goplus": 0})
+        fetcher.goplus_token_security(TOKEN, chain_id=4663)
+        url, params = session.calls[0]
+        self.assertTrue(url.endswith("/token_security/4663"), url)
+        self.assertNotIn("chain_id", params)
+
+    def test_dexscreener_uses_the_chain_slug(self):
+        session = FakeSession({"token-pairs": FakeResponse({"pairs": []})})
+        fetcher = SnapshotFetcher(session=session, min_intervals={"dexscreener": 0})
+        fetcher.dexscreener_pairs(TOKEN, chain_id=8453)
+        url, _ = session.calls[0]
+        self.assertIn("/token-pairs/v1/base/", url)
+
+    def test_unsupported_chain_fails_closed_without_a_request(self):
+        session = FakeSession({})
+        fetcher = SnapshotFetcher(session=session, min_intervals={"dexscreener": 0})
+        result = fetcher.dexscreener_pairs(TOKEN, chain_id=4663)
+        self.assertFalse(result.ok)
+        self.assertEqual("unsupported_chain:4663", result.error)
+        self.assertEqual([], session.calls)
+
+    def test_fetch_all_forwards_the_chain(self):
+        session = FakeSession({
+            "token_security": FakeResponse({"result": {}}),
+            "IsHoneypot": FakeResponse({"honeypotResult": {"isHoneypot": False}}),
+        })
+        fetcher = SnapshotFetcher(session=session, min_intervals={"goplus": 0, "honeypot": 0, "dexscreener": 0})
+        results = fetcher.fetch_all(TOKEN, chain_id=4663, chain="robinhood")
+        self.assertTrue(results["goplus"].ok)
+        self.assertEqual("unsupported_chain:4663", results["dexscreener"].error)
+        self.assertIn("/token_security/4663", session.calls[0][0])
+
+
+class UnknownChainFailsClosedTests(unittest.TestCase):
+    """An unresolved chain must never be silently treated as BSC."""
+
+    def _fetcher(self):
+        session = FakeSession({
+            "token_security": FakeResponse({"result": {}}),
+            "IsHoneypot": FakeResponse({"honeypotResult": {"isHoneypot": False}}),
+            "token-pairs": FakeResponse({"pairs": []}),
+        })
+        return SnapshotFetcher(session=session, min_intervals={"goplus": 0, "honeypot": 0, "dexscreener": 0}), session
+
+    def test_none_chain_id_makes_every_source_fail_without_a_request(self):
+        fetcher, session = self._fetcher()
+        results = fetcher.fetch_all(TOKEN, chain_id=None, chain="hyperevm")
+        self.assertEqual([], session.calls)
+        for source in ("goplus", "honeypot", "dexscreener"):
+            self.assertFalse(results[source].ok, source)
+            self.assertEqual("unsupported_chain:None", results[source].error)
+
+    def test_zero_and_garbage_chain_ids_are_rejected(self):
+        for bad in (0, -1, "", "abc", True):
+            fetcher, session = self._fetcher()
+            result = fetcher.goplus_token_security(TOKEN, chain_id=bad)
+            self.assertFalse(result.ok, bad)
+            self.assertEqual([], session.calls)
+
+    def test_positive_chain_id_is_still_forwarded(self):
+        fetcher, session = self._fetcher()
+        fetcher.goplus_token_security(TOKEN, chain_id="4663")
+        self.assertTrue(session.calls[0][0].endswith("/token_security/4663"))

@@ -7,6 +7,31 @@ import time
 from typing import Any, Callable
 
 
+# DexScreener keys its token-pairs endpoint by chain slug, not by chain id. Chains with no
+# public slug must fail closed instead of silently querying BSC.
+DEXSCREENER_CHAIN_SLUGS = {
+    1: "ethereum",
+    56: "bsc",
+    8453: "base",
+    42161: "arbitrum",
+}
+
+
+def coerce_chain_id(chain_id: object) -> int | None:
+    """Return a usable positive chain id, or None when the chain is unknown.
+
+    ``None`` is a real answer here: the caller has no chain mapping, so the fetcher must
+    fail closed rather than defaulting to BSC.
+    """
+    if chain_id is None or isinstance(chain_id, bool):
+        return None
+    try:
+        value = int(chain_id)
+    except (TypeError, ValueError):
+        return None
+    return value if value > 0 else None
+
+
 @dataclass(frozen=True)
 class FetchResult:
     source: str
@@ -80,18 +105,34 @@ class SnapshotFetcher:
         self.cache.set(source, url + repr(sorted((params or {}).items())), result)
         return result
 
-    def goplus_token_security(self, token: str, chain_id: int = 56) -> FetchResult:
-        params = {"contract_addresses": token, "chain_id": chain_id}
+    def goplus_token_security(self, token: str, chain_id: object = 56) -> FetchResult:
+        # GoPlus puts the chain in the path; sending chain_id as a query parameter while
+        # calling the BSC path would silently return BSC data for another chain's token.
+        resolved = coerce_chain_id(chain_id)
+        if resolved is None:
+            return FetchResult("goplus", False, error=f"unsupported_chain:{chain_id}",
+                               fetched_at=self.clock())
+        params = {"contract_addresses": token}
         if self.goplus_key:
             params["app_key"] = self.goplus_key
-        return self._request("goplus", "https://api.gopluslabs.io/api/v1/token_security/56", params)
+        url = f"https://api.gopluslabs.io/api/v1/token_security/{resolved}"
+        return self._request("goplus", url, params)
 
-    def honeypot_check(self, token: str, chain_id: int = 56) -> FetchResult:
+    def honeypot_check(self, token: str, chain_id: object = 56) -> FetchResult:
+        resolved = coerce_chain_id(chain_id)
+        if resolved is None:
+            return FetchResult("honeypot", False, error=f"unsupported_chain:{chain_id}",
+                               fetched_at=self.clock())
         return self._request("honeypot", "https://api.honeypot.is/v2/IsHoneypot",
-                             {"address": token, "chainID": chain_id})
+                             {"address": token, "chainID": resolved})
 
-    def dexscreener_pairs(self, token: str) -> FetchResult:
-        return self._request("dexscreener", f"https://api.dexscreener.com/token-pairs/v1/bsc/{token}", None)
+    def dexscreener_pairs(self, token: str, chain_id: object = 56) -> FetchResult:
+        resolved = coerce_chain_id(chain_id)
+        slug = DEXSCREENER_CHAIN_SLUGS.get(resolved) if resolved is not None else None
+        if slug is None:
+            return FetchResult("dexscreener", False, error=f"unsupported_chain:{chain_id}",
+                               fetched_at=self.clock())
+        return self._request("dexscreener", f"https://api.dexscreener.com/token-pairs/v1/{slug}/{token}", None)
 
     def gmgn_token_info(self, token: str, chain: str = "bsc") -> FetchResult:
         if not self.gmgn_key:
@@ -100,10 +141,15 @@ class SnapshotFetcher:
                              {"chain": chain, "address": token},
                              {"X-APIKEY": self.gmgn_key})
 
-    def fetch_all(self, token: str) -> dict[str, FetchResult]:
+    def fetch_all(self, token: str, chain_id: object = 56, chain: str = "bsc") -> dict[str, FetchResult]:
+        """Fetch every safety source for one token.
+
+        ``chain_id`` selects the provider endpoint, so a non-BSC token is never scored with
+        BSC data. Unknown chains fail closed: the filters see an error and reject.
+        """
         return {
-            "goplus": self.goplus_token_security(token),
-            "honeypot": self.honeypot_check(token),
-            "dexscreener": self.dexscreener_pairs(token),
-            "gmgn": self.gmgn_token_info(token),
+            "goplus": self.goplus_token_security(token, chain_id),
+            "honeypot": self.honeypot_check(token, chain_id),
+            "dexscreener": self.dexscreener_pairs(token, chain_id),
+            "gmgn": self.gmgn_token_info(token, chain),
         }
