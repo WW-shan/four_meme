@@ -84,7 +84,7 @@
 - 2026-09-20：plan 写入。
 - 2026-09-20：X10.1 完成（适配器注册表 + `config/chains.json` 9 链）。
 - 2026-09-20：BSC 完成 Four.meme / Pancake V2 / Pancake V3 / Flap / OpenFour 的实盘核实（见 `docs/research/20260920-live-chain-verification/`）。
-- 2026-09-20：Robinhood 拿到首个有来源的发射台（Doppler，官方部署表），实测 2000 区块内 4 次 `Create`。
+- 2026-09-20：Robinhood 核实 8 个平台：Doppler（`Create=5`）、Pons V2（`TokenLaunched=38`/`Launched=28`）、Long、o1、Flap Controller、GMGN Router 等；其余 Robinhood 平台仍缺有来源地址。
 - 2026-09-20：Solana 完成 pump.fun / letsbonk / boop / moonshot 程序核实；virtuals 程序休眠。
 - 2026-09-20：Base 完成 Clanker v4 / Flaunch / Doppler 核实；ETH 与 Arbitrum 完成 Uniswap V2/V3 核实。
 - 待办：BSC 其余发射台（cubepeg/likwid/goplus/lunafun 等）、Base basememe/virtuals_v2/klik、ETH trench/klik/livo/stroid/printr、Solana bags 发射程序、HyperEVM 工厂，均因缺少有来源地址而 blocked，禁止猜地址。

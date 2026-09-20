@@ -82,16 +82,25 @@ Bankr 本身不是发射台：官方文档（docs.bankr.bot）说明 Base 上通
 | Camelot V2 | `0x6eccab422d763ac031210895c81787e87b43a652` | 有代码（Sourcify `CamelotFactory`），20,000 区块 0 事件（疑似停用） |
 | Doppler HookInitializer | `0xaa7f809bb3752f715fa2e418230667c382a56544` | 有代码，20,000 区块 0 事件 |
 
-### Robinhood（1 个 VERIFIED-LIVE，2026-09-20 首次拿到有来源地址）
+### Robinhood（8 个平台 VERIFIED-LIVE，本轮最大突破）
 
-| 平台 | 地址 | 实测 |
+来源：`whetstoneresearch/doppler` 官方 `Deployments.md` + `0xfnzero/rbh-trade-sdk` 的 `rbhtrade/addresses.go` 地址簿；
+每个地址都用 Robinhood RPC 复核代码，并在 2,000 区块窗口抓真实日志（窗口约 5–6 分钟）。
+
+| 平台 | 地址 | 实测（2,000 区块） |
 |---|---|---|
-| Doppler HookInitializer | `0x4e3468951d49f2eea976ed0d6e75ffcb44a9a544` | Sourcify `DopplerHookInitializer`；2,000 区块：`Create=4`、`Swap=637`、`ModifyLiquidity=184` —— 说明 Robinhood 上真的有新币在发 |
-| Doppler Deployer / UniswapV4Initializer | `0x4389ad34…573f` / `0x6cce158b…57ea` | 有代码，窗口内 0 事件（部署器低频） |
+| Doppler HookInitializer | `0x4e3468951d49f2eea976ed0d6e75ffcb44a9a544` | Sourcify `DopplerHookInitializer`；`Create=5`、`Swap=589`、`ModifyLiquidity=179` |
+| Pons V2 工厂 | `0x7ed598bcef8bd9edd8c97a195c6d13f40801ec7e` | Sourcify `PonsV2LaunchFactory`；`TokenLaunched=38`、`CreatorFeeRecipientUpdated=7` |
+| Pons V2 一键发币买入 | `0xe33e9e479df8802cb0866d5d05258bec4cf62948` | Sourcify `PonsV2LaunchAndBuy`；`Launched=28` |
+| Pons V2 Hook | `0xe5e702641ea86f4ae6cc3cdaed2b886f976be044` | Sourcify `PonsV2MemeHook`；`HookFeeCollected=1355`、`PoolFeesSwept=220` |
+| Long Airlock / Rehype Hook | `0xeb7c0347…0862` / `0x6f02324d…0f77` | 6 条 / 3 条事件（有代码，低频） |
+| o1 LaunchHook / FeeEscrow | `0x0310cfeb…2acc` / `0xc5444b41…e5ef` | Sourcify `LaunchHook` / `FeeEscrow`；`Trade=6`、`Credited=12` |
+| Flap Controller（代理） | `0x26605f322f7ff986f381bb9a6e3f5dab0beaeb09` | Sourcify `TransparentUpgradeableProxy`；130 条事件 |
+| GMGN Router | `0x65050a9b7e5075a2ba5ced7b1b64ee66262c40dc` | 3,124 条事件（执行路由，不是发射台） |
 
-来源：`whetstoneresearch/doppler` 官方 `Deployments.md`（明确列出 Robinhood Mainnet 4663）。
-其余 27 个 GMGN 平台（trench/noxa/dyorswap/apestore/printr/virtuals/bankr/clanker/klik/livo/flap/bags/bowfun/o1/circus/arrowfinance/longxyz/motion/pons/stoxes/holoworld/pewfun/dyorfun_v3/noxafi）仍无有来源地址；`robinscan.io` 的 Blockscout API 路径全部 404。
-链上发现（20 区块）到的活跃合约：`PoolManager`（Uniswap V4，Sourcify 已验证）、`RelayRouterV3`、两个代理。
+有代码但窗口内 0 事件（地址已核实、活动待观察）：Doppler Deployer/UniswapV4Initializer、o1 Factory（Sourcify `RWAERC20LaunchpadFactory`）、Bags Factory/Hook/Vault（`BagsV4Hook`）、LetsCash Factory/Hook（`CashCatHookV2`）、Pools Entry/TokenFactory（`LiquidityLauncher`）、PAIR Launchpad、Varo Launchpad、Virtuals Launchpad/Factory。
+链上发现（20 区块）另见 `PoolManager`（Uniswap V4，Sourcify 已验证）、`RelayRouterV3`、`Permit2`、`WETH/USDG` 代理。
+仍未核实：trench、noxa、dyorswap、apestore、printr、bankr（Robinhood 侧）、clanker、klik、livo、bowfun、circus、arrowfinance、longxyz、motion、stoxes、holoworld、pewfun、dyorfun_v3、noxafi —— `robinscan.io` 的 Blockscout API 路径全部 404，缺有来源地址。
 
 ### Arc / Stable / HyperEVM（无已核实发射台）
 
@@ -116,7 +125,7 @@ Bankr 本身不是发射台：官方文档（docs.bankr.bot）说明 Base 上通
 ## 本轮纠正的既有错误
 
 1. `config/chains.json` 原来把 pancake_v3 标为 `verified` 却没有来源；本轮补上来源，并记录 Sourcify 名称不一致（`PlunderV3Factory`）这一事实。地址本身通过 `feeAmountTickSpacing`/`getPool` 与真实池子验证可用。
-2. Robinhood 之前因为浏览器 API 404 被判“无法核实”；本轮换路径（官方 Doppler 部署表 + 链上日志）拿到了可用的发射台，并实测到 4 次 `Create`。
+2. Robinhood 之前因为浏览器 API 404 被判“无法核实”；本轮换路径（官方 Doppler 部署表 + 第三方地址簿 + 链上日志）核实了 8 个平台，其中 Pons V2 实测 `TokenLaunched=38`、`Launched=28`。
 3. Bankr 被当成 Base 发射台；官方文档显示它是 Doppler 的客户端，核实对象应是 Doppler 合约。
 4. 公共 RPC 的限制被写进工具：BSC 必须带地址过滤且单查询 ≤2 万条结果；Arc ~30 区块；Stable 1,024 区块；Robinhood ≤1 万条日志并有 429 限流（已加退避重试）。
 
