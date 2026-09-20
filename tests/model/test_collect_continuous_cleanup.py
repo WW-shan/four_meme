@@ -6,6 +6,7 @@ import sys
 import types
 import asyncio
 from datetime import datetime, timezone
+from unittest.mock import patch
 
 
 def _load_collect_continuous_module():
@@ -54,6 +55,10 @@ def _load_collect_continuous_module():
             @staticmethod
             def get_log_http_pool():
                 return []
+
+            @staticmethod
+            def get_http_request_kwargs():
+                return {}
 
         config_module.Config = _Config
         sys.modules["config"] = config_pkg
@@ -276,6 +281,25 @@ class TestCollectContinuousListenerMode(unittest.TestCase):
             self.assertEqual("hybrid", collector._get_collector_listener_mode())
         finally:
             collect_continuous_module.os.getenv = original_getenv
+
+    def test_http_provider_receives_configured_proxy(self):
+        captured = {}
+
+        class _Provider:
+            def __init__(self, endpoint, request_kwargs=None):
+                captured["endpoint"] = endpoint
+                captured["request_kwargs"] = request_kwargs
+
+        collector = ContinuousCollector()
+        with patch.object(
+            collect_continuous_module.Config,
+            "get_http_request_kwargs",
+            return_value={"proxy": "http://127.0.0.1:10808"},
+        ):
+            collector._build_http_provider("https://rpc.example", _Provider)
+
+        self.assertEqual(captured["endpoint"], "https://rpc.example")
+        self.assertEqual(captured["request_kwargs"], {"proxy": "http://127.0.0.1:10808"})
 
 
 class TestCollectContinuousCheckpointAge(unittest.TestCase):

@@ -521,6 +521,44 @@ class TestTrainHybridPipeline(unittest.TestCase):
             self.assertTrue(Path(out["threshold_path"]).exists())
             self.assertIn("labels", out)
 
+    def test_train_buy_model_can_cap_buy_samples_without_shortening_sell_episodes(self):
+        import tempfile
+
+        m = _load_module()
+        samples = []
+        for token, base_price, base_label in (("A", 1.0, 10.0), ("B", 2.0, 120.0)):
+            for index in range(3):
+                samples.append(
+                    {
+                        "features": {"current_price": base_price + index},
+                        "label": {"max_return_pct": base_label + index},
+                        "meta": {"token_address": token, "sample_time": 100 + index},
+                    }
+                )
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            with patch.object(m, "_load_samples", return_value=samples), \
+                 patch.object(m, "_split_samples_for_calibration", return_value=([0, 1], [])), \
+                 patch.object(m, "BuyCatBoostModel") as MockModel:
+                fake = MagicMock()
+                fake.predict_proba.return_value = [[0.3, 0.7], [0.3, 0.7]]
+                fake.select_threshold.return_value = 0.42
+                fake.model = MagicMock()
+                fake.model.save_model.side_effect = lambda path: Path(path).write_text("cbm", encoding="utf-8")
+                MockModel.return_value = fake
+
+                out = m.train_buy_model(
+                    {
+                        "output_dir": tmpdir,
+                        "target_label_column": "max_return_pct",
+                        "target_threshold_value": 80.0,
+                        "buy_max_samples_per_token": 1,
+                    }
+                )
+
+        self.assertEqual(len(out["samples"]), 2)
+        self.assertEqual(len(out["sell_training_samples"]), 6)
+
     def test_train_buy_model_can_balance_fit_weights_by_token(self):
         import tempfile
         m = _load_module()

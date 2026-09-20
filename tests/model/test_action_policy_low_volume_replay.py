@@ -50,6 +50,15 @@ class _FakeEntryModel:
 
 
 class TestActionPolicyReplayGate(unittest.TestCase):
+    def test_missing_historical_report_is_an_empty_fail_closed_input(self):
+        cli = _load_cli()
+
+        report = cli._load_json(Path("/tmp/missing-latest-only-report.json"))
+
+        self.assertTrue(report["_missing_report"])
+        self.assertEqual(report["rows"], [])
+        self.assertEqual(report["evaluation"], {})
+
     def test_scores_only_low_volume_candidates_with_decision_time_features(self):
         train_rejected = {
             "candidate_sample": [

@@ -179,6 +179,28 @@ class TestDataCollectorReactivation(unittest.TestCase):
             self.assertEqual(lifecycle["create_timestamp"], 1000)
             self.assertEqual(lifecycle["last_update"], 2000)
 
+    def test_out_of_order_events_are_inserted_by_chain_time_and_keep_provenance(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            collector = DataCollector(output_dir=tmpdir, incremental_run_id="20260227_030000")
+            token = "0xORDER"
+            collector.on_token_create(_create_event(token, 1000, symbol="ORDER"))
+
+            later = _buy_event(token, 1020, account="0xlater")
+            later.update({"blockNumber": 12, "logIndex": 2, "transactionHash": b"\x02" * 32})
+            earlier = _buy_event(token, 1010, account="0xearlier")
+            earlier.update({"blockNumber": 11, "logIndex": 1, "transactionHash": b"\x01" * 32})
+
+            collector.on_token_purchase(later)
+            collector.on_token_purchase(earlier)
+
+            lifecycle = collector.token_lifecycle[token]
+            self.assertEqual([row["timestamp"] for row in lifecycle["buys"]], [1010, 1020])
+            self.assertEqual([row["timestamp"] for row in lifecycle["price_history"]], [1010, 1020])
+            self.assertEqual(lifecycle["last_update"], 1020)
+            self.assertEqual(lifecycle["buys"][0]["block_number"], 11)
+            self.assertEqual(lifecycle["buys"][1]["log_index"], 2)
+            self.assertEqual(lifecycle["price_current"], lifecycle["buys"][1]["price"])
+
 
 if __name__ == "__main__":
     unittest.main()

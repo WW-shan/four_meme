@@ -136,6 +136,45 @@ class TestDatasetBuilderIncrementalMerge(unittest.TestCase):
         self.assertEqual(loaded, 1)
         self.assertEqual(seen_tokens, ["valid"])
 
+    def test_incremental_fragments_are_merged_before_sample_generation(self):
+        rows = [
+            {
+                "token_address": "FRAGMENT",
+                "create_timestamp": 1,
+                "buys": [{"timestamp": 10, "account": "0x1", "bnb_amount": 0.1, "price": 1.0}],
+                "sells": [],
+                "price_history": [{"timestamp": 10, "price": 1.0, "type": "buy"}],
+                "last_update": 10,
+            },
+            {
+                "token_address": "FRAGMENT",
+                "create_timestamp": 1,
+                "buys": [{"timestamp": 20, "account": "0x2", "bnb_amount": 0.2, "price": 2.0}],
+                "sells": [],
+                "price_history": [{"timestamp": 20, "price": 2.0, "type": "buy"}],
+                "last_update": 20,
+            },
+        ]
+        for index, row in enumerate(rows, start=1):
+            (self.lifecycle_dir / f"lifecycle_incremental_20260215_10{index:04d}.jsonl").write_text(
+                json.dumps(row) + "\n", encoding="utf-8"
+            )
+
+        captured = []
+
+        def _capture_and_skip(lifecycle):
+            captured.append(lifecycle)
+            return []
+
+        with patch.object(self.builder, "_generate_samples_from_lifecycle", side_effect=_capture_and_skip):
+            loaded = self.builder.load_lifecycle_files()
+
+        self.assertEqual(loaded, 1)
+        self.assertEqual(len(captured), 1)
+        self.assertEqual([row["timestamp"] for row in captured[0]["buys"]], [10, 20])
+        self.assertEqual(captured[0]["total_buy_count"], 2)
+        self.assertEqual(captured[0]["last_update"], 20)
+
 
 if __name__ == "__main__":
     unittest.main()

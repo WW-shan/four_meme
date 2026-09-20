@@ -355,7 +355,17 @@ def _report_metadata(report, args):
 
 
 def _load_json(path: Path):
-    return json.loads(path.read_text(encoding="utf-8"))
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except FileNotFoundError:
+        # Historical probe inputs are optional after the latest-data cleanup.
+        # An empty report keeps this diagnostic fail-closed and reproducible.
+        return {
+            "_missing_report": str(path),
+            "rows": [],
+            "evaluation": {},
+            "summary": {},
+        }
 
 
 def _paths(values):

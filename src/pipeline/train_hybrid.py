@@ -1013,6 +1013,9 @@ def train_buy_model(config):
 
     samples = _load_samples(config)
     buy_samples = _filter_samples_by_entry_window(samples, config)
+    buy_max_samples_per_token = config.get("buy_max_samples_per_token")
+    if buy_max_samples_per_token is not None:
+        buy_samples = _limit_samples_per_token(buy_samples, buy_max_samples_per_token)
     target_label_column = config.get("target_label_column", "executable_return_pct")
     target_threshold_value = float(config.get("target_threshold_value", 80.0))
     rows, labels, metas = _prepare_training_rows(

@@ -1,3 +1,4 @@
+import math
 import unittest
 
 from src.data.feature_extractor import extract_features
@@ -53,6 +54,12 @@ class TestFeatureExtractorBehaviorDynamics(unittest.TestCase):
             "concentration_decay_10_30",
             "retail_entry_rate_ratio_30s",
             "lp_resistance_ratio_10s",
+            "creator_buy_share",
+            "creator_sell_share",
+            "round_trip_buy_volume_ratio",
+            "buy_volume_per_unique_buyer",
+            "volume_price_divergence",
+            "sell_pressure_change_10_60",
         ]
 
         for key in required_keys:
@@ -61,6 +68,21 @@ class TestFeatureExtractorBehaviorDynamics(unittest.TestCase):
 
         for key in OPTIONAL_FLOW_KEYS:
             self.assertNotIn(key, features)
+
+        self.assertAlmostEqual(features["creator_buy_share"], 0.0, places=12)
+        self.assertAlmostEqual(features["creator_sell_share"], 0.0, places=12)
+        self.assertAlmostEqual(features["round_trip_buy_volume_ratio"], 0.2 / 1.6, places=12)
+        self.assertAlmostEqual(features["buy_volume_per_unique_buyer"], 1.6 / 3.0, places=12)
+        self.assertAlmostEqual(
+            features["volume_price_divergence"],
+            math.log1p(1.65) / (1.0 + abs((1.3 - 1.0) / 1.0 * 100.0) / 100.0),
+            places=12,
+        )
+        self.assertAlmostEqual(
+            features["sell_pressure_change_10_60"],
+            (0.05 / (0.4 + 0.05)) - (0.05 / (1.6 + 0.05)),
+            places=12,
+        )
 
     def test_extract_features_omits_optional_flow_features_by_default_for_schema_compatibility(self):
         lifecycle = {

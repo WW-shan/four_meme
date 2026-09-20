@@ -92,7 +92,18 @@ def _base_overrides(args):
 
 
 def _load_json(path: Path):
-    return json.loads(path.read_text(encoding="utf-8"))
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except FileNotFoundError:
+        # Historical probe inputs are optional after the latest-data cleanup.
+        # Keep the replay conservative by supplying an empty report; the gate
+        # will fail closed rather than preventing unrelated diagnostics from running.
+        return {
+            "_missing_report": str(path),
+            "rows": [],
+            "evaluation": {},
+            "summary": {},
+        }
 
 
 def _paths(values):

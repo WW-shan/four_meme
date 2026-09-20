@@ -101,6 +101,12 @@ def parse_args(argv=None):
     parser.add_argument("--min-policy-hold-seconds", type=int, default=0, help="Minimum age before policy sell signals can close a position")
     parser.add_argument("--max-samples-per-token", type=int, default=120, help="Evenly cap dense event samples per token")
     parser.add_argument(
+        "--buy-max-samples-per-token",
+        type=int,
+        default=None,
+        help="Optional separate cap for buy-model samples per token; sell episodes keep all eligible samples",
+    )
+    parser.add_argument(
         "--include-flow-features",
         action="store_true",
         help="Include optional short-window sell-pressure and signed-imbalance features in training artifacts",
@@ -465,6 +471,9 @@ def main(argv=None):
             "od_wait": args.catboost_od_wait,
         },
     }
+    buy_max_samples_per_token = getattr(args, "buy_max_samples_per_token", None)
+    if buy_max_samples_per_token is not None:
+        config["buy_max_samples_per_token"] = buy_max_samples_per_token
     result = run_hybrid_training(config)
     print(json.dumps(result, ensure_ascii=False, sort_keys=True))
     return result

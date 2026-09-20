@@ -1,3 +1,4 @@
+import math
 from typing import Dict, Iterable, List, Optional
 
 import numpy as np
@@ -176,6 +177,15 @@ def extract_features(
     creator_balance = address_balances.get(creator, 0)
     creator_holding_ratio = creator_balance / total_supply if total_supply > 0 else 0
 
+    creator_buy_share = _safe_div(creator_buy_volume, total_buy_volume, default=0.0)
+    creator_sell_share = _safe_div(creator_sell_volume, total_sell_volume, default=0.0)
+    buy_volume_per_unique_buyer = _safe_div(total_buy_volume, float(unique_buyers), default=0.0)
+
+    # High volume with little price movement is a useful wash/LPI warning signal.
+    volume_price_divergence = math.log1p(max(0.0, total_buy_volume + total_sell_volume)) / (
+        1.0 + abs(float(price_change_pct)) / 100.0
+    )
+
     if avg_buy_size > 0:
         whale_threshold = avg_buy_size * 3
         whale_buys = [b for b in past_buys if b['bnb_amount'] > whale_threshold]
@@ -198,6 +208,12 @@ def extract_features(
     sellers_set = set(s['account'] for s in past_sells)
     overlap_addresses = buyers_set & sellers_set
     address_overlap_ratio = len(overlap_addresses) / len(buyers_set) if buyers_set else 0
+    round_trip_buy_volume = sum(
+        float(b.get('bnb_amount', 0.0))
+        for b in past_buys
+        if b.get('account', '') in sellers_set
+    )
+    round_trip_buy_volume_ratio = _safe_div(round_trip_buy_volume, total_buy_volume, default=0.0)
 
     create_time = lifecycle['create_timestamp']
     early_window = 30
@@ -341,6 +357,7 @@ def extract_features(
     sell_pressure_10s = float(_safe_div(sell_volume_10s, total_flow_volume_10s, default=0.0))
     sell_pressure_30s = float(_safe_div(sell_volume_30s, total_flow_volume_30s, default=0.0))
     sell_pressure_60s = float(_safe_div(sell_volume_60s, total_flow_volume_60s, default=0.0))
+    sell_pressure_change_10_60 = sell_pressure_10s - sell_pressure_60s
     signed_imbalance_10s = float(_safe_div(vol_10 - sell_volume_10s, total_flow_volume_10s, default=0.0))
     signed_imbalance_30s = float(_safe_div(vol_30 - sell_volume_30s, total_flow_volume_30s, default=0.0))
     signed_imbalance_60s = float(_safe_div(vol_60 - sell_volume_60s, total_flow_volume_60s, default=0.0))
@@ -388,12 +405,17 @@ def extract_features(
         'creator_is_buyer': 1 if creator_is_buyer else 0,
         'creator_is_seller': 1 if creator_is_seller else 0,
         'creator_buy_volume': creator_buy_volume,
+        'creator_buy_share': creator_buy_share,
         'creator_sell_volume': creator_sell_volume,
+        'creator_sell_share': creator_sell_share,
         'creator_holding_ratio': creator_holding_ratio,
         'whale_count': whale_count,
         'whale_volume_ratio': whale_volume_ratio,
         'repeat_buyer_ratio': repeat_buyer_ratio,
         'address_overlap_ratio': address_overlap_ratio,
+        'round_trip_buy_volume_ratio': round_trip_buy_volume_ratio,
+        'buy_volume_per_unique_buyer': buy_volume_per_unique_buyer,
+        'volume_price_divergence': volume_price_divergence,
         'early_buy_count': early_buy_count,
         'early_buy_volume': early_buy_volume,
         'early_unique_buyers': early_unique_buyers,
@@ -437,6 +459,7 @@ def extract_features(
         'concentration_decay_10_30': concentration_decay_10_30,
         'retail_entry_rate_ratio_30s': retail_entry_rate_ratio_30s,
         'lp_resistance_ratio_10s': lp_resistance_ratio_10s,
+        'sell_pressure_change_10_60': sell_pressure_change_10_60,
     }
 
     if include_flow_features:
