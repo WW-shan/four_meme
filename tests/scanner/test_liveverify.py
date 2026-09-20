@@ -182,6 +182,7 @@ class EvmVerifierTests(unittest.TestCase):
             "0x" + "60" * 100,
             RpcCallError("eth_getLogs", [{"error": "query exceeds max results 20000"}]),
             [],
+            [],  # from-genesis history probe
         ])
         verifier = EvmVerifier(client, FakeSourcify())
         result = verifier.verify_contract(chain="bsc", chain_id=56, address="0x" + "aa" * 20, span=400,
@@ -190,6 +191,7 @@ class EvmVerifierTests(unittest.TestCase):
         self.assertEqual(400, result["live_window"]["requested_span"])
         self.assertFalse(result["ok"])
         self.assertIn("窗口内没有任何事件", result["verification_notes"][0])
+        self.assertFalse(result["history_probe"]["events_exist"])
 
 
 class ReportTests(unittest.TestCase):
@@ -215,3 +217,92 @@ class ReportTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TargetSpanTests(unittest.TestCase):
+    """Per-target log windows, so quiet launchpads are not reported as empty by a narrow window."""
+
+    def test_target_span_overrides_chain_default(self):
+        from scripts.verify_live import resolve_target_span
+
+        self.assertEqual(2000, resolve_target_span({}, 2000))
+        self.assertEqual(20000000, resolve_target_span({"span": 20000000}, 2000))
+        self.assertEqual(2000, resolve_target_span({"span": None}, 2000))
+
+    def test_invalid_span_falls_back_to_default(self):
+        from scripts.verify_live import resolve_target_span
+
+        self.assertEqual(5000, resolve_target_span({"span": "not-a-number"}, 5000))
+        self.assertEqual(1, resolve_target_span({"span": 0}, 0))
+
+    def test_live_config_uses_declared_spans(self):
+        import json
+        from pathlib import Path
+
+        root = Path(__file__).resolve().parents[2]
+        config = json.loads((root / "config" / "live_targets.json").read_text(encoding="utf-8"))
+        spans = {target["id"]: target.get("span") for spec in config["chains"].values()
+                 for target in spec.get("targets", [])}
+        self.assertEqual(20000000, spans["hoodfun_launchpad"])
+        self.assertEqual(40000000, spans["stoxes_factory"])
+        self.assertEqual(1000, spans["pew_instant_factory_1_stable"])
+
+
+class LatestEventTests(unittest.TestCase):
+    def test_latest_event_age_is_reported(self):
+        import json
+        from src.radar.liveverify.report import render_markdown
+
+        payload = {
+            "generated_at": 1000.0,
+            "chains": {"robinhood": {"health": {"reported_chain_id": 4663, "expected_chain_id": 4663},
+                                     "targets": [{
+                                         "target_id": "demo", "address": "0xabc", "ok": True,
+                                         "code_size_bytes": 100, "sourcify": {"name": "Demo"},
+                                         "live_window": {"logs": 3}, "topic_hits": {},
+                                         "latest_event": {"block": 5, "age_seconds": 900000.0},
+                                     }]}},
+            "blocked_targets": [],
+        }
+        text = render_markdown(payload)
+        self.assertIn("最近事件", text)
+        self.assertIn("5 / 10.4 天前", text)
+
+
+class HistoricalStatusTests(unittest.TestCase):
+    """A quiet launchpad with proven historical events is HISTORICAL, not CODE-ONLY."""
+
+    def test_history_probe_refusal_counts_as_events_existing(self):
+        from src.radar.liveverify.evm import EvmVerifier
+
+        client = FakeClient([RpcCallError("eth_getLogs", [{"error": "logs matched by query exceeds limit"}])])
+        probe = EvmVerifier(client, FakeSourcify()).history_probe("0x" + "aa" * 20, latest_block=100)
+        self.assertFalse(probe["ok"])
+        self.assertTrue(probe["events_exist"])
+
+    def test_history_probe_reports_oldest_and_newest_block(self):
+        from src.radar.liveverify.evm import EvmVerifier
+
+        logs = [{"blockNumber": hex(50), "topics": [], "data": "0x"},
+                {"blockNumber": hex(90), "topics": [], "data": "0x"}]
+        probe = EvmVerifier(FakeClient([logs]), FakeSourcify()).history_probe("0x" + "aa" * 20, latest_block=100)
+        self.assertTrue(probe["events_exist"])
+        self.assertEqual(50, probe["first_block"])
+        self.assertEqual(90, probe["last_block"])
+        self.assertEqual(10, probe["blocks_since_last"])
+
+    def test_markdown_labels_historical_rows(self):
+        import json
+        from src.radar.liveverify.report import render_markdown
+
+        payload = {
+            "generated_at": 1.0,
+            "chains": {"robinhood": {"health": {}, "targets": [{
+                "target_id": "quiet", "address": "0xabc", "ok": False, "code_size_bytes": 100,
+                "sourcify": {}, "live_window": {"logs": 0}, "topic_hits": {},
+                "history_probe": {"mode": "from_genesis", "ok": False, "events_exist": True},
+            }]}},
+            "blocked_targets": [],
+        }
+        text = render_markdown(payload)
+        self.assertIn("HISTORICAL", text)

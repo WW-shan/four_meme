@@ -18,6 +18,8 @@ def _status(entry: dict) -> str:
     if entry.get("kind") == "target":
         if entry.get("ok"):
             return "VERIFIED-LIVE"
+        if (entry.get("history_probe") or {}).get("events_exist"):
+            return "HISTORICAL"
         if entry.get("code_size_bytes"):
             return "CODE-ONLY"
         return "FAILED"
@@ -32,7 +34,9 @@ def render_markdown(payload: dict) -> str:
         "",
         f"- 生成时间：{time.strftime('%Y-%m-%d %H:%M:%S %z', time.localtime(payload.get('generated_at', time.time())))}",
         f"- 链数量：{len(payload.get('chains', {}))}",
-        "- 判定口径：`VERIFIED-LIVE` = 合约有代码 + 真实链上事件（含区块/交易哈希）；`CODE-ONLY` = 有代码但窗口内无事件；`FAILED` = 探测失败。",
+        "- 判定口径：`VERIFIED-LIVE` = 合约有代码 + 窗口内有真实链上事件（含区块/交易哈希）；"
+        "`HISTORICAL` = 有代码且 from-genesis 证明历史上有真实事件，但最近窗口内没有；"
+        "`CODE-ONLY` = 有代码但从未观察到事件；`FAILED` = 探测失败。",
         "",
         "## 链级连通性",
         "",
@@ -50,16 +54,30 @@ def render_markdown(payload: dict) -> str:
             f"{span.get('mode', '-')} | {span.get('accepted_span', '-')} | {health.get('endpoint', '-')} |"
         )
     lines += ["", "## 合约级核实", "",
-              "| 链 | 目标 | 地址 | 代码字节 | Sourcify 名称 | 窗口事件数 | 期望 topic 命中 | 判定 |",
-              "|---|---|---|---:|---|---:|---|---|"]
+              "| 链 | 目标 | 地址 | 代码字节 | Sourcify 名称 | 窗口事件数 | 最近事件(区块/距今) | 期望 topic 命中 | 判定 |",
+              "|---|---|---|---:|---|---:|---|---|---|"]
     for chain, item in payload.get("chains", {}).items():
         for target in item.get("targets", []):
             sourcify = target.get("sourcify") or {}
             hits = target.get("topic_hits") or {}
             hit_text = ", ".join(f"{sig.split('(')[0]}={count}" for sig, count in hits.items()) or "-"
+            latest = target.get("latest_event") or {}
+            if latest.get("block"):
+                age = latest.get("age_seconds")
+                if age is None:
+                    age_text = "-"
+                elif age < 3600:
+                    age_text = f"{age / 60:.0f} 分钟前"
+                elif age < 86400 * 2:
+                    age_text = f"{age / 3600:.1f} 小时前"
+                else:
+                    age_text = f"{age / 86400:.1f} 天前"
+                latest_text = f"{latest.get('block')} / {age_text}"
+            else:
+                latest_text = "-"
             lines.append(
                 f"| {chain} | {target.get('target_id')} | {target.get('address')} | {target.get('code_size_bytes', '-')} | "
-                f"{sourcify.get('name') or '-'} | {(target.get('live_window') or {}).get('logs', '-')} | {hit_text} | {_status(target)} |"
+                f"{sourcify.get('name') or '-'} | {(target.get('live_window') or {}).get('logs', '-')} | {latest_text} | {hit_text} | {_status(target)} |"
             )
     blocked = payload.get("blocked_targets", [])
     if blocked:

@@ -152,6 +152,9 @@ class EvmVerifier:
     RETRYABLE_LOG_ERRORS = ("exceeds max results", "response is too big", "invalid block range",
                             "exceeds limit", "limit exceeded", "range")
 
+    # RPC refusals that themselves prove a contract emitted events at some point.
+    TOO_MANY_RESULT_ERRORS = ("exceeds", "too big", "too large", "limit", "timed out", "timeout")
+
     def recent_logs(self, address: str, *, span: int, topic0s: Iterable[str] | None = None,
                     latest_block: int | None = None, min_span: int = 20) -> tuple[list[dict], int, list[dict]]:
         """Fetch address-filtered logs, shrinking the window when the RPC refuses it.
@@ -180,6 +183,27 @@ class EvmVerifier:
                     raise
                 current = max(min_span, current // 2)
         raise RpcCallError("eth_getLogs", attempts)
+
+    def history_probe(self, address: str, *, latest_block: int | None = None) -> dict:
+        """One unfiltered from-genesis query: does this address have *any* real events?
+
+        A refusal because too many logs matched is itself evidence: the contract emitted events,
+        just not inside the recent window. This keeps a quiet launchpad from being reported as
+        indistinguishable from a wrong address.
+        """
+        latest = latest_block if latest_block is not None else hex_int(self.client.call("eth_blockNumber"))
+        try:
+            logs = self.client.call("eth_getLogs", [{"address": address, "fromBlock": "0x0",
+                                                     "toBlock": "latest"}]) or []
+        except RpcCallError as exc:
+            message = str(exc)
+            return {"mode": "from_genesis", "ok": False, "error": message[:200],
+                    "events_exist": any(token in message.lower() for token in self.TOO_MANY_RESULT_ERRORS)}
+        blocks = [hex_int(log.get("blockNumber")) for log in logs if log.get("blockNumber")]
+        return {"mode": "from_genesis", "ok": True, "logs": len(logs),
+                "first_block": min(blocks) if blocks else None, "last_block": max(blocks) if blocks else None,
+                "blocks_since_last": (latest - max(blocks)) if blocks else None,
+                "events_exist": bool(logs)}
 
     def verify_contract(self, *, chain: str, chain_id: int, address: str, span: int,
                         expected_names: Iterable[str] = (), topic_signatures: Iterable[str] = (),
@@ -253,6 +277,16 @@ class EvmVerifier:
                 "decoded": decoded,
             })
         result["samples"] = samples
+        if samples:
+            newest = max(samples, key=lambda item: item.get("block") or 0)
+            timestamp = newest.get("block_timestamp")
+            result["latest_event"] = {
+                "block": newest.get("block"),
+                "block_timestamp": timestamp,
+                "age_seconds": (round(time.time() - timestamp, 1) if timestamp else None),
+                "transaction_hash": newest.get("transaction_hash"),
+                "topic0": newest.get("topic0"),
+            }
         notes: list[str] = []
         if topic_signatures:
             hit_any = any(count > 0 for count in result["topic_hits"].values())
@@ -266,6 +300,15 @@ class EvmVerifier:
             result["ok"] = bool(logs)
             if not logs:
                 notes.append("窗口内没有任何事件")
+        if not logs:
+            probe = self.history_probe(address, latest_block=latest_block)
+            result["history_probe"] = probe
+            if probe.get("events_exist"):
+                if probe.get("ok"):
+                    notes.append(f"窗口外有真实历史事件：{probe.get('logs')} 条，最近一次在区块 {probe.get('last_block')}"
+                                 f"（距今 {probe.get('blocks_since_last')} 区块）")
+                else:
+                    notes.append("窗口外有真实历史事件：from-genesis 查询被拒绝（匹配日志过多），说明该地址确实发射过事件")
         if result.get("expected_names") and result.get("name_matches") is False:
             notes.append(f"Sourcify 记录名为 {sourcify.name!r}，与期望 {result['expected_names']} 不一致（字节码匹配优先，名称仅作参考）")
         if notes:

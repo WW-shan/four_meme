@@ -35,7 +35,7 @@ class JsonRpcClient:
         self.session = session or requests.Session()
         self.attempts: list[dict] = []
 
-    def call_raw(self, method: str, params: list | None = None, *, max_retries: int = 2) -> Any:
+    def call_raw(self, method: str, params: list | None = None, *, max_retries: int = 4) -> Any:
         payload = {"jsonrpc": "2.0", "id": 1, "method": method, "params": params or []}
         last_error: str | None = None
         for url in self.endpoints:
@@ -59,12 +59,12 @@ class JsonRpcClient:
                 self.attempts.append({"url": url, "method": method, "ok": False, "error": last_error,
                                       "seconds": seconds, "rate_limited": rate_limited})
                 if rate_limited and attempt < max_retries:
-                    time.sleep(3 * (attempt + 1))
+                    time.sleep(min(2 ** (attempt + 1), 20))
                     continue
                 break
         raise RpcCallError(method, list(self.attempts))
 
-    def call(self, method: str, params: list | None = None, *, max_retries: int = 2) -> Any:
+    def call(self, method: str, params: list | None = None, *, max_retries: int = 4) -> Any:
         return self.call_raw(method, params, max_retries=max_retries)
 
     @property

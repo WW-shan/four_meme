@@ -68,6 +68,20 @@ def apply_proxy_abi(verifier, entry: dict, target: dict, abi: list | None) -> li
     return abi
 
 
+def resolve_target_span(target: dict, default_span: int) -> int:
+    """Per-target log window.
+
+    Low-activity launchpads need a wider window than the chain default; the effective span is
+    always reported in the evidence so a narrow window is never presented as a wide one.
+    """
+    raw = target.get("span")
+    try:
+        span = int(raw) if raw else int(default_span)
+    except (TypeError, ValueError):
+        span = int(default_span)
+    return max(1, span)
+
+
 def verify_evm_chain(chain: str, spec: dict, *, span_override: int | None, discovery: bool,
                      top_n: int) -> dict:
     client = JsonRpcClient(spec["rpc"])
@@ -81,8 +95,9 @@ def verify_evm_chain(chain: str, spec: dict, *, span_override: int | None, disco
         health.log_span = probe_log_span(client, health.latest_block or 0, spans=probe_spans)
         result["health"] = health.to_dict()
 
-    span = span_override or int(spec.get("target_span") or 100)
+    default_span = span_override or int(spec.get("target_span") or 100)
     for target in spec.get("targets", []):
+        span = resolve_target_span(target, default_span)
         topic_signatures = list(target.get("topics") or [])
         abi_override = resolve_abi(target, session=verifier.client.session)
         entry_sourcify = verifier.sourcify.lookup(int(expected_chain_id or 0), target["address"])
