@@ -92,5 +92,16 @@ class SnapshotMappingTests(unittest.TestCase):
         self.assertEqual({}, snapshot["sources"])
 
 
+class DexScreenerListPayloadTests(unittest.TestCase):
+    def test_token_pairs_list_payload_maps_price_liquidity_and_mcap(self):
+        fetched = {"dexscreener": FetchResult("dexscreener", True, payload=[
+            {"liquidity": {"usd": 6915502.46}, "marketCap": 973503451.0, "priceUsd": "1.23"},
+        ])}
+        snapshot = build_snapshot(TOKEN, fetched)
+        self.assertEqual(6915502.46, snapshot["liquidity_usd"])
+        self.assertEqual(973503451.0, snapshot["mcap_usd"])
+        self.assertEqual(1.23, snapshot["price_usd"])
+
+
 if __name__ == "__main__":
     unittest.main()

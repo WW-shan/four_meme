@@ -68,8 +68,13 @@ def _honeypot_map(result: FetchResult) -> dict:
 
 
 def _dexscreener_map(result: FetchResult) -> dict:
-    payload = result.payload if isinstance(result.payload, Mapping) else {}
-    pairs = payload.get("pairs") or payload.get("pair") or []
+    payload = result.payload
+    if isinstance(payload, list):
+        pairs = payload
+    elif isinstance(payload, Mapping):
+        pairs = payload.get("pairs") or payload.get("pair") or []
+    else:
+        pairs = []
     if isinstance(pairs, Mapping):
         pairs = [pairs]
     best = None
@@ -85,6 +90,7 @@ def _dexscreener_map(result: FetchResult) -> dict:
     return {
         "liquidity_usd": liquidity,
         "mcap_usd": _float(pair.get("marketCap")) or _float(pair.get("fdv")),
+        "price_usd": _float(pair.get("priceUsd")),
         "social_url": ((pair.get("info") or {}).get("socials") or [{}])[0].get("url"),
         "_source": "dexscreener",
     }
