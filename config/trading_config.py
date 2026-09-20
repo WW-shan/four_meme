@@ -68,6 +68,11 @@ class TradingConfig:
     MAX_GAS_PRICE_GWEI = float(os.getenv('MAX_GAS_PRICE_GWEI', '0.1'))     # 最高不超过0.1 Gwei
     GAS_MULTIPLIER = float(os.getenv('GAS_MULTIPLIER', '1.1'))  # 稍微加价10%
     BUY_SLIPPAGE_PERCENT = int(os.getenv('BUY_SLIPPAGE_PERCENT', '15'))
+    SELL_SLIPPAGE_PERCENT = int(os.getenv('SELL_SLIPPAGE_PERCENT', '15'))
+    FOURMEME_TOKEN_DECIMALS = int(os.getenv('FOURMEME_TOKEN_DECIMALS', '18'))
+    # Only used when no expected price is available; the live buy path always
+    # passes a verified price and therefore computes a real minimum instead.
+    BUY_MIN_AMOUNT_FLOOR = int(os.getenv('BUY_MIN_AMOUNT_FLOOR', '1'))
     BUY_CONFIRM_POLL_INTERVAL_SECONDS = float(os.getenv('BUY_CONFIRM_POLL_INTERVAL_SECONDS', '0.25'))
     BUY_CONFIRM_TIMEOUT_SECONDS = int(os.getenv('BUY_CONFIRM_TIMEOUT_SECONDS', '120'))
     BUY_USE_LIFECYCLE_FAST_STATUS = os.getenv('BUY_USE_LIFECYCLE_FAST_STATUS', 'true').lower() == 'true'
@@ -86,6 +91,44 @@ class TradingConfig:
     MOONSHOT_PROFIT_PERCENT = int(os.getenv('MOONSHOT_PROFIT_PERCENT', '500'))
     MOONSHOT_STOP_LOSS_PERCENT = int(os.getenv('MOONSHOT_STOP_LOSS_PERCENT', '-30'))
     MOONSHOT_MAX_HOLD_HOURS = int(os.getenv('MOONSHOT_MAX_HOLD_HOURS', '24'))
+
+    # ========== Runner reserve (explicit opt-in, default disabled) ==========
+    RUNNER_RESERVE_ENABLED = os.getenv('RUNNER_RESERVE_ENABLED', 'false').lower() == 'true'
+    RUNNER_RESERVE_ACTIVATION_MULTIPLE = _float_env('RUNNER_RESERVE_ACTIVATION_MULTIPLE', 2.0)
+    RUNNER_RESERVE_PARTIAL_EXIT_RATIO = _float_env('RUNNER_RESERVE_PARTIAL_EXIT_RATIO', 0.70)
+    RUNNER_RESERVE_STOP_DRAWDOWN = _float_env('RUNNER_RESERVE_STOP_DRAWDOWN', 0.30)
+    RUNNER_RESERVE_FLOOR_RETURN = _float_env('RUNNER_RESERVE_FLOOR_RETURN', 0.0)
+    RUNNER_RESERVE_MAX_HOLD_SECONDS = _int_env('RUNNER_RESERVE_MAX_HOLD_SECONDS', 86400)
+    RUNNER_RESERVE_MAX_SELL_PRESSURE_30S = _float_env('RUNNER_RESERVE_MAX_SELL_PRESSURE_30S', 0.55)
+    RUNNER_RESERVE_MIN_FLOW_EVENT_COUNT_30S = _int_env('RUNNER_RESERVE_MIN_FLOW_EVENT_COUNT_30S', 1)
+
+    # ========== Post-graduation retention health (explicit opt-in) ==========
+    # Shadow mode evaluates/logs DEX health but never changes a position.
+    POST_GRADUATION_RETENTION_ENABLED = os.getenv('POST_GRADUATION_RETENTION_ENABLED', 'false').lower() == 'true'
+    POST_GRADUATION_RETENTION_SHADOW_ENABLED = (
+        os.getenv('POST_GRADUATION_RETENTION_SHADOW_ENABLED', 'false').lower() == 'true'
+    )
+    POST_GRADUATION_RETENTION_MAX_HOLD_SECONDS = _int_env(
+        'POST_GRADUATION_RETENTION_MAX_HOLD_SECONDS', 4 * 86400
+    )
+    POST_GRADUATION_RETENTION_MAX_DATA_AGE_SECONDS = _float_env(
+        'POST_GRADUATION_RETENTION_MAX_DATA_AGE_SECONDS', 120.0
+    )
+    POST_GRADUATION_RETENTION_MIN_LIQUIDITY_USD = _float_env(
+        'POST_GRADUATION_RETENTION_MIN_LIQUIDITY_USD', 10_000.0
+    )
+    POST_GRADUATION_RETENTION_MIN_VOLUME_LIQUIDITY_RATIO_5M = _float_env(
+        'POST_GRADUATION_RETENTION_MIN_VOLUME_LIQUIDITY_RATIO_5M', 0.20
+    )
+    POST_GRADUATION_RETENTION_MIN_NEW_TRADERS_1H = _float_env(
+        'POST_GRADUATION_RETENTION_MIN_NEW_TRADERS_1H', 2.0
+    )
+    POST_GRADUATION_RETENTION_MAX_SELL_PRESSURE_5M = _float_env(
+        'POST_GRADUATION_RETENTION_MAX_SELL_PRESSURE_5M', 0.60
+    )
+    POST_GRADUATION_RETENTION_MAX_DRAWDOWN = _float_env(
+        'POST_GRADUATION_RETENTION_MAX_DRAWDOWN', 0.35
+    )
 
     # ========== 风控参数 ==========
     MAX_DAILY_TRADES = int(os.getenv('MAX_DAILY_TRADES', '100'))
@@ -174,8 +217,75 @@ class TradingConfig:
         if cls.POSITION_SIZE <= 0:
             raise ValueError("POSITION_SIZE must be positive")
 
+        if cls.RUNNER_RESERVE_ACTIVATION_MULTIPLE <= 1.0:
+            raise ValueError("RUNNER_RESERVE_ACTIVATION_MULTIPLE must be greater than 1")
+
+        if not 0.0 < cls.RUNNER_RESERVE_PARTIAL_EXIT_RATIO < 1.0:
+            raise ValueError("RUNNER_RESERVE_PARTIAL_EXIT_RATIO must be between 0 and 1")
+
+        if not 0.0 < cls.RUNNER_RESERVE_STOP_DRAWDOWN < 1.0:
+            raise ValueError("RUNNER_RESERVE_STOP_DRAWDOWN must be between 0 and 1")
+
+        if not math.isfinite(cls.RUNNER_RESERVE_FLOOR_RETURN) or cls.RUNNER_RESERVE_FLOOR_RETURN < -1.0:
+            raise ValueError("RUNNER_RESERVE_FLOOR_RETURN must be finite and >= -1")
+
+        if cls.RUNNER_RESERVE_MAX_HOLD_SECONDS <= 0:
+            raise ValueError("RUNNER_RESERVE_MAX_HOLD_SECONDS must be positive")
+
+        if not 0.0 <= cls.RUNNER_RESERVE_MAX_SELL_PRESSURE_30S <= 1.0:
+            raise ValueError("RUNNER_RESERVE_MAX_SELL_PRESSURE_30S must be between 0 and 1")
+
+        if cls.RUNNER_RESERVE_MIN_FLOW_EVENT_COUNT_30S < 0:
+            raise ValueError("RUNNER_RESERVE_MIN_FLOW_EVENT_COUNT_30S must be non-negative")
+
+        if cls.POST_GRADUATION_RETENTION_MAX_HOLD_SECONDS <= 0:
+            raise ValueError("POST_GRADUATION_RETENTION_MAX_HOLD_SECONDS must be positive")
+
+        if cls.POST_GRADUATION_RETENTION_MAX_DATA_AGE_SECONDS <= 0:
+            raise ValueError("POST_GRADUATION_RETENTION_MAX_DATA_AGE_SECONDS must be positive")
+
+        if (
+            not math.isfinite(cls.POST_GRADUATION_RETENTION_MIN_LIQUIDITY_USD)
+            or cls.POST_GRADUATION_RETENTION_MIN_LIQUIDITY_USD < 0
+        ):
+            raise ValueError("POST_GRADUATION_RETENTION_MIN_LIQUIDITY_USD must be finite and non-negative")
+
+        if (
+            not math.isfinite(cls.POST_GRADUATION_RETENTION_MIN_VOLUME_LIQUIDITY_RATIO_5M)
+            or cls.POST_GRADUATION_RETENTION_MIN_VOLUME_LIQUIDITY_RATIO_5M < 0
+        ):
+            raise ValueError(
+                "POST_GRADUATION_RETENTION_MIN_VOLUME_LIQUIDITY_RATIO_5M must be finite and non-negative"
+            )
+
+        if (
+            not math.isfinite(cls.POST_GRADUATION_RETENTION_MIN_NEW_TRADERS_1H)
+            or cls.POST_GRADUATION_RETENTION_MIN_NEW_TRADERS_1H < 0
+        ):
+            raise ValueError("POST_GRADUATION_RETENTION_MIN_NEW_TRADERS_1H must be finite and non-negative")
+
+        if (
+            not math.isfinite(cls.POST_GRADUATION_RETENTION_MAX_SELL_PRESSURE_5M)
+            or not 0 <= cls.POST_GRADUATION_RETENTION_MAX_SELL_PRESSURE_5M <= 1
+        ):
+            raise ValueError("POST_GRADUATION_RETENTION_MAX_SELL_PRESSURE_5M must be between 0 and 1")
+
+        if (
+            not math.isfinite(cls.POST_GRADUATION_RETENTION_MAX_DRAWDOWN)
+            or not 0 < cls.POST_GRADUATION_RETENTION_MAX_DRAWDOWN < 1
+        ):
+            raise ValueError("POST_GRADUATION_RETENTION_MAX_DRAWDOWN must be between 0 and 1")
+
         if cls.BUY_CONFIRM_POLL_INTERVAL_SECONDS <= 0:
             raise ValueError("BUY_CONFIRM_POLL_INTERVAL_SECONDS must be positive")
+        if not 0 <= cls.BUY_SLIPPAGE_PERCENT < 100:
+            raise ValueError("BUY_SLIPPAGE_PERCENT must be between 0 and 100")
+        if not 0 <= cls.SELL_SLIPPAGE_PERCENT < 100:
+            raise ValueError("SELL_SLIPPAGE_PERCENT must be between 0 and 100")
+        if not 0 <= cls.FOURMEME_TOKEN_DECIMALS <= 36:
+            raise ValueError("FOURMEME_TOKEN_DECIMALS must be between 0 and 36")
+        if cls.BUY_MIN_AMOUNT_FLOOR < 0:
+            raise ValueError("BUY_MIN_AMOUNT_FLOOR must be non-negative")
 
         if cls.BUY_CONFIRM_TIMEOUT_SECONDS <= 0:
             raise ValueError("BUY_CONFIRM_TIMEOUT_SECONDS must be positive")

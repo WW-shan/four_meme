@@ -1,9 +1,11 @@
+from src.data.fourmeme_quote import classify_quote
 """
 数据收集器 - 整合事件数据并生成训练样本
 """
 
 import json
 import logging
+from bisect import bisect_right
 from typing import Dict, List, Optional
 from pathlib import Path
 from datetime import datetime
@@ -309,6 +311,86 @@ class DataCollector:
         return len(lifecycle.get('buys', [])) + len(lifecycle.get('sells', []))
 
     @classmethod
+    def _event_sort_key(cls, event: Dict) -> tuple[int, int, int, str]:
+        """Order an event by chain time and provenance when available."""
+        timestamp = cls._normalize_int(event.get('timestamp'), default=0)
+        block_number = cls._normalize_int(
+            event.get('block_number', event.get('blockNumber')),
+            default=-1,
+        )
+        log_index = cls._normalize_int(
+            event.get('log_index', event.get('logIndex')),
+            default=-1,
+        )
+        tx_hash = cls._normalize_tx_hash(
+            event.get('transaction_hash', event.get('transactionHash'))
+        )
+        return timestamp, block_number, log_index, tx_hash
+
+    @classmethod
+    def _insert_ordered_event(cls, events: List[Dict], event: Dict) -> None:
+        """Insert a live event without relying on arrival order."""
+        key = cls._event_sort_key(event)
+        keys = [cls._event_sort_key(item) for item in events]
+        events.insert(bisect_right(keys, key), event)
+
+    @classmethod
+    def _normalize_event_sequences(cls, lifecycle: Dict) -> None:
+        """Sort persisted sequences and repair the chain-side last update."""
+        chain_timestamps = []
+        for key in ('buys', 'sells', 'price_history'):
+            values = [item for item in lifecycle.get(key, []) if isinstance(item, dict)]
+            values.sort(key=cls._event_sort_key)
+            lifecycle[key] = values
+            chain_timestamps.extend(
+                cls._normalize_int(item.get('timestamp'), default=0)
+                for item in values
+                if cls._normalize_int(item.get('timestamp'), default=0) > 0
+            )
+        create_timestamp = cls._normalize_int(lifecycle.get('create_timestamp'), default=0)
+        previous_update = cls._normalize_int(lifecycle.get('last_update'), default=0)
+        if create_timestamp > 0:
+            chain_timestamps.append(create_timestamp)
+        if previous_update > 0:
+            chain_timestamps.append(previous_update)
+        if chain_timestamps:
+            lifecycle['last_update'] = max(chain_timestamps)
+
+    @classmethod
+    def _refresh_price_state(cls, lifecycle: Dict) -> None:
+        """Derive current/first/high/low prices from chronological trades."""
+        buys = [item for item in lifecycle.get('buys', []) if float(item.get('price', 0.0) or 0.0) > 0.0]
+        sells = [item for item in lifecycle.get('sells', []) if float(item.get('price', 0.0) or 0.0) > 0.0]
+        trades = sorted(buys + sells, key=cls._event_sort_key)
+        if not trades:
+            lifecycle['price_current'] = 0.0
+            lifecycle['price_first'] = 0.0
+            lifecycle['price_max'] = 0.0
+            lifecycle['price_min'] = 0.0
+            return
+        prices = [float(item.get('price', 0.0) or 0.0) for item in trades]
+        lifecycle['price_current'] = prices[-1]
+        lifecycle['price_first'] = float(buys[0].get('price', 0.0) or 0.0) if buys else prices[0]
+        lifecycle['price_max'] = max(prices)
+        lifecycle['price_min'] = min(prices)
+
+    @classmethod
+    def _event_provenance(cls, event_data: Dict) -> Dict:
+        """Keep block/log identity so same-second swaps remain distinguishable."""
+        provenance = {
+            'block_number': cls._normalize_int(event_data.get('blockNumber'), default=-1),
+            'log_index': cls._normalize_int(event_data.get('logIndex'), default=-1),
+            'transaction_hash': cls._normalize_tx_hash(event_data.get('transactionHash')),
+        }
+        received_at = event_data.get('received_at')
+        if received_at is not None:
+            try:
+                provenance['received_at'] = float(received_at)
+            except (TypeError, ValueError):
+                pass
+        return provenance
+
+    @classmethod
     def _should_replace_lifecycle(cls, existing: Dict, incoming: Dict) -> bool:
         existing_activity = cls._lifecycle_activity_count(existing)
         incoming_activity = cls._lifecycle_activity_count(incoming)
@@ -418,6 +500,8 @@ class DataCollector:
             if norm['price_min'] == float('inf'):
                 norm['price_min'] = 0.0
 
+            self._normalize_event_sequences(norm)
+            self._refresh_price_state(norm)
             return norm
 
         norm = lifecycle.copy()
@@ -450,6 +534,8 @@ class DataCollector:
                 if int(item.get('timestamp', 0) or 0) > 0
             ]
             norm['last_update'] = max(timestamps) if timestamps else int(norm.get('create_timestamp', 0) or 0)
+        self._normalize_event_sequences(norm)
+        self._refresh_price_state(norm)
         return norm
 
     def _deserialize_lifecycle(self, lifecycle: Dict) -> Dict:
@@ -694,21 +780,25 @@ class DataCollector:
             if token_amount > 0:
                 price = (bnb_amount / 1e18) / (token_amount / 1e18)
 
-                # 记录买入
-                lifecycle['buys'].append({
+                # 记录买入，按链上顺序插入以容忍重试/恢复乱序。
+                buy = {
                     'timestamp': timestamp,
                     'account': account,
                     'token_amount': token_amount / 1e18,
                     'bnb_amount': bnb_amount / 1e18,
                     'price': price
-                })
+                }
+                buy.update(self._event_provenance(event_data))
+                self._insert_ordered_event(lifecycle['buys'], buy)
 
                 # 更新价格历史
-                lifecycle['price_history'].append({
+                price_point = {
                     'timestamp': timestamp,
                     'price': price,
                     'type': 'buy'
-                })
+                }
+                price_point.update(self._event_provenance(event_data))
+                self._insert_ordered_event(lifecycle['price_history'], price_point)
 
                 # 更新统计
                 lifecycle['total_buy_volume_bnb'] += bnb_amount / 1e18
@@ -724,11 +814,15 @@ class DataCollector:
                 if lifecycle['price_first'] == 0:
                     lifecycle['price_first'] = price
 
-                lifecycle['last_update'] = timestamp
+                lifecycle['last_update'] = max(
+                    int(lifecycle.get('last_update', 0) or 0),
+                    self._normalize_int(timestamp, default=0),
+                )
                 lifecycle['last_update_local'] = datetime.now().timestamp()
 
                 # 更新时间窗口统计
-                self._update_time_window_stats(lifecycle, timestamp, bnb_amount / 1e18)
+                self._refresh_price_state(lifecycle)
+                self._update_time_window_stats(lifecycle, lifecycle['last_update'], bnb_amount / 1e18)
                 self._advance_applied_cursor(event_data)
                 return True
 
@@ -759,21 +853,25 @@ class DataCollector:
             if token_amount > 0:
                 price = (bnb_amount / 1e18) / (token_amount / 1e18)
 
-                # 记录卖出
-                lifecycle['sells'].append({
+                # 记录卖出，按链上顺序插入以容忍重试/恢复乱序。
+                sale = {
                     'timestamp': timestamp,
                     'account': account,
                     'token_amount': token_amount / 1e18,
                     'bnb_amount': bnb_amount / 1e18,
                     'price': price
-                })
+                }
+                sale.update(self._event_provenance(event_data))
+                self._insert_ordered_event(lifecycle['sells'], sale)
 
                 # 更新价格历史
-                lifecycle['price_history'].append({
+                price_point = {
                     'timestamp': timestamp,
                     'price': price,
                     'type': 'sell'
-                })
+                }
+                price_point.update(self._event_provenance(event_data))
+                self._insert_ordered_event(lifecycle['price_history'], price_point)
 
                 # 更新统计
                 lifecycle['total_sell_volume_bnb'] += bnb_amount / 1e18
@@ -787,11 +885,15 @@ class DataCollector:
                 lifecycle['price_max'] = max(lifecycle['price_max'], price)
                 lifecycle['price_min'] = min(lifecycle['price_min'], price)
 
-                lifecycle['last_update'] = timestamp
+                lifecycle['last_update'] = max(
+                    int(lifecycle.get('last_update', 0) or 0),
+                    self._normalize_int(timestamp, default=0),
+                )
                 lifecycle['last_update_local'] = datetime.now().timestamp()
 
                 # 更新时间窗口统计
-                self._update_time_window_stats(lifecycle, timestamp, bnb_amount / 1e18)
+                self._refresh_price_state(lifecycle)
+                self._update_time_window_stats(lifecycle, lifecycle['last_update'], bnb_amount / 1e18)
                 self._advance_applied_cursor(event_data)
                 return True
 
@@ -805,7 +907,9 @@ class DataCollector:
         """处理TradeStop事件 (代币毕业)"""
         try:
             args = event_data.get('args', {})
-            token_address = args.get('token', '')
+            # LiquidityAdded carries the token as `base`; TradeStop carries it as
+            # `token`. Both are graduation signals and must never be read as trades.
+            token_address = args.get('token') or args.get('base') or ''
 
             if token_address not in self.token_lifecycle:
                 if not self._seed_lifecycle_from_metadata(token_address, event_data):
@@ -814,6 +918,14 @@ class DataCollector:
             lifecycle = self.token_lifecycle[token_address]
             lifecycle['graduated'] = True
             lifecycle['graduate_time'] = event_data.get('timestamp', 0)
+            quote = args.get('quote')
+            if quote:
+                lifecycle['quote_asset'] = str(quote)
+                lifecycle['quote_symbol'] = classify_quote(quote)
+            lifecycle['last_update'] = max(
+                int(lifecycle.get('last_update', 0) or 0),
+                self._normalize_int(event_data.get('timestamp'), default=0),
+            )
             lifecycle['last_update_local'] = datetime.now().timestamp()
 
             logger.info(f"Token graduated: {lifecycle['symbol']} ({token_address[:10]}...)")
@@ -949,6 +1061,8 @@ class DataCollector:
     def _serialize_lifecycle(self, lifecycle: Dict) -> Dict:
         """将生命周期数据转换为可JSON序列化结构"""
         lifecycle_copy = lifecycle.copy()
+        self._normalize_event_sequences(lifecycle_copy)
+        self._refresh_price_state(lifecycle_copy)
         lifecycle_copy['unique_buyers'] = sorted(lifecycle['unique_buyers'])
         lifecycle_copy['unique_sellers'] = sorted(lifecycle['unique_sellers'])
         return lifecycle_copy

@@ -19,7 +19,39 @@ logger = logging.getLogger(__name__)
 
 # 常量定义
 TOKEN_MANAGER_HELPER = "0xF251F83e40a78868FcfA3FA4599Dad6494E46034"
-NATIVE_QUOTE_ADDRESS = "0x0000000000000000000000000000000000000000"
+from src.data.fourmeme_quote import (
+    KNOWN_QUOTE_ASSETS,
+    NATIVE_QUOTE_ADDRESS,
+    classify_quote,
+)
+
+
+def compute_buy_min_amount(
+    buy_amount_bnb: float,
+    expected_price: float,
+    decimals: int,
+    slippage_percent: int,
+) -> Optional[int]:
+    """Return the minimum base-token amount for buyMemeToken, or None if unpriceable."""
+    try:
+        if buy_amount_bnb <= 0 or expected_price <= 0 or decimals < 0:
+            return None
+        expected_tokens = (float(buy_amount_bnb) / float(expected_price)) * (10 ** int(decimals))
+        minimum = int(expected_tokens * (100 - int(slippage_percent)) / 100)
+        return max(1, minimum)
+    except (TypeError, ValueError, OverflowError):
+        return None
+
+
+def compute_sell_min_out(expected_out: int, slippage_percent: int) -> Optional[int]:
+    """Return the minimum quote amount for an AMM sell, or None if unpriceable."""
+    try:
+        expected_out = int(expected_out)
+        if expected_out <= 0:
+            return None
+        return max(1, expected_out * (100 - int(slippage_percent)) // 100)
+    except (TypeError, ValueError, OverflowError):
+        return None
 TOKEN_MANAGER_HELPER_ABI = [
     {
         "inputs": [{"internalType": "address", "name": "token", "type": "address"}],
@@ -330,8 +362,11 @@ class TradeExecutor:
         quote_hex = cls._quote_asset_to_hex(quote)
         if not quote_hex:
             return "Unknown quote asset"
-        if quote_hex.lower() != NATIVE_QUOTE_ADDRESS.lower():
-            return f"Unsupported quote asset: {quote_hex}"
+        normalized = quote_hex.lower()
+        if normalized != NATIVE_QUOTE_ADDRESS:
+            name = classify_quote(normalized)
+            label = quote_hex if name == "unknown" else name
+            return f"Unsupported quote asset: {label}"
         return None
 
     async def check_token_quote_supported(self, token_address: str) -> dict:
@@ -431,9 +466,30 @@ class TradeExecutor:
 
             value_wei = self.w3.to_wei(buy_amount_bnb, 'ether')
 
-            # minAmount set to 1 to match four_meme_buyer behavior (avoid 0 if contract forbids it)
+            min_amount = compute_buy_min_amount(
+                buy_amount_bnb,
+                expected_price,
+                TradingConfig.FOURMEME_TOKEN_DECIMALS,
+                TradingConfig.BUY_SLIPPAGE_PERCENT,
+            )
+            if min_amount is None:
+                min_amount = TradingConfig.BUY_MIN_AMOUNT_FLOOR
+                logger.warning(
+                    "buy minAmount falling back to configured floor=%s because "
+                    "expected_price=%s is not a verified positive price",
+                    min_amount,
+                    expected_price,
+                )
+            else:
+                logger.info(
+                    "buy minAmount=%s computed from expected_price=%s slippage=%s%%",
+                    min_amount,
+                    expected_price,
+                    TradingConfig.BUY_SLIPPAGE_PERCENT,
+                )
+
             func = self.router.functions.buyMemeToken(
-                self.contract_address, token_address, self.wallet_address, value_wei, 1
+                self.contract_address, token_address, self.wallet_address, value_wei, min_amount
             )
 
             if skip_estimate:
@@ -672,8 +728,34 @@ class TradeExecutor:
                 self.w3.to_checksum_address(WBNB)
             ]
 
+            amount_out_min = None
+            expected_out = None
+            try:
+                amounts = await self.pancake_router.functions.getAmountsOut(int(amount), path).call()
+                if amounts:
+                    expected_out = int(amounts[-1])
+                    amount_out_min = compute_sell_min_out(
+                        expected_out, TradingConfig.SELL_SLIPPAGE_PERCENT
+                    )
+            except Exception as quote_err:
+                logger.warning(f"⚠️ PancakeSwap getAmountsOut failed: {quote_err}")
+
+            if amount_out_min is None:
+                amount_out_min = 1
+                logger.warning(
+                    "PancakeSwap sell has no verified quote; using emergency minOut=1 "
+                    "(unquoted_exit=True)"
+                )
+            else:
+                logger.info(
+                    "PancakeSwap sell minOut=%s from expected_out=%s slippage=%s%%",
+                    amount_out_min,
+                    expected_out,
+                    TradingConfig.SELL_SLIPPAGE_PERCENT,
+                )
+
             func = self.pancake_router.functions.swapExactTokensForETHSupportingFeeOnTransferTokens(
-                int(amount), 0, path, self.wallet_address, deadline
+                int(amount), amount_out_min, path, self.wallet_address, deadline
             )
 
             try:

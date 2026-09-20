@@ -15,7 +15,7 @@ import sys
 import os
 from pathlib import Path
 from datetime import datetime
-from typing import Any, Dict, Optional, List
+from typing import Any, Dict, Optional, List, Mapping
 
 # Add project root to path (Fix for ModuleNotFoundError)
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../"))
@@ -26,10 +26,16 @@ from src.core.listener import FourMemeListener
 from src.core.ws_manager import WSConnectionManager
 from src.core.trader import TradeExecutor
 from config.trading_config import TradingConfig
+from src.data.fourmeme_log_decoder import TRADE_TOPICS
 from src.data.collector import DataCollector
 from src.data.feature_extractor import requires_flow_features
 from src.model.action_policy_router_runtime import ActionPolicyRouterRuntime
 from src.rl.trading_env import build_sell_observation
+from src.trader.post_graduation_retention import (
+    PostGraduationRetentionPolicy,
+    RetentionHealthConfig,
+)
+from src.trader.runner_reserve import RunnerReserveConfig, RunnerReservePolicy
 
 # Setup logging
 logging.basicConfig(
@@ -73,12 +79,11 @@ MODEL_MANIFEST_RUNTIME_KEYS = frozenset(
         "buy_primary_score_rescue_min_age_seconds",
     }
 )
+# Sale topics are derived from the checked-in Four.meme ABIs. The old
+# hand-written set wrongly included the LiquidityAdded topic, which could be
+# decoded as a sell price in receipt attribution.
 FOURMEME_SALE_TOPICS = frozenset(
-    {
-        "80d4e495cda89b31af98c8e977ff11f417bafcee26902a17a15be51830c47533",
-        "c18aa71171b358b706fe3dd345299685ba21a5316c66ffa9e319268b033c44b0",
-        "0a5575b3648bae2210cee56bf33254cc1ddfbc7bf637c0af2ac18b14fb1bae19",
-    }
+    topic for topic, side in TRADE_TOPICS.items() if side == "sale"
 )
 
 
@@ -282,6 +287,115 @@ class MemeBot:
         self.trailing_stop_pct = self._optional_float(config.get('trailing_stop_pct', self._exit_strategy_defaults['trailing_stop_pct']))
         self.rug_sell_pressure = self._optional_float(config.get('rug_sell_pressure', self._exit_strategy_defaults['rug_sell_pressure']))
         self.allow_partial_exits = bool(config.get('allow_partial_exits', self._exit_strategy_defaults['allow_partial_exits']))
+        self.runner_reserve = RunnerReservePolicy(
+            RunnerReserveConfig(
+                enabled=bool(config.get('runner_reserve_enabled', TradingConfig.RUNNER_RESERVE_ENABLED)),
+                activation_multiple=float(
+                    config.get(
+                        'runner_reserve_activation_multiple',
+                        TradingConfig.RUNNER_RESERVE_ACTIVATION_MULTIPLE,
+                    )
+                ),
+                partial_exit_ratio=float(
+                    config.get(
+                        'runner_reserve_partial_exit_ratio',
+                        TradingConfig.RUNNER_RESERVE_PARTIAL_EXIT_RATIO,
+                    )
+                ),
+                stop_drawdown_from_peak=float(
+                    config.get(
+                        'runner_reserve_stop_drawdown',
+                        TradingConfig.RUNNER_RESERVE_STOP_DRAWDOWN,
+                    )
+                ),
+                floor_return_after_activation=float(
+                    config.get(
+                        'runner_reserve_floor_return',
+                        TradingConfig.RUNNER_RESERVE_FLOOR_RETURN,
+                    )
+                ),
+                max_hold_seconds=float(
+                    config.get(
+                        'runner_reserve_max_hold_seconds',
+                        TradingConfig.RUNNER_RESERVE_MAX_HOLD_SECONDS,
+                    )
+                ),
+                max_sell_pressure_30s=float(
+                    config.get(
+                        'runner_reserve_max_sell_pressure_30s',
+                        TradingConfig.RUNNER_RESERVE_MAX_SELL_PRESSURE_30S,
+                    )
+                ),
+                min_flow_event_count_30s=int(
+                    config.get(
+                        'runner_reserve_min_flow_event_count_30s',
+                        TradingConfig.RUNNER_RESERVE_MIN_FLOW_EVENT_COUNT_30S,
+                    )
+                ),
+            )
+        )
+        self.post_graduation_retention_enabled = bool(
+            config.get(
+                'post_graduation_retention_enabled',
+                TradingConfig.POST_GRADUATION_RETENTION_ENABLED,
+            )
+        )
+        self.post_graduation_retention_shadow_enabled = bool(
+            config.get(
+                'post_graduation_retention_shadow_enabled',
+                TradingConfig.POST_GRADUATION_RETENTION_SHADOW_ENABLED,
+            )
+        )
+        self.post_graduation_retention = PostGraduationRetentionPolicy(
+            RetentionHealthConfig(
+                enabled=bool(
+                    self.post_graduation_retention_enabled
+                    or self.post_graduation_retention_shadow_enabled
+                ),
+                max_hold_seconds=float(
+                    config.get(
+                        'post_graduation_retention_max_hold_seconds',
+                        TradingConfig.POST_GRADUATION_RETENTION_MAX_HOLD_SECONDS,
+                    )
+                ),
+                max_data_age_seconds=float(
+                    config.get(
+                        'post_graduation_retention_max_data_age_seconds',
+                        TradingConfig.POST_GRADUATION_RETENTION_MAX_DATA_AGE_SECONDS,
+                    )
+                ),
+                min_liquidity_usd=float(
+                    config.get(
+                        'post_graduation_retention_min_liquidity_usd',
+                        TradingConfig.POST_GRADUATION_RETENTION_MIN_LIQUIDITY_USD,
+                    )
+                ),
+                min_volume_liquidity_ratio_5m=float(
+                    config.get(
+                        'post_graduation_retention_min_volume_liquidity_ratio_5m',
+                        TradingConfig.POST_GRADUATION_RETENTION_MIN_VOLUME_LIQUIDITY_RATIO_5M,
+                    )
+                ),
+                min_new_traders_1h=float(
+                    config.get(
+                        'post_graduation_retention_min_new_traders_1h',
+                        TradingConfig.POST_GRADUATION_RETENTION_MIN_NEW_TRADERS_1H,
+                    )
+                ),
+                max_sell_pressure_5m=float(
+                    config.get(
+                        'post_graduation_retention_max_sell_pressure_5m',
+                        TradingConfig.POST_GRADUATION_RETENTION_MAX_SELL_PRESSURE_5M,
+                    )
+                ),
+                max_drawdown_from_peak=float(
+                    config.get(
+                        'post_graduation_retention_max_drawdown',
+                        TradingConfig.POST_GRADUATION_RETENTION_MAX_DRAWDOWN,
+                    )
+                ),
+            )
+        )
         self.entry_price_protection_pct = self._optional_nonnegative_float(config.get('entry_price_protection_pct', None))
         self.entry_price_protection_source = 'manual' if self._config_has_value('entry_price_protection_pct') else 'default'
         self.max_concurrent_positions = max(
@@ -946,6 +1060,177 @@ class MemeBot:
             include_flow_features=getattr(self, "include_flow_features", False),
         )
 
+    @staticmethod
+    def _runner_market_snapshot(lifecycle: Dict, features: Dict) -> Dict:
+        """Add a point-in-time 30s flow heartbeat for the reserve policy."""
+        market = dict(features or {})
+        try:
+            anchor = float(lifecycle.get('last_update') or datetime.now().timestamp())
+        except (TypeError, ValueError):
+            anchor = datetime.now().timestamp()
+        recent_buys = []
+        recent_sells = []
+        for key, target in (('buys', recent_buys), ('sells', recent_sells)):
+            for row in lifecycle.get(key) or []:
+                try:
+                    timestamp = float(row.get('timestamp', 0) or 0)
+                    amount = float(row.get('bnb_amount', 0) or 0)
+                except (AttributeError, TypeError, ValueError):
+                    continue
+                if amount >= 0.0 and 0.0 <= anchor - timestamp <= 30.0:
+                    target.append(amount)
+        buy_volume = sum(recent_buys)
+        sell_volume = sum(recent_sells)
+        total_volume = buy_volume + sell_volume
+        market['flow_buy_volume_30s'] = buy_volume
+        market['flow_sell_volume_30s'] = sell_volume
+        market['flow_total_volume_30s'] = total_volume
+        market['flow_event_count_30s'] = len(recent_buys) + len(recent_sells)
+        market['sell_pressure_30s'] = sell_volume / total_volume if total_volume > 0.0 else 0.0
+        return market
+
+    @staticmethod
+    def _post_graduation_market_snapshot(
+        position: Mapping[str, Any],
+        lifecycle: Mapping[str, Any],
+        features: Mapping[str, Any] | None = None,
+    ) -> Dict[str, Any]:
+        """Collect only explicit DEX health fields and retain their provenance.
+
+        A future DEX adapter can attach a ``post_graduation_market`` mapping to
+        the position or lifecycle.  Curve features are not substituted for DEX
+        health because doing so would make a missing post-graduation feed look
+        healthy.
+        """
+
+        field_names = {
+            "graduated",
+            "dex_liquidity_usd",
+            "liquidity_usd",
+            "pair_liquidity_usd",
+            "liquidity",
+            "volume_liquidity_ratio_5m",
+            "dex_volume_liquidity_ratio_5m",
+            "volume_to_liquidity_5m",
+            "dex_volume_5m_usd",
+            "volume_5m_usd",
+            "volume_5m",
+            "current_price",
+            "price_current",
+            "mid_price",
+            "dex_price",
+            "dex_price_usd",
+            "price",
+            "new_traders_1h",
+            "new_trader_growth_1h",
+            "dex_new_traders_1h",
+            "sell_pressure_5m",
+            "dex_sell_pressure_5m",
+            "sell_pressure",
+            "dex_buy_volume_5m_usd",
+            "buy_volume_5m_usd",
+            "buy_volume_5m",
+            "dex_sell_volume_5m_usd",
+            "sell_volume_5m_usd",
+            "sell_volume_5m",
+            "observed_at",
+            "dex_observed_at",
+            "market_timestamp",
+            "updated_at",
+            "timestamp",
+            "data_age_seconds",
+            "dex_data_age_seconds",
+            "data_source",
+            "dex_data_source",
+            "source",
+            "chain_id",
+            "pair_address",
+            "pair",
+            "pair_created_at",
+            "block_number",
+            "log_index",
+            "tx_hash",
+        }
+        market: Dict[str, Any] = {}
+        sources = ((lifecycle, True), (features or {}, False), (position, True))
+        for source, allow_top_level in sources:
+            if not isinstance(source, Mapping):
+                continue
+            if allow_top_level:
+                for key in field_names:
+                    if key in source and source.get(key) is not None:
+                        market[key] = source[key]
+            nested = source.get("post_graduation_market")
+            if isinstance(nested, Mapping):
+                for key in field_names:
+                    if key in nested and nested.get(key) is not None:
+                        market[key] = nested[key]
+        if position.get("runner_graduated"):
+            market["graduated"] = True
+        return market
+
+    def _defers_short_hold_timeout(
+        self,
+        position: Mapping[str, Any],
+        age_seconds: float,
+        lifecycle: Mapping[str, Any] | None = None,
+    ) -> bool:
+        """Let an enforced DEX-health runner use its longer conditional horizon."""
+
+        if (
+            self.post_graduation_retention_enabled
+            and not self.post_graduation_retention_shadow_enabled
+            and bool(position.get("runner_graduated"))
+            and str(position.get("runner_state") or "").lower() == "active"
+        ):
+            return float(age_seconds) < float(self.post_graduation_retention.config.max_hold_seconds)
+        return self.runner_reserve.defers_short_hold_timeout(position, age_seconds)
+
+    @staticmethod
+    def _post_graduation_snapshot_sort_key(snapshot: Mapping[str, Any]) -> float:
+        for key in ("observed_at", "timestamp", "updated_at"):
+            try:
+                value = float(snapshot.get(key))
+            except (AttributeError, TypeError, ValueError):
+                continue
+            if math.isfinite(value):
+                return value
+        return float("inf")
+
+    def update_post_graduation_market(self, token_address: str, snapshot: Mapping[str, Any]) -> bool:
+        """Attach one adapter snapshot to an open position for shadow/replay use."""
+
+        if token_address not in self.positions or not isinstance(snapshot, Mapping):
+            return False
+        normalized = {str(key): value for key, value in snapshot.items()}
+
+        def store(target: dict[str, Any]) -> None:
+            current = target.setdefault("post_graduation_market", {})
+            if not isinstance(current, dict):
+                current = {}
+                target["post_graduation_market"] = current
+            current.update(normalized)
+            history = target.setdefault("post_graduation_snapshots", [])
+            if not isinstance(history, list):
+                history = []
+                target["post_graduation_snapshots"] = history
+            marker = json.dumps(normalized, sort_keys=True, default=str)
+            existing_markers = {
+                json.dumps(item, sort_keys=True, default=str)
+                for item in history
+                if isinstance(item, Mapping)
+            }
+            if marker not in existing_markers:
+                history.append(dict(normalized))
+            history.sort(key=self._post_graduation_snapshot_sort_key)
+
+        lifecycle = getattr(self.collector, "token_lifecycle", {}).get(token_address)
+        store(self.positions[token_address])
+        if isinstance(lifecycle, dict):
+            store(lifecycle)
+        self._save_state()
+        return True
+
     def _action_policy_router_runtime_params(self) -> Dict[str, Any]:
         return {
             "buy_threshold": self.prob_threshold,
@@ -1354,6 +1639,7 @@ class MemeBot:
         self.listener.register_handler('TokenPurchase2', self._on_trade)
         self.listener.register_handler('TokenSale2', self._on_trade)
         self.listener.register_handler('TradeStop', self._on_trade_stop)
+        self.listener.register_handler('LiquidityAdded', self._on_trade_stop)
 
     async def _on_token_create(self, event_name, event_data):
         self.collector.on_token_create(event_data)
@@ -1381,13 +1667,32 @@ class MemeBot:
             self.collector_events_enqueued += 1
 
     async def _on_trade_stop(self, event_name, event_data):
+        args = event_data.get('args', {})
+        token_address = args.get('token') or args.get('base')
         self.collector.on_trade_stop(event_data)
-        token_address = event_data.get('args', {}).get('token')
         if token_address:
             await self._enqueue_analysis_token(token_address)
         if token_address in self.positions:
-            logger.info(f"🎓 Token {token_address} Graduated! Closing position.")
-            await self._close_position(token_address, reason="GRADUATED")
+            position = self.positions[token_address]
+            if self.runner_reserve.should_survive_graduation(position):
+                position['runner_graduated'] = True
+                position['runner_graduated_at'] = datetime.now()
+                self._save_state()
+                logger.info(
+                    f"🎓 Token {token_address} graduated; retaining active runner reserve "
+                    "until its health/timeout policy exits."
+                )
+                return
+            # Graduation is a venue transition, not a profit target. Keep the
+            # position under ordinary target/stop/time management; a DEX feed
+            # can update its price after this event.
+            position['graduation_observed'] = True
+            position['graduation_observed_at'] = datetime.now()
+            self._save_state()
+            logger.info(
+                f"🎓 Token {token_address} graduated; no forced exit, "
+                "continuing normal target/stop/time management."
+            )
 
     async def _enqueue_analysis_token(self, token_address: Optional[str]):
         if not token_address:
@@ -1980,7 +2285,10 @@ class MemeBot:
                     return
 
             time_held = (datetime.now() - pos['entry_time']).total_seconds()
-            if time_held >= self.hold_time_seconds:
+            if (
+                time_held >= self.hold_time_seconds
+                and not self._defers_short_hold_timeout(pos, time_held, lifecycle)
+            ):
                 await self._close_position(token_address, reason="TIME_EXIT")
                 return
 
@@ -2020,6 +2328,109 @@ class MemeBot:
                 if sell_pressure >= float(self.rug_sell_pressure):
                     await self._close_position(token_address, reason="RUG_EXIT")
                     return
+
+            # Once a runner crosses the curve-to-DEX boundary, the old
+            # FourMeme flow heartbeat is no longer sufficient. Shadow mode
+            # records this policy while leaving the legacy runner untouched.
+            retention_enforced = bool(
+                self.post_graduation_retention_enabled
+                and not self.post_graduation_retention_shadow_enabled
+            )
+            if (
+                bool(pos.get('runner_graduated'))
+                and (
+                    self.post_graduation_retention_enabled
+                    or self.post_graduation_retention_shadow_enabled
+                )
+            ):
+                retention_market = self._post_graduation_market_snapshot(pos, lifecycle)
+                retention_price = current_price
+                for price_key in ("dex_price_usd", "dex_price", "price", "current_price", "mid_price", "price_current"):
+                    try:
+                        candidate_price = float(retention_market.get(price_key, 0.0) or 0.0)
+                    except (TypeError, ValueError):
+                        candidate_price = 0.0
+                    if math.isfinite(candidate_price) and candidate_price > 0.0:
+                        retention_price = candidate_price
+                        break
+                retention_decision = self.post_graduation_retention.evaluate(
+                    pos,
+                    current_price=float(retention_price),
+                    now=datetime.now(),
+                    market=retention_market,
+                )
+                self._log_signal_audit({
+                    "action": "POST_GRADUATION_RETENTION_DECISION",
+                    "token": token_address,
+                    "symbol": pos.get('symbol'),
+                    "mode": "enforced" if retention_enforced else "shadow",
+                    "decision": retention_decision.action,
+                    "reason": retention_decision.reason,
+                    "health_score": retention_decision.health_score,
+                    "checks": dict(retention_decision.checks),
+                    "missing_fields": list(retention_decision.missing_fields),
+                    **dict(retention_decision.provenance),
+                })
+                if retention_enforced:
+                    retention_updates = dict(retention_decision.updates)
+                    if retention_decision.action in {"hold", "close"}:
+                        try:
+                            prior_runner_peak = float(pos.get("runner_peak_price", 0.0) or 0.0)
+                        except (TypeError, ValueError):
+                            prior_runner_peak = 0.0
+                        try:
+                            prior_peak = float(pos.get("peak_price", 0.0) or 0.0)
+                        except (TypeError, ValueError):
+                            prior_peak = 0.0
+                        peak = max(prior_runner_peak, prior_peak, float(retention_price))
+                        retention_updates["runner_peak_price"] = peak
+                        retention_updates["peak_price"] = peak
+                    if retention_decision.action == "close":
+                        pos.update(retention_updates)
+                        await self._close_position(
+                            token_address,
+                            reason=str(retention_decision.reason).upper(),
+                        )
+                        return
+                    if retention_decision.action == "hold":
+                        changed = any(pos.get(key) != value for key, value in retention_updates.items())
+                        pos.update(retention_updates)
+                        if changed:
+                            self._save_state()
+                        return
+
+            runner_decision = self.runner_reserve.evaluate(
+                pos,
+                current_price=float(current_price),
+                now=datetime.now(),
+                market=(
+                    self._runner_market_snapshot(lifecycle, position_features())
+                    if self.runner_reserve.config.enabled
+                    else {}
+                ),
+            )
+            if runner_decision.action == "partial_exit":
+                partial_succeeded = await self._partial_sell(
+                    token_address,
+                    sell_ratio=float(runner_decision.partial_exit_ratio or 0.0),
+                    reason="RUNNER_ACTIVATION_2X",
+                )
+                if partial_succeeded:
+                    pos.update(dict(runner_decision.updates))
+                    pos['runner_partial_exit_ratio'] = float(runner_decision.partial_exit_ratio or 0.0)
+                    self._save_state()
+                return
+            if runner_decision.action == "close":
+                pos.update(dict(runner_decision.updates))
+                await self._close_position(token_address, reason=str(runner_decision.reason).upper())
+                return
+            if runner_decision.action == "hold":
+                runner_updates = dict(runner_decision.updates)
+                changed = any(pos.get(key) != value for key, value in runner_updates.items())
+                pos.update(runner_updates)
+                if changed:
+                    self._save_state()
+                return
 
             if self.trailing_start_pct is not None and self.trailing_stop_pct is not None:
                 drawdown_from_peak_pct = (current_price / peak_price) - 1.0 if peak_price > 0 else 0.0
@@ -2132,9 +2543,13 @@ class MemeBot:
                         await self._close_position(token_address, reason="POST_TP_DRAWDOWN_EXIT")
                         return
 
-            # Time exit (always applies)
+            # Base positions use the short timeout; active reserves use their
+            # own max-hold guard through the policy above.
             time_held = (datetime.now() - pos['entry_time']).total_seconds()
-            if time_held >= self.hold_time_seconds:
+            if (
+                time_held >= self.hold_time_seconds
+                and not self._defers_short_hold_timeout(pos, time_held, lifecycle)
+            ):
                 await self._close_position(token_address, reason="TIME_EXIT")
                 return
             return
@@ -2837,6 +3252,10 @@ class MemeBot:
                 # 基于实盘实际成交价的锚点，避免信号价与成交价偏差导致止盈错判
                 'tp_base_price': price,
                 'peak_price': price,
+                # Runner reserve is armed only when explicitly enabled; the
+                # disabled state keeps legacy position files self-describing.
+                'runner_state': 'armed' if self.runner_reserve.config.enabled else 'disabled',
+                'runner_peak_price': price,
                 **self._action_policy_route_position_fields(action_policy_route),
             }
             if TradingConfig.ENABLE_TRADING:
@@ -2975,7 +3394,7 @@ class MemeBot:
     async def _partial_sell(self, token_address, sell_ratio, reason):
         """部分卖出持仓"""
         if token_address not in self.positions:
-            return
+            return False
         pos = self.positions[token_address]
 
         # Mark attempt
@@ -2999,14 +3418,14 @@ class MemeBot:
                         tx_hash = await self.executor.sell_token(token_address, sell_amount)
                     else:
                         logger.warning(f"⚠️ Token balance is 0 for {pos['symbol']}, cannot partial sell.")
-                        return
+                        return False
                 except Exception as e:
                     logger.error(f"❌ Error in partial sell {pos['symbol']}: {e}")
-                    return
+                    return False
 
             if not tx_hash:
                 logger.error(f"❌ Partial Sell Failed for {pos['symbol']}. Keeping position.")
-                return
+                return False
 
         # 计算部分卖出的收益，纸面模式也使用实际入场价，避免追价后收益虚高。
         try:
@@ -3065,8 +3484,10 @@ class MemeBot:
                 "is_real_trade": TradingConfig.ENABLE_TRADING,
             })
             self._save_state()
+            return True
         except Exception as e:
             logger.error(f"Error processing partial sell stats for {pos['symbol']}: {e}")
+            return False
 
     async def _do_sell(self, token_address, pos, reason=None) -> object:
         """执行实际卖出操作。返回 tx_hash(成功)、None(balance=0已移除)、False(失败)"""
@@ -3740,6 +4161,23 @@ if __name__ == "__main__":
             'buy_action_policy_router_min_live_features': TradingConfig.BUY_ACTION_POLICY_ROUTER_MIN_LIVE_FEATURES,
             'buy_action_policy_continue_hold_activation_pct': TradingConfig.BUY_ACTION_POLICY_CONTINUE_HOLD_ACTIVATION_PCT,
             'buy_action_policy_continue_hold_release_pct': TradingConfig.BUY_ACTION_POLICY_CONTINUE_HOLD_RELEASE_PCT,
+            'runner_reserve_enabled': TradingConfig.RUNNER_RESERVE_ENABLED,
+            'runner_reserve_activation_multiple': TradingConfig.RUNNER_RESERVE_ACTIVATION_MULTIPLE,
+            'runner_reserve_partial_exit_ratio': TradingConfig.RUNNER_RESERVE_PARTIAL_EXIT_RATIO,
+            'runner_reserve_stop_drawdown': TradingConfig.RUNNER_RESERVE_STOP_DRAWDOWN,
+            'runner_reserve_floor_return': TradingConfig.RUNNER_RESERVE_FLOOR_RETURN,
+            'runner_reserve_max_hold_seconds': TradingConfig.RUNNER_RESERVE_MAX_HOLD_SECONDS,
+            'runner_reserve_max_sell_pressure_30s': TradingConfig.RUNNER_RESERVE_MAX_SELL_PRESSURE_30S,
+            'runner_reserve_min_flow_event_count_30s': TradingConfig.RUNNER_RESERVE_MIN_FLOW_EVENT_COUNT_30S,
+            'post_graduation_retention_enabled': TradingConfig.POST_GRADUATION_RETENTION_ENABLED,
+            'post_graduation_retention_shadow_enabled': TradingConfig.POST_GRADUATION_RETENTION_SHADOW_ENABLED,
+            'post_graduation_retention_max_hold_seconds': TradingConfig.POST_GRADUATION_RETENTION_MAX_HOLD_SECONDS,
+            'post_graduation_retention_max_data_age_seconds': TradingConfig.POST_GRADUATION_RETENTION_MAX_DATA_AGE_SECONDS,
+            'post_graduation_retention_min_liquidity_usd': TradingConfig.POST_GRADUATION_RETENTION_MIN_LIQUIDITY_USD,
+            'post_graduation_retention_min_volume_liquidity_ratio_5m': TradingConfig.POST_GRADUATION_RETENTION_MIN_VOLUME_LIQUIDITY_RATIO_5M,
+            'post_graduation_retention_min_new_traders_1h': TradingConfig.POST_GRADUATION_RETENTION_MIN_NEW_TRADERS_1H,
+            'post_graduation_retention_max_sell_pressure_5m': TradingConfig.POST_GRADUATION_RETENTION_MAX_SELL_PRESSURE_5M,
+            'post_graduation_retention_max_drawdown': TradingConfig.POST_GRADUATION_RETENTION_MAX_DRAWDOWN,
             'max_concurrent_positions': TradingConfig.MAX_CONCURRENT_POSITIONS,
             'position_size': TradingConfig.POSITION_SIZE,
             'fixed_stake_bnb': TradingConfig.FIXED_STAKE_BNB,

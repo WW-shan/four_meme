@@ -18,8 +18,10 @@ ENV/
 *.swp
 *.swo
 
-# Local browser automation state
+# Local browser automation state and artifacts
 .playwright-mcp/
+.playwright-cli/
+output/
 
 # Data files
 data/*
@@ -32,6 +34,10 @@ data/*
 logs/
 *.log
 !src/data
+
+# Local research caches and reproducible large raw reports.
+C:/
+data/replay_reports/moonshot_label_truth_probe_????????.json
 
 
 # OS files
@@ -60,7 +66,6 @@ private_keys.txt
 wallets.json
 
 # Local AI/task state
-.ccg/
 .claude/
 .claude_cache/
 **/.claude/

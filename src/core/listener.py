@@ -5,12 +5,19 @@ Monitors and processes FourMeme platform events on BSC
 
 import asyncio
 import logging
+import re
 import time
 from typing import Dict, Set, Callable, Any, List, Optional
 from web3 import AsyncWeb3
 from web3.contract import AsyncContract
 from web3.middleware import ExtraDataToPOAMiddleware
 from config.config import Config
+from src.data.fourmeme_log_decoder import (
+    AUXILIARY_TRADE_EVENTS,
+    EVENT_NAME_BY_TOPIC,
+    canonical_trade_name,
+    decode_fourmeme_log,
+)
 
 try:
     from web3.providers.rpc import AsyncHTTPProvider
@@ -384,6 +391,8 @@ class FourMemeListener:
         markers = [
             'invalid block range',
             'eth_getlogs is limited',
+            'maximum block range',
+            'exceed maximum block range',
             'limit exceeded',
             '429',
             'rate limit',
@@ -396,6 +405,19 @@ class FourMemeListener:
             'temporarily unavailable'
         ]
         return any(marker in message for marker in markers)
+
+    @staticmethod
+    def _range_limit_from_error(error: Exception) -> Optional[int]:
+        """Extract a provider's explicit eth_getLogs range limit when present."""
+        message = str(error).lower()
+        match = re.search(r'(?:maximum block range|block range limit)[^0-9]{0,24}(\d+)', message)
+        if not match:
+            return None
+        try:
+            limit = int(match.group(1))
+        except (TypeError, ValueError):
+            return None
+        return limit if limit > 1 else None
 
     def _load_contract(self):
         """Load contract instance"""
@@ -919,6 +941,22 @@ class FourMemeListener:
             return False
 
         message = str(last_transient_exc).lower()
+        explicit_range_limit = self._range_limit_from_error(last_transient_exc)
+        if explicit_range_limit is not None and (to_block - from_block + 1) > explicit_range_limit:
+            logger.warning(
+                f"Chunking blocks {from_block}-{to_block} into provider-limited ranges of "
+                f"{explicit_range_limit} after get_logs range-limit error: {last_transient_exc}"
+            )
+            self.log_range_splits += 1
+            chunk_start = from_block
+            while chunk_start <= to_block:
+                chunk_end = min(to_block, chunk_start + explicit_range_limit - 1)
+                chunk_ok = await self._process_block_range(chunk_start, chunk_end, retry_count + 1)
+                if not chunk_ok:
+                    return False
+                chunk_start = chunk_end + 1
+            return True
+
         if 'block range limit exceeded' in message and (to_block - from_block) > 1:
             reduced_to_block = from_block + max(1, (to_block - from_block) // 2)
             logger.warning(
@@ -959,131 +997,55 @@ class FourMemeListener:
                 timestamp_w3=timestamp_w3,
             )
 
-            # 先走 topic 快路径，避免每条日志都走 ABI 全量解码
+            # Known-topic fast path: decode strictly from the checked-in ABIs.
+            # The ABI registry is the single source of truth for topic hashes and
+            # layouts. Earlier hand-maintained tables mapped the LiquidityAdded
+            # topic to TokenSale, contained one malformed 65-char topic, and
+            # mis-decoded v1 trades because the v1 layout differs from v2.
             topic0 = event_log['topics'][0].hex() if event_log.get('topics') else 'no-topic'
             if isinstance(topic0, str) and topic0.startswith('0x'):
                 topic0 = topic0[2:]
+            topic0 = str(topic0).lower()
 
-            # Known topics for FourMeme
-            known_topics = {
-                'a78d55aeb92a87db782edde05df51f62cd9c43f9c4ee844147e54d963cd30d37a': 'TokenPurchase',
-                'c18aa71171b358b706fe3dd345299685ba21a5316c66ffa9e319268b033c44b0': 'TokenSale',
-                '7db52723a3b2cdd6164364b3b766e65e540d7be48ffa89582956d8eaebe62942': 'TokenPurchase (Alt)',
-                '48063b1239b68b5d50123408787a6df1f644d9160f0e5f702fefddb9a855954d': 'TokenPurchase2',
-                '0a5575b3648bae2210cee56bf33254cc1ddfbc7bf637c0af2ac18b14fb1bae19': 'TokenSale (Alt)',
-                '741ffc4605df23259462547defeab4f6e755bdc5fbb6d0820727d6d3400c7e0d': 'TokenSale2',
-            }
+            if topic0 in EVENT_NAME_BY_TOPIC:
+                decoded = decode_fourmeme_log(event_log)
+                if decoded is None:
+                    tx_hash = event_log.get('transactionHash', b'')
+                    if isinstance(tx_hash, bytes):
+                        tx_hash = tx_hash.hex()
+                    logger.warning(
+                        "Known Four.meme topic failed strict ABI decode; skipping "
+                        f"tx={str(tx_hash)[:12]} topic={topic0[:12]}"
+                    )
+                    return
 
-            if topic0 in known_topics:
-                event_name_raw = known_topics[topic0]
+                raw_event_name, args = decoded
+                if raw_event_name in AUXILIARY_TRADE_EVENTS:
+                    logger.debug(f"Skipping auxiliary Four.meme event {raw_event_name}")
+                    return
 
-                # Determine normalized event name
-                if 'Purchase' in event_name_raw:
-                    normalized_name = 'TokenPurchase'
-                else:
-                    normalized_name = 'TokenSale'
+                event_name = canonical_trade_name(raw_event_name) or raw_event_name
+                normalized_args = {}
+                for key, value in args.items():
+                    if isinstance(value, str) and value.startswith('0x'):
+                        try:
+                            value = self.w3.to_checksum_address(value)
+                        except Exception:
+                            pass
+                    normalized_args[key] = value
 
-                # Manual Decoding
-                try:
-                    data = event_log.get('data', b'')
-                    topics = event_log.get('topics', [])
-                    if isinstance(data, str):
-                        data = bytes.fromhex(data.replace('0x', ''))
-
-                    token_address = None
-                    account_address = None
-                    amount = 0
-                    cost = 0
-                    price = 0
-
-                    # Scenario 1: Unindexed (Token/Account in Data) - Matches TokenSale (Alt)
-                    # Word 0: Token
-                    # Word 1: Account
-                    # Word 2: Price
-                    # Word 3: Amount
-                    # Word 4: Cost
-                    if len(topics) == 1 and len(data) >= 160:
-                        token_hex = data[12:32].hex()
-                        account_hex = data[44:64].hex()
-                        token_address = self.w3.to_checksum_address('0x' + token_hex)
-                        account_address = self.w3.to_checksum_address('0x' + account_hex)
-
-                        # price = int.from_bytes(data[64:96], 'big')
-                        amount = int.from_bytes(data[96:128], 'big')
-                        cost = int.from_bytes(data[128:160], 'big')
-
-                    # Scenario 2: Indexed (Token/Account in Topics) - Matches TokenPurchase2?
-                    # Topic 1: Token
-                    # Topic 2: Account
-                    # Data: Price, Amount, Cost...
-                    elif len(topics) >= 3 and len(data) >= 96:
-                        token_address = self.w3.to_checksum_address('0x' + topics[1].hex()[24:])
-                        account_address = self.w3.to_checksum_address('0x' + topics[2].hex()[24:])
-
-                        # Assuming Data: Price, Amount, Cost
-                        # Word 0: Price
-                        # Word 1: Amount
-                        # Word 2: Cost
-                        amount = int.from_bytes(data[32:64], 'big')
-                        cost = int.from_bytes(data[64:96], 'big')
-
-                    # Scenario 3: Partial Indexed (Token in Topic, Account in Data?)
-                    # Some variants might have Token indexed but Account not.
-                    elif len(topics) == 2 and len(data) >= 128:
-                        token_address = self.w3.to_checksum_address('0x' + topics[1].hex()[24:])
-                        account_hex = data[12:32].hex() # Account at Word 0
-                        account_address = self.w3.to_checksum_address('0x' + account_hex)
-
-                        # Data: Account, Price, Amount, Cost
-                        amount = int.from_bytes(data[64:96], 'big')
-                        cost = int.from_bytes(data[96:128], 'big')
-
-                    # Scenario 4: Single-topic compact payload (Token, Account, Amount, Cost)
-                    elif len(topics) == 1 and len(data) == 128:
-                        token_hex = data[12:32].hex()
-                        account_hex = data[44:64].hex()
-                        token_address = self.w3.to_checksum_address('0x' + token_hex)
-                        account_address = self.w3.to_checksum_address('0x' + account_hex)
-                        amount = int.from_bytes(data[64:96], 'big')
-                        cost = int.from_bytes(data[96:128], 'big')
-
-                    # Scenario 5: Lightweight Event (Topics: 1, Data: 32)
-                    # Likely just "origin" or similar signal event, insufficient for trade stats.
-                    elif len(topics) == 1 and len(data) == 32:
-                         logger.debug(f"Skipping lightweight signal event {event_name_raw} (Data: 32 bytes)")
-                         return
-
-                    if token_address and account_address:
-                        if amount > 0:
-                            price = cost / amount
-
-                        processed_log = {
-                            'event_name': normalized_name,
-                            'args': {
-                                'token': token_address,
-                                'account': account_address,
-                                'amount': amount,
-                                'cost': cost,
-                                'price': price
-                            },
-                            'transactionHash': event_log.get('transactionHash'),
-                            'logIndex': event_log.get('logIndex'),
-                            'blockNumber': event_log.get('blockNumber'),
-                            'timestamp': event_timestamp
-                        }
-
-                        logger.debug(f"✅ Manually decoded {event_name_raw} -> {normalized_name}: {processed_log['args']['token'][:10]}...")
-                        await self._process_event(normalized_name, processed_log)
-                        return
-                    else:
-                        # Log specific failure reason for debugging
-                        logger.debug(f"Manual decode skip: topics={len(topics)}, data_len={len(data)}")
-
-                except Exception as decode_err:
-                    logger.error(f"Manual decode failed: {decode_err}")
-
-                tx_hash = event_log.get('transactionHash', b'').hex()
-                logger.error(f"❌ Failed to decode KNOWN event {event_name_raw} - Topic match found but ABI mismatch? Tx: {tx_hash[:10]}... Topics: {len(event_log.get('topics', []))} Data: {len(event_log.get('data', b''))}")
+                processed_log = {
+                    'event_name': event_name,
+                    'raw_event_name': raw_event_name,
+                    'args': normalized_args,
+                    'transactionHash': event_log.get('transactionHash'),
+                    'logIndex': event_log.get('logIndex'),
+                    'blockNumber': event_log.get('blockNumber'),
+                    'timestamp': event_timestamp,
+                    'received_at': time.time(),
+                }
+                await self._process_event(event_name, processed_log)
+                return
 
             # Unknown topic: fallback to ABI decode path
             decoded_events = self.contract.events
@@ -1108,6 +1070,7 @@ class FourMemeListener:
                     processed_log['blockNumber'] = event_log.get('blockNumber')
                     processed_log['transactionHash'] = event_log.get('transactionHash')
                     processed_log['logIndex'] = event_log.get('logIndex')
+                    processed_log['received_at'] = time.time()
 
                 except Exception as e:
                     # Log decoding errors for debugging

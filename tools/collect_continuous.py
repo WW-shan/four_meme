@@ -45,6 +45,14 @@ logger = logging.getLogger(__name__)
 class ContinuousCollector:
     """持续数据收集器"""
 
+    @staticmethod
+    def _build_http_provider(endpoint, provider_cls):
+        """Build the collector's HTTP provider with the configured local proxy."""
+        return provider_cls(
+            endpoint,
+            request_kwargs=Config.get_http_request_kwargs(),
+        )
+
     def __init__(self):
         self.collector = DataCollector()
         self.state_file = self.collector.output_dir / "collector_runtime_state.json"
@@ -180,7 +188,7 @@ class ContinuousCollector:
                 self.ws_manager = None
                 fallback_endpoint = log_http_endpoints[0]
                 logger.warning(f"⚠️ collector 使用 http_only 模式: 使用轮询节点 {fallback_endpoint}")
-                w3 = AsyncWeb3(AsyncHTTPProvider(fallback_endpoint))
+                w3 = AsyncWeb3(self._build_http_provider(fallback_endpoint, AsyncHTTPProvider))
 
             # 测试节点响应速度
             try:
@@ -218,6 +226,7 @@ class ContinuousCollector:
             self.listener.register_handler('TokenPurchase2', self._handle_event)
             self.listener.register_handler('TokenSale2', self._handle_event)
             self.listener.register_handler('TradeStop', self._handle_event)
+            self.listener.register_handler('LiquidityAdded', self._handle_event)
 
             restored_metadata = self.collector.load_token_metadata_index()
             if restored_metadata <= 0:

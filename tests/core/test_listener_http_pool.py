@@ -748,6 +748,30 @@ class TestListenerHttpPool(unittest.IsolatedAsyncioTestCase):
         requested_ranges = [(call.args[1], call.args[2]) for call in listener._get_logs_via_provider.await_args_list]
         self.assertEqual(requested_ranges, [(100, 200), (100, 150), (151, 200)])
 
+    async def test_process_block_range_chunks_provider_maximum_range(self):
+        listener_cls = _load_listener_class()
+        listener = listener_cls(
+            w3=types.SimpleNamespace(),
+            config={
+                'contract_address': '0x1',
+                'contract_abi': [],
+                'log_http_endpoints': ['https://rpc.a'],
+            },
+            ws_manager=None,
+        )
+
+        range_limit_exc = Exception('exceed maximum block range: 5000')
+        listener._get_logs_via_provider = AsyncMock(
+            side_effect=[range_limit_exc, ([], 0), ([], 0), ([], 0)]
+        )
+        listener._process_logs_in_batches = AsyncMock(return_value=None)
+
+        result = await listener._process_block_range(100, 10200)
+
+        self.assertTrue(result)
+        requested_ranges = [(call.args[1], call.args[2]) for call in listener._get_logs_via_provider.await_args_list]
+        self.assertEqual(requested_ranges, [(100, 10200), (100, 5099), (5100, 10099), (10100, 10200)])
+
     async def test_subscribe_advances_only_through_provider_head_when_http_pool_lags(self):
         listener_cls = _load_listener_class()
 
@@ -1004,7 +1028,57 @@ class TestListenerHttpPool(unittest.IsolatedAsyncioTestCase):
 
         await listener._parse_and_process_event(event_log)
 
-    async def test_parse_observed_tokensale_topic_uses_known_fast_path(self):
+    async def test_parse_liquidity_added_topic_decodes_as_graduation(self):
+        listener_cls = _load_listener_class()
+        listener = listener_cls(
+            w3=types.SimpleNamespace(to_checksum_address=lambda value: value),
+            config={
+                'contract_address': '0x1',
+                'contract_abi': [],
+                'log_http_endpoints': [],
+                'log_http_weights': [],
+            },
+            ws_manager=None,
+        )
+        processed = []
+
+        class _ExplodingContract:
+            @property
+            def events(self):
+                raise AssertionError('known LiquidityAdded topic must not touch contract.events')
+
+        listener.contract = _ExplodingContract()
+
+        async def _capture(event_name, event_data):
+            processed.append((event_name, event_data))
+
+        listener.register_handler('LiquidityAdded', _capture)
+        listener.register_handler('TokenSale', _capture)
+
+        base = bytes.fromhex('00' * 12 + '11' * 20)
+        offers = (22222).to_bytes(32, 'big')
+        quote = bytes.fromhex('00' * 12 + '33' * 20)
+        funds = (987654321).to_bytes(32, 'big')
+        event_log = {
+            'topics': [bytes.fromhex('c18aa71171b358b706fe3dd345299685ba21a5316c66ffa9e319268b033c44b0')],
+            'data': base + offers + quote + funds,
+            'transactionHash': b'\x02' * 32,
+            'blockNumber': 124,
+            'logIndex': 3,
+        }
+
+        await listener._parse_and_process_event(event_log)
+
+        self.assertEqual(['LiquidityAdded'], [name for name, _ in processed])
+        event_data = processed[0][1]
+        self.assertEqual('LiquidityAdded', event_data['raw_event_name'])
+        self.assertEqual('0x' + '11' * 20, event_data['args']['base'].lower())
+        self.assertEqual(22222, event_data['args']['offers'])
+        self.assertEqual('0x' + '33' * 20, event_data['args']['quote'].lower())
+        self.assertEqual(987654321, event_data['args']['funds'])
+        self.assertIn('received_at', event_data)
+
+    async def test_parse_malformed_liquidity_added_payload_is_skipped_without_fallback(self):
         listener_cls = _load_listener_class()
         listener = listener_cls(
             w3=types.SimpleNamespace(to_checksum_address=lambda value: value),
@@ -1017,26 +1091,23 @@ class TestListenerHttpPool(unittest.IsolatedAsyncioTestCase):
             ws_manager=None,
         )
 
-        class _FastPathBypassTouched(BaseException):
-            pass
-
         class _ExplodingContract:
             @property
             def events(self):
-                raise _FastPathBypassTouched('known TokenSale topic must not touch contract.events fallback decode path')
+                raise AssertionError('malformed known topic must not touch contract.events')
 
         listener.contract = _ExplodingContract()
-
         event_log = {
             'topics': [bytes.fromhex('c18aa71171b358b706fe3dd345299685ba21a5316c66ffa9e319268b033c44b0')],
             'data': b'\x00' * 32,
-            'transactionHash': b'\x02' * 32,
-            'blockNumber': 124,
+            'transactionHash': b'\x03' * 32,
+            'blockNumber': 125,
+            'logIndex': 0,
         }
 
         await listener._parse_and_process_event(event_log)
 
-    async def test_parse_tokensale_single_topic_128_byte_payload_decodes_sale(self):
+    async def test_parse_v1_tokensale_topic_decodes_token_amount_and_ether_amount(self):
         listener_cls = _load_listener_class()
         listener = listener_cls(
             w3=types.SimpleNamespace(to_checksum_address=lambda value: value),
@@ -1057,13 +1128,12 @@ class TestListenerHttpPool(unittest.IsolatedAsyncioTestCase):
 
         token_word = bytes.fromhex('00' * 12 + '11' * 20)
         account_word = bytes.fromhex('00' * 12 + '22' * 20)
-        amount_word = (123456789).to_bytes(32, 'big')
-        cost_word = (987654321).to_bytes(32, 'big')
-        data = token_word + account_word + amount_word + cost_word
-
+        token_amount = (123456789).to_bytes(32, 'big')
+        ether_amount = (987654321).to_bytes(32, 'big')
+        fee = (555).to_bytes(32, 'big')
         event_log = {
-            'topics': [bytes.fromhex('c18aa71171b358b706fe3dd345299685ba21a5316c66ffa9e319268b033c44b0')],
-            'data': data,
+            'topics': [bytes.fromhex('80d4e495cda89b31af98c8e977ff11f417bafcee26902a17a15be51830c47533')],
+            'data': token_word + account_word + token_amount + ether_amount + fee,
             'transactionHash': b'\x04' * 32,
             'blockNumber': 126,
             'logIndex': 0,
@@ -1073,12 +1143,56 @@ class TestListenerHttpPool(unittest.IsolatedAsyncioTestCase):
 
         self.assertEqual(1, len(processed))
         self.assertEqual('TokenSale', processed[0][0])
-        self.assertEqual('0x' + '11' * 20, processed[0][1]['args']['token'])
-        self.assertEqual('0x' + '22' * 20, processed[0][1]['args']['account'])
+        self.assertEqual(123456789, processed[0][1]['args']['amount'])
+        self.assertEqual(987654321, processed[0][1]['args']['cost'])
+        self.assertEqual(555, processed[0][1]['args']['fee'])
+        self.assertIn('received_at', processed[0][1])
+
+    async def test_parse_v2_tokensale_topic_decodes_amount_and_cost(self):
+        listener_cls = _load_listener_class()
+        listener = listener_cls(
+            w3=types.SimpleNamespace(to_checksum_address=lambda value: value),
+            config={
+                'contract_address': '0x1',
+                'contract_abi': [],
+                'log_http_endpoints': [],
+                'log_http_weights': [],
+            },
+            ws_manager=None,
+        )
+        processed = []
+
+        async def _capture(event_name, event_data):
+            processed.append((event_name, event_data))
+
+        listener.register_handler('TokenSale', _capture)
+
+        words = b''.join([
+            bytes.fromhex('00' * 12 + '11' * 20),
+            bytes.fromhex('00' * 12 + '22' * 20),
+            (100).to_bytes(32, 'big'),
+            (123456789).to_bytes(32, 'big'),
+            (987654321).to_bytes(32, 'big'),
+            (5).to_bytes(32, 'big'),
+            (7).to_bytes(32, 'big'),
+            (9).to_bytes(32, 'big'),
+        ])
+        event_log = {
+            'topics': [bytes.fromhex('0a5575b3648bae2210cee56bf33254cc1ddfbc7bf637c0af2ac18b14fb1bae19')],
+            'data': words,
+            'transactionHash': b'\x05' * 32,
+            'blockNumber': 127,
+            'logIndex': 1,
+        }
+
+        await listener._parse_and_process_event(event_log)
+
+        self.assertEqual(1, len(processed))
+        self.assertEqual('TokenSale', processed[0][0])
         self.assertEqual(123456789, processed[0][1]['args']['amount'])
         self.assertEqual(987654321, processed[0][1]['args']['cost'])
 
-    async def test_parse_known_trade_topic_falls_back_to_contract_decode_when_manual_decode_fails(self):
+    async def test_parse_unknown_topic_falls_back_to_contract_decode(self):
         listener_cls = _load_listener_class()
         processed = []
 
@@ -1112,18 +1226,20 @@ class TestListenerHttpPool(unittest.IsolatedAsyncioTestCase):
         listener.register_handler('TokenSale', _capture)
 
         event_log = {
-            'topics': [bytes.fromhex('c18aa71171b358b706fe3dd345299685ba21a5316c66ffa9e319268b033c44b0')],
+            'topics': [bytes.fromhex('ab' * 32)],
             'data': b'\x00' * 96,
-            'transactionHash': b'\x03' * 32,
-            'blockNumber': 125,
+            'transactionHash': b'\x06' * 32,
+            'blockNumber': 128,
+            'logIndex': 0,
         }
 
         await listener._parse_and_process_event(event_log)
 
-        self.assertEqual(len(processed), 1)
-        self.assertEqual(processed[0][0], 'TokenSale')
+        self.assertEqual(1, len(processed))
+        self.assertEqual('TokenSale', processed[0][0])
         self.assertEqual(processed[0][1]['args']['token'], '0xToken')
         self.assertEqual(processed[0][1]['args']['account'], '0xAcct')
+        self.assertIn('received_at', processed[0][1])
 
     async def test_close_log_providers_closes_async_http_sessions(self):
         listener_cls = _load_listener_class()

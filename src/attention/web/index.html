@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>Signal Atlas - Multi-chain Attention</title>
+  <link rel="stylesheet" href="/style.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <header class="masthead"><a class="brand" href="/">SIGNAL <span>ATLAS</span><i></i></a><span class="edition">MULTI-CHAIN OBSERVATORY / 01</span><span class="read-only">OBSERVE ONLY</span></header>
+  <main>
+    <div id="mode-banner" class="banner" hidden></div>
+    <div id="error-banner" class="banner error" role="alert" hidden></div>
+    <section class="hero"><div><p class="eyebrow">FOLLOW THE CONVERSATION</p><h1>Attention,<br><em>before action.</em></h1><p class="intro">A source-backed view of emerging narratives and token interest.<br>Observe the shift. Inspect the evidence.</p></div><aside class="pulse"><p class="eyebrow">OBSERVATION DESK</p><div id="updated">Connecting...</div><p id="coverage">Loading source coverage</p><button id="refresh" class="text-button">Refresh observations &#8599;</button></aside></section>
+    <section id="stats" class="stats" aria-label="Observation overview"></section>
+    <section class="desk">
+      <div class="section-heading"><div><p class="eyebrow">THE WATCHLIST</p><h2>What is gathering attention?</h2></div><span class="refresh-note">VIEW REFRESHES EVERY 15s</span></div>
+      <div class="toolbar"><div class="tabs" role="tablist" aria-label="Board view"><button role="tab" data-view="rising" aria-selected="true">Rising topics</button><button role="tab" data-view="sustained" aria-selected="false">Sustained</button><button role="tab" data-view="tokens" aria-selected="false">Tokens</button><button role="tab" data-view="kol" aria-selected="false">KOL events</button></div><div class="filters"><label>CHAIN <select id="chain"><option value="all">All chains</option><option value="sol">Solana</option><option value="bsc">BNB Chain</option><option value="base">Base</option><option value="eth">Ethereum</option></select></label><label>WINDOW <select id="window"><option value="5m">5 minutes</option><option value="15m">15 minutes</option><option value="1h" selected>1 hour</option><option value="6h">6 hours</option><option value="24h">24 hours</option></select></label></div></div>
+      <div class="search-row"><label for="search">FILTER OBSERVATIONS</label><input id="search" type="search" placeholder="Topic, symbol or contract address" autocomplete="off"><span id="result-count"></span></div>
+      <p id="view-note" class="view-note"></p><div id="board" aria-live="polite"><div class="empty">Reading observations...</div></div>
+    </section>
+    <section class="sources"><div><p class="eyebrow">KNOW YOUR COVERAGE</p><h2>Sources &amp; freshness</h2><p>Missing data is not zero interest. Provider search activity and social mentions are measured separately.</p></div><div id="source-list"></div></section>
+    <details class="method"><summary>How these rankings work</summary><p>Activity uses distinct observed X authors. Rising compares distinct authors in the last 15 minutes with the preceding 15 minutes, with +1 smoothing. Acceleration stays unavailable until 30 minutes of continuous successful collection are recorded. The score is an unvalidated discovery heuristic.</p><p>Reposts, quotes and replies are separate post types. Engagement counts reported on original posts are cumulative snapshots, not additional observed posts. KOL means a configured account, not a verified promotion. GMGN platform visits are not X mentions.</p><p>Contract strings are matched exactly against observed chain-qualified candidates. A match is not proof of endorsement, an official token, liquidity or tradeability. Only configured sources are covered; this is not a whole-internet ranking.</p></details>
+  </main>
+  <footer><span>SIGNAL ATLAS / RESEARCH EDITION</span><a href="/api/v1/board" target="_blank" rel="noopener">Read-only data API &#8599;</a><span>NO ORDERS. NO WALLET ACCESS.</span></footer>
+  <dialog id="detail"><div class="dialog-top"><span class="eyebrow">EVIDENCE FILE</span><button id="close-detail" aria-label="Close evidence">&#10005;</button></div><div id="detail-body"></div></dialog>
+</body>
+</html>

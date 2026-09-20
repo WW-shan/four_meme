@@ -278,11 +278,10 @@ class DatasetBuilder:
                             ordered_token_addresses.append(token_address)
                             continue
 
-                        existing_activity = len(existing.get('buys', [])) + len(existing.get('sells', []))
-                        incoming_activity = len(lifecycle.get('buys', [])) + len(lifecycle.get('sells', []))
-
-                        if incoming_activity >= existing_activity:
-                            merged_lifecycles[token_address] = lifecycle
+                        merged_lifecycles[token_address] = self._merge_lifecycle_rows(
+                            existing,
+                            lifecycle,
+                        )
                     except Exception as e:
                         logger.error(f"Error loading lifecycle: {e}")
                         import traceback
@@ -376,6 +375,103 @@ class DatasetBuilder:
 
         return False
 
+    @staticmethod
+    def _event_identity(event: Dict) -> str:
+        """Return a stable identity for repeated snapshot events."""
+        identity = {
+            'timestamp': int(event.get('timestamp', 0) or 0),
+            'account': str(event.get('account', '') or '').lower(),
+            'token_amount': event.get('token_amount'),
+            'bnb_amount': event.get('bnb_amount'),
+            'ether_amount': event.get('ether_amount'),
+            'price': event.get('price'),
+            'type': str(event.get('type', '') or ''),
+            'block_number': event.get('block_number', event.get('blockNumber')),
+            'log_index': event.get('log_index', event.get('logIndex')),
+            'transaction_hash': str(
+                event.get('transaction_hash', event.get('transactionHash')) or ''
+            ).lower(),
+        }
+        return json.dumps(identity, sort_keys=True, default=str, separators=(',', ':'))
+
+    @classmethod
+    def _merge_event_rows(cls, existing, incoming) -> List[Dict]:
+        merged = {}
+        for event in list(existing or []) + list(incoming or []):
+            if not isinstance(event, dict):
+                continue
+            identity = cls._event_identity(event)
+            if identity and identity not in merged:
+                merged[identity] = dict(event)
+        return sorted(
+            merged.values(),
+            key=lambda event: (
+                int(event.get('timestamp', 0) or 0),
+                int(event.get('block_number', event.get('blockNumber', -1)) or -1),
+                int(event.get('log_index', event.get('logIndex', -1)) or -1),
+                str(event.get('transaction_hash', event.get('transactionHash')) or ''),
+            ),
+        )
+
+    @classmethod
+    def _merge_lifecycle_rows(cls, existing: Dict, incoming: Dict) -> Dict:
+        """Merge cumulative snapshots and reactivation fragments by token."""
+        existing_activity = len(existing.get('buys', [])) + len(existing.get('sells', []))
+        incoming_activity = len(incoming.get('buys', [])) + len(incoming.get('sells', []))
+        merged = dict(incoming if incoming_activity >= existing_activity else existing)
+        merged['buys'] = cls._merge_event_rows(existing.get('buys'), incoming.get('buys'))
+        merged['sells'] = cls._merge_event_rows(existing.get('sells'), incoming.get('sells'))
+        merged['price_history'] = cls._merge_event_rows(
+            existing.get('price_history'), incoming.get('price_history')
+        )
+        merged['total_buy_volume_bnb'] = sum(
+            float(event.get('bnb_amount', 0.0) or 0.0) for event in merged['buys']
+        )
+        merged['total_sell_volume_bnb'] = sum(
+            float(event.get('bnb_amount', 0.0) or 0.0) for event in merged['sells']
+        )
+        merged['total_buy_count'] = len(merged['buys'])
+        merged['total_sell_count'] = len(merged['sells'])
+        merged['unique_buyers'] = sorted({
+            str(event.get('account', '') or '')
+            for event in merged['buys']
+            if str(event.get('account', '') or '')
+        })
+        merged['unique_sellers'] = sorted({
+            str(event.get('account', '') or '')
+            for event in merged['sells']
+            if str(event.get('account', '') or '')
+        })
+        trades = sorted(merged['buys'] + merged['sells'], key=lambda event: int(event.get('timestamp', 0) or 0))
+        prices = [float(event.get('price', 0.0) or 0.0) for event in trades if float(event.get('price', 0.0) or 0.0) > 0.0]
+        if prices:
+            merged['price_first'] = float(merged['buys'][0].get('price', 0.0) or 0.0) if merged['buys'] else prices[0]
+            merged['price_current'] = prices[-1]
+            merged['price_max'] = max(prices)
+            merged['price_min'] = min(prices)
+        timestamps = [
+            int(event.get('timestamp', 0) or 0)
+            for event in trades + merged['price_history']
+            if int(event.get('timestamp', 0) or 0) > 0
+        ]
+        create_timestamp = int(merged.get('create_timestamp', 0) or 0)
+        if create_timestamp > 0:
+            timestamps.append(create_timestamp)
+        previous_update = int(merged.get('last_update', 0) or 0)
+        if previous_update > 0:
+            timestamps.append(previous_update)
+        if timestamps:
+            merged['last_update'] = max(timestamps)
+        merged['graduated'] = bool(existing.get('graduated') or incoming.get('graduated'))
+        graduate_times = [
+            int(value)
+            for value in (existing.get('graduate_time'), incoming.get('graduate_time'))
+            if int(value or 0) > 0
+        ]
+        if graduate_times:
+            merged['graduate_time'] = max(graduate_times)
+        return merged
+
     def _normalize_lifecycle(self, lifecycle: Dict) -> Dict:
         """标准化生命周期数据格式 (适配新数据源)"""
         # 如果是新格式 (包含 created_at 且没有 buys/sells)
@@ -432,6 +528,12 @@ class DatasetBuilder:
         """
         # 标准化数据格式 (适配新旧数据)
         lifecycle = self._normalize_lifecycle(lifecycle)
+
+        # Known non-BNB quote assets must not be labelled with BNB-denominated
+        # prices. Records without quote metadata remain unknown and are kept.
+        quote_symbol = str(lifecycle.get('quote_symbol') or '').strip().upper()
+        if quote_symbol and quote_symbol != 'BNB':
+            return []
 
         if sample_intervals is None:
             sample_intervals = self._resolve_sample_intervals_for_lifecycle(lifecycle)
