@@ -41,11 +41,13 @@ class SnapshotFetcher:
 
     def __init__(self, session=None, *, cache: SourceCache | None = None,
                  clock: Callable[[], float] = time.time, goplus_key: str | None = None,
+                 gmgn_key: str | None = None,
                  min_intervals: dict[str, float] | None = None, timeout: float = 15.0):
         self.session = session
         self.cache = cache if cache is not None else SourceCache(clock=clock)
         self.clock = clock
         self.goplus_key = goplus_key
+        self.gmgn_key = gmgn_key
         self.timeout = timeout
         self.min_intervals = {"goplus": 0.5, "honeypot": 0.5, "dexscreener": 0.2, "gmgn": 0.5}
         self.min_intervals.update(min_intervals or {})
@@ -92,11 +94,11 @@ class SnapshotFetcher:
         return self._request("dexscreener", f"https://api.dexscreener.com/token-pairs/v1/bsc/{token}", None)
 
     def gmgn_token_info(self, token: str, chain: str = "bsc") -> FetchResult:
-        if not self.goplus_key and not getattr(self, "gmgn_key", None):
+        if not self.gmgn_key:
             return FetchResult("gmgn", False, error="gmgn_api_key_missing", fetched_at=self.clock())
         return self._request("gmgn", "https://openapi.gmgn.ai/v1/token/info",
                              {"chain": chain, "address": token},
-                             {"X-APIKEY": getattr(self, "gmgn_key", "")})
+                             {"X-APIKEY": self.gmgn_key})
 
     def fetch_all(self, token: str) -> dict[str, FetchResult]:
         return {

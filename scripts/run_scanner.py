@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 from pathlib import Path
 import sys
 
@@ -17,6 +18,9 @@ from src.radar.api import make_scanner_server  # noqa: E402
 from src.radar.events import launch_from_event  # noqa: E402
 from src.radar.store import ScannerStore  # noqa: E402
 from src.safety.attribution import build_attribution  # noqa: E402
+from src.safety.fetchers import SnapshotFetcher  # noqa: E402
+from src.safety.snapshot import build_snapshot  # noqa: E402
+from src.walletflow.gmgn import GmgnOpenApiClient  # noqa: E402
 from src.safety.orchestrator import build_report  # noqa: E402
 from src.shadow.executor import shadow_buy, shadow_sell  # noqa: E402
 from src.shadow.report import ShadowGateConfig, build_gate_report, records_from_store  # noqa: E402
@@ -26,6 +30,22 @@ def _load(path: str) -> dict:
     return json.loads(Path(path).read_text(encoding="utf-8"))
 
 
+def _live_fetcher() -> SnapshotFetcher:
+    import requests
+
+    return SnapshotFetcher(
+        session=requests.Session(),
+        goplus_key=os.getenv("GOPLUS_API_KEY") or None,
+        gmgn_key=os.getenv("GMGN_API_KEY") or None,
+    )
+
+
+def _gmgn_session():
+    import requests
+
+    return requests.Session()
+
+
 def command_audit(args) -> int:
     config = ScannerConfig.load(args.config)
     snapshot = _load(args.snapshot)
@@ -33,6 +53,50 @@ def command_audit(args) -> int:
     report = build_report(token, snapshot, config.thresholds, mode=args.mode or config.mode)
     print(json.dumps(report.to_dict(), ensure_ascii=False, indent=2))
     return 0 if report.verdict == "pass" else 2
+
+
+def command_snapshot(args) -> int:
+    fetcher = _live_fetcher()
+    fetched = fetcher.fetch_all(args.token)
+    snapshot = build_snapshot(args.token, fetched)
+    print(json.dumps(snapshot, ensure_ascii=False, indent=2, default=str))
+    return 0 if any(getattr(result, "ok", False) for result in fetched.values()) else 2
+
+
+def command_audit_live(args) -> int:
+    fetcher = _live_fetcher()
+    fetched = fetcher.fetch_all(args.token)
+    snapshot = build_snapshot(args.token, fetched)
+    config = ScannerConfig.load(args.config)
+    report = build_report(args.token, snapshot, config.thresholds, mode=args.mode or config.mode)
+    print(json.dumps(report.to_dict(), ensure_ascii=False, indent=2))
+    return 0 if report.verdict == "pass" else 2
+
+
+def command_wallet_ingest(args) -> int:
+    client = GmgnOpenApiClient(os.getenv("GMGN_API_KEY", ""), session=_gmgn_session())
+    events = client.wallet_trades(args.address, limit=args.limit, chain=args.chain)
+    store = ScannerStore(args.db)
+    now = __import__("time").time()
+    for event in events:
+        store.append("wallet_event", f"{args.chain}:{event.wallet}", event.__dict__,
+                     event.chain_time or now, event.received_at or now)
+    print(json.dumps({"wallet": args.address, "events": len(events), "db": args.db}, ensure_ascii=False))
+    return 0 if events else 2
+
+
+def command_solana_event(args) -> int:
+    from src.radar.solana import launch_from_solana_event
+
+    launch = launch_from_solana_event(_load(args.event))
+    if launch is None:
+        print(json.dumps({"ok": False, "error": "invalid_solana_event"}, ensure_ascii=False))
+        return 2
+    if args.db:
+        ScannerStore(args.db).append("launch", f"sol:{launch.mint}", launch.to_dict(),
+                                     launch.chain_time or launch.received_at, launch.received_at)
+    print(json.dumps({"ok": True, "launch": launch.to_dict()}, ensure_ascii=False, indent=2))
+    return 0
 
 
 def command_shadow(args) -> int:
@@ -131,6 +195,24 @@ def main(argv=None) -> int:
     shadow = sub.add_parser("shadow", help="Simulate a shadow buy/sell round trip")
     shadow.add_argument("--scenario", required=True)
     shadow.set_defaults(func=command_shadow)
+    snapshot = sub.add_parser("snapshot", help="Fetch a live token snapshot from configured providers")
+    snapshot.add_argument("--token", required=True)
+    snapshot.set_defaults(func=command_snapshot)
+    audit_live = sub.add_parser("audit-live", help="Fetch a live snapshot and run safety filters")
+    audit_live.add_argument("--token", required=True)
+    audit_live.add_argument("--mode", choices=("safe", "learning"))
+    audit_live.add_argument("--config", help="Optional scanner config JSON")
+    audit_live.set_defaults(func=command_audit_live)
+    wallet = sub.add_parser("wallet-ingest", help="Ingest GMGN smart-money trades into the scanner DB")
+    wallet.add_argument("--db", required=True)
+    wallet.add_argument("--address", required=True)
+    wallet.add_argument("--chain", default="bsc")
+    wallet.add_argument("--limit", type=int, default=100)
+    wallet.set_defaults(func=command_wallet_ingest)
+    solana = sub.add_parser("solana-event", help="Normalize (and optionally store) a decoded Solana launch event")
+    solana.add_argument("--event", required=True)
+    solana.add_argument("--db")
+    solana.set_defaults(func=command_solana_event)
     radar = sub.add_parser("radar", help="Decode a listener event JSON into a launch record")
     radar.add_argument("--event", required=True)
     radar.set_defaults(func=command_radar)
