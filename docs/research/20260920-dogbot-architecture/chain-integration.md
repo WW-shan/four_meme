@@ -74,3 +74,16 @@
 - GMGN 只读探测（demo key，2026-09-20）：robinhood/arc/hyperevm/stable 有响应，monad/megaeth/xlayer/sonic 400。
 - pump.fun program ID：`https://github.com/chainstacklabs/pumpfun-bonkfun-bot`。
 - 项目本地：`config/contracts.json`、`config/TokenManager*.lite.abi`。
+
+## 八、合约级核实尝试（2026-09-20，未成功）
+
+对 Robinhood / Arc / Stable 的浏览器 API 做了直接探测，用于查找 pons / trench / noxa / flap / clanker 等平台合约：
+
+- `https://robinscan.io/api/v2/search`：HTTP 404（该路径不存在或非 Blockscout v2 API）。
+- `https://explorer.arc.io/api/v2/search`：HTTP 403（拒绝）。
+- `https://stablescan.xyz/api/v2/search`：返回 HTML 而非 JSON。
+
+结论：当前环境无法从这些浏览器 API 取得已验证合约地址，因此 **Robinhood / Arc / Stable 的平台合约保持 UNKNOWN、适配器保持 disabled**，不猜地址。可行替代路径：
+1. 从 GMGN 只读发现先接入这三条链（`GmgnDiscoveryAdapter` 已支持），拿到真实 token 与平台字段；
+2. 用 GMGN token info / DexScreener 反查具体池子与合约，再由人工在官方浏览器核对；
+3. 或提供官方文档里明确列出的工厂/平台地址，再写入 `config/chains.json` 并标记 `verified`。
