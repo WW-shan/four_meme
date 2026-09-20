@@ -12,6 +12,7 @@ from src.shadow.executor import ShadowFill, ShadowPosition
 class ShadowTracker:
     store: object | None = None
     config: ExitRuleConfig = field(default_factory=ExitRuleConfig)
+    chain: str | None = None
     positions: dict[str, ShadowPosition] = field(default_factory=dict)
     exit_states: dict[str, ExitState] = field(default_factory=dict)
 
@@ -70,4 +71,8 @@ class ShadowTracker:
 
     def _record(self, kind: str, token: str, payload: dict, at: float) -> None:
         if self.store is not None and hasattr(self.store, "append"):
-            self.store.append(kind, token, payload, at, at)
+            body = dict(payload)
+            if self.chain:
+                # Chain tag lets the shadow gate be evaluated per chain (X10.8).
+                body["chain"] = self.chain
+            self.store.append(kind, token, body, at, at)

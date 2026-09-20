@@ -62,8 +62,14 @@ class ScannerStore:
             )
             return int(cursor.lastrowid)
 
+    # Payload chain first (written by the pipeline), then the ``chain:token`` entity prefix
+    # used by the radar collector, so rows written before this column existed still filter.
+    CHAIN_EXPR = ("COALESCE(json_extract(payload, '$.chain'), "
+                  "CASE WHEN instr(entity, ':') > 0 THEN substr(entity, 1, instr(entity, ':') - 1) END)")
+
     def rows(self, kind: str | None = None, entity: str | None = None,
-             since: float = 0, until: float | None = None, limit: int = 1000) -> list[dict]:
+             since: float = 0, until: float | None = None, limit: int = 1000,
+             chain: str | None = None, platform: str | None = None) -> list[dict]:
         until = time.time() if until is None else float(until)
         clauses, params = ["observed_at >= ?", "observed_at <= ?"], [float(since), until]
         if kind is not None:
@@ -72,6 +78,12 @@ class ScannerStore:
         if entity is not None:
             clauses.append("entity = ?")
             params.append(entity)
+        if chain is not None:
+            clauses.append(f"{self.CHAIN_EXPR} = ?")
+            params.append(chain)
+        if platform is not None:
+            clauses.append("json_extract(payload, '$.platform') = ?")
+            params.append(platform)
         params.append(int(limit))
         sql = (
             "SELECT * FROM observations WHERE " + " AND ".join(clauses)
@@ -80,6 +92,36 @@ class ScannerStore:
         with self.connect() as db:
             rows = db.execute(sql, params).fetchall()
         return [{**dict(row), "payload": json.loads(row["payload"])} for row in rows]
+
+    def chain_activity(self, since: float = 0, until: float | None = None) -> list[dict]:
+        """Per-chain observation counts and last-seen time for the dashboard status strip."""
+        until = time.time() if until is None else float(until)
+        sql = (
+            "SELECT " + self.CHAIN_EXPR + " AS chain, COUNT(*) AS observations, "
+            "MIN(observed_at) AS first_observed_at, MAX(observed_at) AS last_observed_at "
+            "FROM observations WHERE observed_at >= ? AND observed_at <= ? "
+            "AND " + self.CHAIN_EXPR + " IS NOT NULL GROUP BY chain ORDER BY chain"
+        )
+        with self.connect() as db:
+            rows = db.execute(sql, [float(since), until]).fetchall()
+        return [dict(row) for row in rows]
+
+    def platform_activity(self, chain: str | None = None, since: float = 0,
+                          until: float | None = None) -> list[dict]:
+        until = time.time() if until is None else float(until)
+        clauses = ["observed_at >= ?", "observed_at <= ?", "json_extract(payload, '$.platform') IS NOT NULL"]
+        params: list = [float(since), until]
+        if chain is not None:
+            clauses.append(f"{self.CHAIN_EXPR} = ?")
+            params.append(chain)
+        sql = (
+            "SELECT " + self.CHAIN_EXPR + " AS chain, json_extract(payload, '$.platform') AS platform, "
+            "COUNT(*) AS observations, MAX(observed_at) AS last_observed_at "
+            "FROM observations WHERE " + " AND ".join(clauses) + " GROUP BY chain, platform ORDER BY observations DESC"
+        )
+        with self.connect() as db:
+            rows = db.execute(sql, params).fetchall()
+        return [dict(row) for row in rows]
 
     def latest(self, kind: str, entity: str) -> dict | None:
         with self.connect() as db:

@@ -22,9 +22,10 @@ class ScannerPipeline:
     fetcher: SnapshotFetcher | None = None
     onchain_reader: Callable[[str], Mapping] | None = None
     clock: Callable[[], float] = time.time
+    chain: str = "bsc"
 
     def __post_init__(self):
-        self.radar = RadarCollector(self.store)
+        self.radar = RadarCollector(self.store, chain=self.chain)
 
     async def handle_event(self, event_name: str, event_data: dict) -> bool:
         return await self.radar.handle_event(event_name, event_data)
@@ -33,6 +34,7 @@ class ScannerPipeline:
         fetched = self.fetcher.fetch_all(token) if self.fetcher is not None else {}
         onchain = self.onchain_reader(token) if self.onchain_reader is not None else {}
         snapshot = build_snapshot(token, fetched, onchain=onchain)
+        snapshot["chain"] = self.chain
         if override:
             # Explicit None is meaningful: renounced authority / unknown tax.
             snapshot.update(dict(override))
@@ -42,7 +44,9 @@ class ScannerPipeline:
     def audit(self, token: str, *, override: Mapping | None = None) -> SafetyReport:
         snapshot = self.snapshot(token, override=override)
         report = build_report(token, snapshot, self.config.thresholds, mode=self.config.mode, now=self.clock())
-        self.store.append("safety_report", token, report.to_dict(), report.created_at, self.clock())
+        payload = report.to_dict()
+        payload["chain"] = self.chain
+        self.store.append("safety_report", token, payload, report.created_at, self.clock())
         return report
 
     def decide(self, token: str, *, report: SafetyReport, funding_confirmed: bool,
@@ -56,5 +60,7 @@ class ScannerPipeline:
             mcap_max_usd=self.config.thresholds.mcap_max_usd,
             budget=budget, state=state, mode=mode, now=self.clock(),
         )
-        self.store.append("decision", token, decision.to_dict(), decision.created_at, self.clock())
+        payload = decision.to_dict()
+        payload["chain"] = self.chain
+        self.store.append("decision", token, payload, decision.created_at, self.clock())
         return decision

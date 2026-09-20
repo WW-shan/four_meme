@@ -1,5 +1,6 @@
 import tempfile
 import threading
+import time
 import unittest
 from pathlib import Path
 from urllib.request import urlopen
@@ -221,3 +222,145 @@ class ScannerPipelineTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class ScannerChainFilterTests(unittest.TestCase):
+    """X10.7: chain/platform/window filters and per-chain staleness."""
+
+    def setUp(self):
+        import tempfile
+        from src.radar.api import make_scanner_server
+        from src.radar.store import ScannerStore
+
+        self.temp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temp.cleanup)
+        self.store = ScannerStore(Path(self.temp.name) / "scanner.sqlite")
+        now = time.time()
+        self.store.append("launch", "0xtok-bsc", {"chain": "bsc", "platform": "fourmeme", "token": "0xtok-bsc"}, now - 5, now - 5)
+        self.store.append("launch", "0xtok-sol", {"chain": "sol", "platform": "pump_fun", "token": "0xtok-sol"}, now - 10, now - 10)
+        self.store.append("launch", "0xtok-old", {"chain": "robinhood", "platform": "pons", "token": "0xtok-old"}, now - 7200, now - 7200)
+        self.server = make_scanner_server(self.store, port=0, chains_config=None, stale_after=1800)
+        self.thread = threading.Thread(target=self.server.serve_forever, daemon=True)
+        self.thread.start()
+        self.addCleanup(self.close)
+        self.url = f"http://127.0.0.1:{self.server.server_port}"
+
+    def close(self):
+        self.server.shutdown()
+        self.server.server_close()
+        self.thread.join()
+
+    def get(self, path):
+        import json
+        with urlopen(self.url + path) as response:
+            return json.load(response)
+
+    def test_chain_filter_returns_only_that_chain(self):
+        payload = self.get("/api/v1/scanner/launches?chain=sol")
+        self.assertEqual(1, payload["count"])
+        self.assertEqual("sol", payload["rows"][0]["payload"]["chain"])
+        self.assertEqual("sol", payload["filters"]["chain"])
+
+    def test_platform_and_window_filters_compose(self):
+        self.assertEqual(1, self.get("/api/v1/scanner/launches?platform=fourmeme")["count"])
+        self.assertEqual(2, self.get("/api/v1/scanner/launches?window=60")["count"])
+        self.assertEqual(0, self.get("/api/v1/scanner/launches?chain=sol&platform=fourmeme")["count"])
+
+    def test_window_filter_reports_seconds(self):
+        self.assertEqual(86400, self.get("/api/v1/scanner/launches?window=86400")["filters"]["window_seconds"])
+
+    def test_invalid_filters_are_rejected(self):
+        from urllib.error import HTTPError
+        for path in ("/api/v1/scanner/launches?window=-1", "/api/v1/scanner/launches?window=abc"):
+            with self.assertRaises(HTTPError) as error:
+                urlopen(self.url + path)
+            self.assertEqual(400, error.exception.code)
+
+    def test_chain_status_marks_stale_not_cold(self):
+        payload = self.get("/api/v1/scanner/chains")
+        by_chain = {item["chain"]: item for item in payload["chains"]}
+        self.assertEqual("live", by_chain["bsc"]["status"])
+        self.assertEqual("live", by_chain["sol"]["status"])
+        self.assertEqual("stale", by_chain["robinhood"]["status"])
+        self.assertGreater(by_chain["robinhood"]["age_seconds"], 1800)
+        self.assertEqual(1, by_chain["robinhood"]["observations"])
+
+    def test_declared_chain_without_rows_is_reported(self):
+        import tempfile
+        from src.radar.api import chain_statuses
+        from src.radar.store import ScannerStore
+
+        with tempfile.TemporaryDirectory() as tmp:
+            store = ScannerStore(Path(tmp) / "scanner.sqlite")
+            statuses = chain_statuses(store, declared=[{"chain": "base", "enabled": False}], stale_after=60)
+        self.assertEqual(1, len(statuses))
+        self.assertEqual("idle", statuses[0]["status"])
+        self.assertIsNone(statuses[0]["age_seconds"])
+
+
+class ScannerPipelineChainTagTests(unittest.TestCase):
+    def test_pipeline_writes_chain_into_payloads(self):
+        import tempfile
+        from config.scanner_config import ScannerConfig
+        from src.radar.pipeline import ScannerPipeline
+        from src.radar.store import ScannerStore
+
+        with tempfile.TemporaryDirectory() as tmp:
+            store = ScannerStore(Path(tmp) / "scanner.sqlite")
+            pipeline = ScannerPipeline(store, ScannerConfig(mode="safe"), clock=lambda: 100.0, chain="robinhood")
+            pipeline.audit("0x" + "22" * 20, override={"liquidity_usd": 1000})
+            rows = store.rows("safety_report", chain="robinhood")
+            self.assertEqual(1, len(rows))
+            self.assertEqual("robinhood", rows[0]["payload"]["chain"])
+            self.assertEqual(0, len(store.rows("safety_report", chain="bsc")))
+
+
+class ScannerDashboardServingTests(unittest.TestCase):
+    """The dashboard must be served as markup, not as a JSON string."""
+
+    def setUp(self):
+        import tempfile
+        from src.radar.api import make_scanner_server
+        from src.radar.store import ScannerStore
+
+        self.temp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temp.cleanup)
+        store = ScannerStore(Path(self.temp.name) / "scanner.sqlite")
+        self.server = make_scanner_server(store, port=0, chains_config=None)
+        self.thread = threading.Thread(target=self.server.serve_forever, daemon=True)
+        self.thread.start()
+        self.addCleanup(self.close)
+        self.url = f"http://127.0.0.1:{self.server.server_port}"
+
+    def close(self):
+        self.server.shutdown()
+        self.server.server_close()
+        self.thread.join()
+
+    def fetch(self, path):
+        with urlopen(self.url + path) as response:
+            return response.headers.get("Content-Type"), response.read().decode()
+
+    def test_html_is_markup_not_json(self):
+        content_type, body = self.fetch("/")
+        self.assertTrue(content_type.startswith("text/html"))
+        self.assertTrue(body.startswith("<!doctype html>"))
+        self.assertNotIn('\\"', body)
+        self.assertIn('<script src="/app.js"></script>', body)
+
+    def test_app_js_is_executable(self):
+        content_type, body = self.fetch("/app.js")
+        self.assertTrue(content_type.startswith("text/javascript"))
+        self.assertTrue(body.startswith("const state = {"))
+        self.assertNotIn('\\n', body)
+
+    def test_style_css_is_plain_css(self):
+        content_type, body = self.fetch("/style.css")
+        self.assertTrue(content_type.startswith("text/css"))
+        self.assertTrue(body.startswith("body{"))
+
+    def test_json_endpoints_stay_json(self):
+        content_type, body = self.fetch("/api/v1/scanner/chains")
+        self.assertTrue(content_type.startswith("application/json"))
+        import json
+        self.assertIn("chains", json.loads(body))

@@ -74,3 +74,52 @@ class LiveCliTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class PerChainGateTests(unittest.TestCase):
+    """X10.8: the shadow gate is evaluated per chain, never as one merged pool."""
+
+    def test_chains_command_reports_one_gate_per_chain(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            db = str(Path(tmp) / "scanner.sqlite")
+            store = ScannerStore(db)
+            store.append("shadow_close", "0xaaa", {"chain": "bsc", "token": "0xaaa", "pnl_quote": 10.0,
+                                                   "quote_amount": 100.0, "latency_seconds": 1.0}, 100.0, 100.0)
+            store.append("shadow_close", "0xbbb", {"chain": "robinhood", "token": "0xbbb", "pnl_quote": -5.0,
+                                                   "quote_amount": 100.0, "latency_seconds": 1.0}, 101.0, 101.0)
+            from scripts.run_scanner import main
+
+            with contextlib.redirect_stdout(io.StringIO()) as buffer:
+                code = main(["chains", "--db", db])
+            payload = json.loads(buffer.getvalue())
+            self.assertEqual(0, code)
+            self.assertEqual(2, len(payload["chains"]))
+            self.assertEqual(1, payload["chains"]["bsc"]["trades"])
+            self.assertEqual(1, payload["chains"]["robinhood"]["trades"])
+            self.assertEqual("insufficient_trades", payload["chains"]["bsc"]["reason_codes"][0])
+            self.assertFalse(payload["trading_enabled"])
+
+    def test_chains_command_filters_by_chain(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            db = str(Path(tmp) / "scanner.sqlite")
+            ScannerStore(db).append("shadow_close", "0xaaa", {"chain": "bsc", "token": "0xaaa", "pnl_quote": 1.0,
+                                                               "quote_amount": 10.0, "latency_seconds": 0.5}, 1.0, 1.0)
+            from scripts.run_scanner import main
+
+            with contextlib.redirect_stdout(io.StringIO()) as buffer:
+                main(["chains", "--db", db, "--chain", "robinhood"])
+            payload = json.loads(buffer.getvalue())
+            self.assertNotIn("bsc", payload["chains"])
+
+    def test_records_from_store_filters_by_chain(self):
+        from src.shadow.report import records_from_store
+
+        with tempfile.TemporaryDirectory() as tmp:
+            store = ScannerStore(str(Path(tmp) / "scanner.sqlite"))
+            store.append("shadow_close", "0xaaa", {"chain": "bsc", "token": "0xaaa", "pnl_quote": 1.0,
+                                                   "quote_amount": 10.0, "latency_seconds": 0.5}, 1.0, 1.0)
+            store.append("shadow_close", "0xbbb", {"chain": "sol", "token": "0xbbb", "pnl_quote": 2.0,
+                                                   "quote_amount": 10.0, "latency_seconds": 0.5}, 2.0, 2.0)
+            self.assertEqual(1, len(records_from_store(store, chain="sol")))
+            self.assertEqual(2, len(records_from_store(store)))
+            self.assertEqual("sol", records_from_store(store, chain="sol")[0]["chain"])

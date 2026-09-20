@@ -8,6 +8,7 @@ import json
 import os
 from pathlib import Path
 import sys
+import time
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
@@ -158,6 +159,33 @@ def command_report(args) -> int:
     return 0 if gate.verdict == "pass" else 2
 
 
+def command_chains(args) -> int:
+    """Per-chain shadow gate table: each chain must pass on its own before it gets real money."""
+    from src.radar.api import chain_statuses, load_declared_chains
+
+    store = ScannerStore(args.db)
+    declared = load_declared_chains(args.chains_config) if args.chains_config else []
+    declared_chains = [item["chain"] for item in declared]
+    observed = [row["chain"] for row in store.chain_activity()]
+    chains = sorted(set(declared_chains) | set(observed))
+    if args.chain:
+        chains = [chain for chain in chains if chain in set(args.chain)]
+    report = {}
+    for chain in chains:
+        records = records_from_store(store, chain=chain)
+        report[chain] = build_gate_report(records, ShadowGateConfig()).to_dict()
+    statuses = {row["chain"]: row["status"] for row in chain_statuses(store, declared=declared)}
+    payload = {
+        "as_of": time.time(),
+        "trading_enabled": False,
+        "chains": {chain: {**gate, "source_status": statuses.get(chain, "idle")}
+                   for chain, gate in report.items()},
+        "note": "每链独立闸门；单链通过只允许该链进入小资金实盘，ENABLE_TRADING 仍保持 false。",
+    }
+    print(json.dumps(payload, ensure_ascii=False, indent=2))
+    return 0
+
+
 def command_live_check(args) -> int:
     from src.decision.live_gate import LiveGateConfig, evaluate_live_gate
 
@@ -223,6 +251,11 @@ def main(argv=None) -> int:
     report = sub.add_parser("report", help="Compute shadow gate + per-filter attribution from a scanner DB")
     report.add_argument("--db", required=True)
     report.set_defaults(func=command_report)
+    chains = sub.add_parser("chains", help="Per-chain shadow gate table (one gate per chain)")
+    chains.add_argument("--db", required=True)
+    chains.add_argument("--chain", action="append", default=[], help="Limit to specific chains (repeatable)")
+    chains.add_argument("--chains-config", help="Optional config/chains.json path for declared chains")
+    chains.set_defaults(func=command_chains)
     live_check = sub.add_parser("live-check", help="Evaluate the live gate against stored shadow records")
     live_check.add_argument("--db", required=True)
     live_check.add_argument("--enabled", action="store_true")

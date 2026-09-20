@@ -77,12 +77,13 @@ def build_gate_report(records: list[dict], config: ShadowGateConfig | None = Non
                             "pass" if not reasons else "reject", tuple(reasons))
 
 
-def records_from_store(store) -> list[dict]:
+def records_from_store(store, chain: str | None = None) -> list[dict]:
     """Reconstruct gate inputs from shadow_close records written by ShadowTracker."""
     records = []
-    for row in store.rows("shadow_close", limit=10_000):
+    for row in store.rows("shadow_close", limit=10_000, chain=chain):
         payload = row.get("payload") or {}
         records.append({
+            "chain": payload.get("chain"),
             "token": payload.get("token") or row.get("entity"),
             "pnl_quote": float(payload.get("pnl_quote", 0.0)),
             "quote_amount": float(payload.get("quote_amount", 0.0)),

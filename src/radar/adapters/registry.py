@@ -24,6 +24,9 @@ class LaunchpadSpec:
     enabled: bool = False
     family: str = "evm"
     source: str | None = None
+    # GMGN platform slug this contract belongs to, so discovery filters and launch records can
+    # be attributed back to a named platform instead of a bare address.
+    platform: str | None = None
 
     def __post_init__(self):
         if self.fact_status not in FACT_STATUSES:
