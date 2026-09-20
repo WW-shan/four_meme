@@ -265,9 +265,27 @@ Stable：GMGN 0 token，链上只发现 `PumperTokenStandalone` 代币实现，�
 
 ## 仍然看不到的（无公开来源，继续保持 blocked）
 
-BSC：`goplus_creator`（GoPlus 侧没有公开合约）、`four_xmode_agent`。
-Base：`basememe`、`baseapp`（GMGN 平台枚举里有，但没有官方合约页；且 Base 免费 RPC 无 archive 窗口，无法用日志反查）。
-Robinhood：`motion`、`holoworld`（HoloLaunch）、`circus`（BONK）、`dyorswap`、`arrowfinance`、`bags`、`flap` 等——Dedaub 的检测表确认它们存在，但没有公开合约地址。
-Solana：`bonkers`（无可核实的官方 program id）。
+这一轮结束后仍然拿不到官方合约地址的，只剩下面这些。它们不是“探测失败”，而是**没有公开来源可查**，因此不写猜测地址：
 
-这些条目继续不写猜测地址；一旦出现官方合约页或提供 GMGN API key，可以按同一套 harness 直接补测。
+| 链 | 平台 | 为什么还看不到 |
+|---|---|---|
+| BSC | `goplus_creator` | GoPlus 侧没有公开工厂合约（SafuSkill 已证明走 Four.meme） |
+| BSC | `four_xmode_agent` | GMGN 列为独立平台，但 Four.meme 官方没有公开该合约 |
+| Base | `basememe`、`baseapp` | GMGN 平台枚举里有，但没有官方合约页；Base 免费 RPC 无 archive，无法用日志反查 |
+| Robinhood | `motion`、`holoworld`(HoloLaunch)、`circus`(BONK)、`dyorswap`、`arrowfinance`、`arena` | Dedaub 的检测表确认平台存在，但没有公开合约地址；Robinhood 只有单一 RPC，无法全链反查 |
+| Robinhood | `hyper.meme`、`lunch.fun`、`memecoin.fun`、`mintfast`、`lemon.fun`、`launchhood`、`leavehood`、`oro`、`pmav.fun`、`potato.fm` 等 | 只出现在 Dedaub 的检测表里，不在 GMGN 默认 allow-list，也没有公开合约地址 |
+| Solana | `bonkers` | 没有可核实的官方 program id |
+| Ethereum | `printr` | printr 文档只给 Robinhood 地址，没有 ETH 部署表 |
+| Arc | 其余发射台 | GMGN 对 arc 不加平台过滤，链上只核实到 Uniswap V4 PoolManager 与 LiquidityLauncher |
+| Stable | 其余发射台 | pew.fun 的 Stable 部署已核实有代码；Stable RPC 只允许约 1,000 区块窗口，无法证明历史事件 |
+
+**合计：152 个目标里，108 个 VERIFIED-LIVE、13 个 HISTORICAL、28 个 CODE-ONLY、3 个 FAILED。**
+真正的“看不到”是上表这些（无公开来源）；`CODE-ONLY` 里有一部分只是免费 RPC 窗口太窄（BSC 约 5,000 区块、Base 2,000 区块、Stable 1,000 区块），换成付费 archive key 就能收紧判定。
+
+一旦出现官方合约页，或提供 GMGN API key，可以按同一套 harness 直接补测：
+
+```bash
+python3 scripts/verify_live.py --chain <chain>            # 全部目标
+python3 scripts/verify_live.py --chain <chain> --span N   # 覆盖窗口
+python3 scripts/verify_live.py --all                      # 9 条链
+```

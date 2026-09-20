@@ -298,13 +298,13 @@
       "blocked": [
         {
           "platform": "cubepeg",
-          "blocked_reason": "链上/官方页面核实：cubepeg 是 Four.meme 的 UniToken NFT 发射模式（four.meme 代币页标注“模式Cubepeg发射”，cubepeg.com 为 Cubus×Four.meme 的 NFT 索引前端），没有独立工厂合约",
+          "blocked_reason": "链上/官方页面核实：cubepeg 是 Four.meme 的 UniToken NFT 发射模式（four.meme 代币页标注“模式Cubepeg发射”，cubepeg.com 是 Cubus×Four.meme 的 NFT 索引前端），没有独立工厂合约",
           "next_step": "已由 fourmeme_token_manager 覆盖；候选地址 0x60a2dfa7… 仅命中泛用 Launchpad 合约（0 事件），不采用"
         },
         {
           "platform": "goplus_creator",
-          "blocked_reason": "缺少有来源的工厂地址",
-          "next_step": "同上"
+          "blocked_reason": "GoPlus 侧没有公开工厂合约；已证明 SafuSkill（goplus_skills）代币走 Four.meme TokenManager2",
+          "next_step": "需要 GoPlus 官方合约页或 GMGN API key 反查发射交易"
         },
         {
           "platform": "lunafun",
@@ -313,8 +313,8 @@
         },
         {
           "platform": "four_xmode_agent",
-          "blocked_reason": "缺少有来源的工厂地址",
-          "next_step": "同上"
+          "blocked_reason": "缺少有来源的工厂地址；GMGN 把它列为独立平台",
+          "next_step": "先查 Four.meme 官方文档是否公开 xmode agent 合约，再上链核实"
         }
       ],
       "notes": "BSC 免费公共 RPC（bsc-rpc.publicnode.com / bsc.publicnode.com）拒绝无地址过滤的 eth_getLogs，并把更大的区块窗口判定为 archive 请求要求个人 token；实测可用窗口约 5,000 区块（约 1 小时）。因此低频 BSC 平台在窗口内为 CODE-ONLY 属于工具窗口限制，不等于平台不存在。"
@@ -506,24 +506,14 @@
       ],
       "blocked": [
         {
-          "platform": "trench",
-          "blocked_reason": "缺少有来源的工厂地址",
-          "next_step": "从官方渠道核实合约后加入"
-        },
-        {
-          "platform": "livo",
-          "blocked_reason": "缺少有来源的工厂地址",
-          "next_step": "同上"
-        },
-        {
-          "platform": "stroid",
-          "blocked_reason": "缺少有来源的工厂地址",
-          "next_step": "同上"
-        },
-        {
           "platform": "printr",
-          "blocked_reason": "缺少有来源的工厂地址",
-          "next_step": "同上"
+          "blocked_reason": "Robinhood 侧的 printr protocol 已核实；Ethereum 侧没有官方部署表（printr 文档只给 Robinhood 地址）",
+          "next_step": "等 printr 公开多链部署表，或在提供 API key 后用 GMGN 反查 ETH 发射交易"
+        },
+        {
+          "platform": "stroid（v1/v2 之外的旧版）",
+          "blocked_reason": "官方前端只列出 launchpad v1/v2/v3 与 feeHook v1/v2/v3，均已列入 targets 并核实",
+          "next_step": "如出现新版本，按同一 harness 补测"
         }
       ],
       "notes": "公共 RPC 免费层限制 10,000 区块（archive 需个人 token）；harness 会把请求窗口缩到可用跨度并记录。"
@@ -718,12 +708,12 @@
       "blocked": [
         {
           "platform": "basememe",
-          "blocked_reason": "缺少有来源的工厂地址",
-          "next_step": "同上"
+          "blocked_reason": "GMGN 平台枚举里有 basememe，但没有官方合约页；Base 免费公共 RPC 不提供 archive eth_getLogs，无法用日志反查地址",
+          "next_step": "需要官方合约页，或付费 archive RPC / GMGN API key"
         },
         {
-          "platform": "virtuals_v2",
-          "blocked_reason": "缺少有来源的工厂地址",
+          "platform": "baseapp",
+          "blocked_reason": "同上：没有官方合约页，且无法用日志反查",
           "next_step": "同上"
         },
         {
@@ -1406,12 +1396,42 @@
         {
           "platform": "gmgn_robinhood_discovery",
           "blocked_reason": "GMGN openapi 需要个人 API key（本地未配置）",
-          "next_step": "用户提供 GMGN_API_KEY 后可只读验证 27 个平台"
+          "next_step": "用户提供 GMGN_API_KEY 后可只读验证 27 个平台并交叉核对 allow-list 之外的平台"
         },
         {
-          "platform": "doppler (Robinhood)",
-          "blocked_reason": "已找到官方部署表并列入 targets；本轮验证结果见 report",
-          "next_step": "若窗口内无事件，需扩大窗口或换 RPC"
+          "platform": "motion",
+          "blocked_reason": "Dedaub Tok{In} 检测表确认该平台存在，但没有公开合约地址；Robinhood 只有单一 RPC，无法用全链日志反查",
+          "next_step": "需要官方合约页，或提供 archive RPC / GMGN API key"
+        },
+        {
+          "platform": "holoworld (HoloLaunch)",
+          "blocked_reason": "Holoworld 官网只有 app 入口，没有合约页；Robinhood 与 BSC 均无公开部署表",
+          "next_step": "同上"
+        },
+        {
+          "platform": "circus (BONK)",
+          "blocked_reason": "媒体报道确认 Circus 是 BONK 在 Robinhood 上的发射台，但没有公开合约地址",
+          "next_step": "同上"
+        },
+        {
+          "platform": "dyorswap",
+          "blocked_reason": "没有公开合约页（DYOR.fun 已核实，dyorswap 是另一个产品）",
+          "next_step": "同上"
+        },
+        {
+          "platform": "arrowfinance",
+          "blocked_reason": "没有公开合约页（ArrowPad 已核实，arrowfinance 是另一个产品）",
+          "next_step": "同上"
+        },
+        {
+          "platform": "arena",
+          "blocked_reason": "Dedaub 检测表把它列为 Avalanche + Robinhood 平台，但没有公开合约地址",
+          "next_step": "同上"
+        },
+        {
+          "platform": "hyper.meme / lunch.fun / memecoin.fun / mintfast / lemon.fun / launchhood / leavehood / oro / pmav.fun / potato.fm / coinbarrel(BSC) / sushi",
+          "blocked_reason": "这些平台只出现在 Dedaub 的 Launchpad Detection 表里，不在 GMGN 的默认 allow-list 中，且都没有公开合约地址",
+          "next_step": "按 Dedaub slug 逐个找官方站点合约页；找到后按同一 harness 补测"
         }
       ],
       "notes": "RPC 有 429 限流；harness 已加重试退避。2000 区块约 5–6 分钟。"
@@ -1458,8 +1478,8 @@
       "blocked": [
         {
           "platform": "arc_launchpads",
-          "blocked_reason": "GMGN 只有通用 swap/limit order；无默认平台清单，未发现已核实的发射台地址",
-          "next_step": "用链上日志发现活跃合约后核实"
+          "blocked_reason": "GMGN 对 arc 没有默认平台 allow-list（服务端不加过滤）；链上只核实到 Uniswap V4 PoolManager 与 LiquidityLauncher",
+          "next_step": "用链上日志发现更多活跃工厂后按地址核实"
         }
       ]
     },
@@ -1493,8 +1513,8 @@
       "blocked": [
         {
           "platform": "stable_launchpads",
-          "blocked_reason": "getLogs 上限 1024 区块；GMGN 探测 0 token",
-          "next_step": "只读观察，不投入开发"
+          "blocked_reason": "pew.fun 的 Stable 部署已列入 targets（有代码、窗口内 0 事件）；Stable RPC 的 eth_getLogs 只允许约 1,000 区块窗口，无法证明历史事件",
+          "next_step": "需要付费 archive RPC 或 GMGN API key 才能收紧判定"
         }
       ]
     },
@@ -1540,8 +1560,8 @@
       "blocked": [
         {
           "platform": "hyperevm_dex",
-          "blocked_reason": "主网 RPC 对无过滤 getLogs 有响应体 1MB 限制；工厂地址未核实",
-          "next_step": "先按地址核实 HyperSwap/KittenSwap 工厂，再做日志探测"
+          "blocked_reason": "HyperSwap V3 工厂与 PositionManager 已核实；其余 DEX（KittenSwap 等）没有公开部署表",
+          "next_step": "找到官方部署表后按同一 harness 补测"
         }
       ]
     },
@@ -1655,9 +1675,9 @@
       ],
       "blocked": [
         {
-          "platform": "bags",
-          "blocked_reason": "程序 ID 未核实",
-          "next_step": "同上"
+          "platform": "bonkers",
+          "blocked_reason": "GMGN 平台枚举里有 bonkers，但没有可核实的官方 program id",
+          "next_step": "需要官方文档或链上反查；找到后按同一 harness 补测"
         }
       ]
     }
