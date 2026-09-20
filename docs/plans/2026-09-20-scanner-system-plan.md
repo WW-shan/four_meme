@@ -9,14 +9,14 @@ Owner：Codex。执行方式：串行阶段（P0 → P9），每个阶段完成�
 |---|---|---|---|
 | P0 数据口径 | ✅ 完成 | 主题注册表、v1/v2 严格解码、LiquidityAdded 毕业、报价分类、买卖 minOut、received_at、dataset quote 守卫、tests/core discover 修复 | — |
 | P1 雷达+快照 | 🟡 运行时就绪 | `src/radar/`（store/events/collector/api/solana/pipeline）、`src/safety/fetchers.py`、`src/safety/snapshot.py`、CLI `radar/serve`、`tools/collect_continuous.py` 的 `SCANNER_ENABLED` 只读接入 | 真实 provider 抓取需个人 key |
-| P2 安全过滤 | 🟡 代码完成 | `src/safety/filters.py`（13 个过滤器）、orchestrator、ScannerConfig 阈值、fail-closed、学习模式 | 用真实快照填充并跑 2–4 周归因 |
-| P3 钱包流 | 🟡 代码完成 | `src/walletflow/`（scoring/pipeline/registry/gmgn）、scout score n≥30、净流入、deployer、bundle cohort | GMGN 凭据下的实盘摄取 |
+| P2 安全过滤 | 🟡 数据待积累 | `src/safety/filters.py`（13 个过滤器）、orchestrator、ScannerConfig 阈值、fail-closed、学习模式、`src/safety/attribution.py` 过滤器归因 | 用真实快照填充并跑 2–4 周归因 |
+| P3 钱包流 | 🟡 凭据待接入 | `src/walletflow/`（scoring/pipeline/registry/gmgn + GmgnOpenApiClient）、scout score n≥30、净流入、deployer、bundle cohort | 个人 GMGN key 下的实盘摄取 |
 | P4 决策层 | ✅ 完成 | `src/decision/engine.py` 规则、reason codes、过期、风险预算 | — |
 | P5 影子执行 | 🟡 代码完成 | `src/shadow/`（executor/exits/tracker/report）、TP 阶梯/止损/追踪/时间/rug/熔断 | 2–4 周影子运行数据 |
 | P6 看板/API | ✅ 完成 | `src/radar/api.py` 只读 API + 三视图看板（即时发现/严格深审/影子跟踪）、CLI `serve` | — |
 | P7 验证闸门 | 🟡 数据待积累 | `src/shadow/report.py` 指标与闸门判定、`records_from_store`、CLI `gate --db` | 2–4 周真实影子数据 |
 | P8 实盘闸门 | 🟡 代码完成 | `src/decision/live_gate.py` 默认关闭、需影子通过+操作者确认 | 用户明确授权与小额实盘 |
-| P9 多链 | 🟡 适配层 | `src/radar/solana.py` 归一化与校验 | Geyser/Jito 实盘接入与凭据 |
+| P9 多链 | 🟡 适配层 | `src/radar/solana.py` 归一化、校验与 `SolanaStreamAdapter` 异步消费 | Geyser/Jito 实盘接入与凭据 |
 
 - 设计依据：`docs/plans/2026-09-20-scanner-system-design.md`
 - 海外实盘终端：`docs/research/20260920-dogbot-architecture/live-products.md`
@@ -302,6 +302,8 @@ LIVE_TRADING_ENABLED=false            # 与现有 ENABLE_TRADING 分离
 - 待运行/阻塞：真实 provider 凭证、2–4 周影子数据、BSC 私有通道收益验证、Solana Geyser/Jito 实盘接入、用户明确授权的小额实盘。
 - 2026-09-20：补齐运行时接线：`tools/collect_continuous.py` 增加 `SCANNER_ENABLED` 只读扫描开关（默认关闭）；`src/radar/pipeline.py` 串起雷达→快照→安全报告→决策→影子；scanner 看板三视图与 `/api/v1/scanner/{launches,graduations,safety,decisions,shadow}`；`records_from_store` + `gate --db` 直接用影子库评估闸门。
 - 验证：`PYTHON_DOTENV_DISABLED=1 python3 -m unittest discover` = 1474 tests, 1 skipped, 0 failures；`tests/scanner/` = 59 tests。
+- 2026-09-20：补齐归因与闸门工具链：`src/safety/attribution.py`（按过滤器 join 影子 PnL）、`GmgnOpenApiClient`（个人 key 下的聪明钱交易解析）、`SolanaStreamAdapter`（异步消费已解码 Solana launch 事件）、CLI `report`（闸门 + 归因）与 `live-check`（实盘闸门判定）。
+- 验证（最终）：`PYTHON_DOTENV_DISABLED=1 python3 -m unittest discover` = 1476 tests, 1 skipped, 0 failures；`tests/scanner/` = 66 tests。
 
 ## 10. Scoreboard 收口
 

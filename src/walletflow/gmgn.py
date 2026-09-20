@@ -39,3 +39,32 @@ class GmgnWalletClient:
         payload = self.client.wallet_trades(address, limit=limit)
         rows = payload.get("data", {}).get("list", []) if isinstance(payload, Mapping) else []
         return parse_trade_rows(rows, label=label)
+
+
+class GmgnOpenApiClient:
+    """Minimal live client for GMGN smart-money trades (personal API key required)."""
+
+    def __init__(self, api_key: str, session=None, base_url: str = "https://openapi.gmgn.ai"):
+        self.api_key = api_key
+        self.session = session
+        self.base_url = base_url
+
+    def wallet_trades(self, address: str, *, limit: int = 100, chain: str = "bsc") -> list[WalletEvent]:
+        if not self.api_key or self.session is None:
+            return []
+        response = self.session.get(
+            f"{self.base_url}/v1/user/smartmoney",
+            params={"chain": chain, "limit": limit},
+            headers={"X-APIKEY": self.api_key, "User-Agent": "meme-scanner/1.0"},
+            timeout=20,
+        )
+        if getattr(response, "status_code", None) != 200:
+            return []
+        try:
+            payload = response.json()
+        except Exception:
+            return []
+        rows = ((payload or {}).get("data") or {}).get("list") or []
+        if address:
+            rows = [row for row in rows if str(row.get("maker", "")).lower() == address.lower()]
+        return parse_trade_rows(rows, label="smart")

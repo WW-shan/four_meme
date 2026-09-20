@@ -16,6 +16,7 @@ from config.scanner_config import ScannerConfig  # noqa: E402
 from src.radar.api import make_scanner_server  # noqa: E402
 from src.radar.events import launch_from_event  # noqa: E402
 from src.radar.store import ScannerStore  # noqa: E402
+from src.safety.attribution import build_attribution  # noqa: E402
 from src.safety.orchestrator import build_report  # noqa: E402
 from src.shadow.executor import shadow_buy, shadow_sell  # noqa: E402
 from src.shadow.report import ShadowGateConfig, build_gate_report, records_from_store  # noqa: E402
@@ -84,6 +85,27 @@ def command_gate(args) -> int:
     return 0 if report.verdict == "pass" else 2
 
 
+def command_report(args) -> int:
+    store = ScannerStore(args.db)
+    records = records_from_store(store)
+    gate = build_gate_report(records, ShadowGateConfig())
+    print(json.dumps({"gate": gate.to_dict(), "attribution": build_attribution(store)},
+                     ensure_ascii=False, indent=2))
+    return 0 if gate.verdict == "pass" else 2
+
+
+def command_live_check(args) -> int:
+    from src.decision.live_gate import LiveGateConfig, evaluate_live_gate
+
+    store = ScannerStore(args.db)
+    gate = build_gate_report(records_from_store(store), ShadowGateConfig())
+    result = evaluate_live_gate(
+        LiveGateConfig(enabled=args.enabled, operator_confirmed=args.confirmed), gate)
+    print(json.dumps({"shadow_gate": gate.to_dict(), "live_gate": {
+        "allowed": result.allowed, "reason_codes": list(result.reason_codes)}}, ensure_ascii=False, indent=2))
+    return 0 if result.allowed else 2
+
+
 def command_serve(args) -> int:
     store = ScannerStore(args.db)
     server = make_scanner_server(store, args.host, args.port)
@@ -116,6 +138,14 @@ def main(argv=None) -> int:
     gate.add_argument("--records", help="Closed trades JSON file")
     gate.add_argument("--db", help="Scanner SQLite database with shadow_close records")
     gate.set_defaults(func=command_gate)
+    report = sub.add_parser("report", help="Compute shadow gate + per-filter attribution from a scanner DB")
+    report.add_argument("--db", required=True)
+    report.set_defaults(func=command_report)
+    live_check = sub.add_parser("live-check", help="Evaluate the live gate against stored shadow records")
+    live_check.add_argument("--db", required=True)
+    live_check.add_argument("--enabled", action="store_true")
+    live_check.add_argument("--confirmed", action="store_true")
+    live_check.set_defaults(func=command_live_check)
     serve = sub.add_parser("serve", help="Serve the read-only scanner API")
     serve.add_argument("--db", default="data/scanner/evidence.sqlite")
     serve.add_argument("--host", default="127.0.0.1")
