@@ -289,3 +289,70 @@ python3 scripts/verify_live.py --chain <chain>            # 全部目标
 python3 scripts/verify_live.py --chain <chain> --span N   # 覆盖窗口
 python3 scripts/verify_live.py --all                      # 9 条链
 ```
+
+---
+
+# 第四轮（2026-09-21）：先确认平台是否存在，再找合约
+
+上一轮把查不到地址的平台统一留在 blocked。这一轮按“**先搜网络确认平台到底存不存在；不存在就忽略；存在就继续找地址**”重做了一遍。
+
+## 第一步：存在性核查
+
+逐个平台查官方站点 / X / 媒体，再直接访问域名看有没有真实产品。
+
+**确认存在，并已找到合约地址：**
+
+| 平台 | 存在性证据 | 拿到的合约 |
+|---|---|---|
+| hyper.meme | 官网标题就是 “hyper.meme — The Robinhood Chain Launchpad” | 前端配置里直接给出 Robinhood（chain 4663）的 `factoryV4 0x08a95be2…`、`curveImplV4`、`lockerV4`，以及 HyperEVM 的 `factory 0x2b593d68…` |
+| pmav.fun | 官网 “Fair Launch Memecoin Launchpad on Robinhood Chain”，页面内联配置自带 “code-verified on chain 4663” | `HOOK 0x97472ae1…`、`HOOK_V22 0x2d0e12fe…`、`FLYWHEEL.FACTORY 0xdbe590c9…` |
+| circus | BONK 官方 X 与 Chainwire/币安广场报道确认 Circus 上线 Robinhood Chain | 前端合约表：`barcusLaunchpad 0xb7fa26c6…`、`barcusLocker 0xa256bc02…`、`circusLens` |
+| lunch.fun | 官网 “fair launch coins on Robinhood Chain” | 前端 ADDR 表：`launcher 0xf5ac14e7…`、`pairLauncher 0x568e12b3…`、`v4Launcher 0xc783221a…`、`v4PairHook 0x4eb19769…` |
+| memecoin.fun | 官网 “memecoin.fun is a fully fair and automatic launchpad for memecoin” | chainId 4663 段：`launchFactory 0x5b5e19d6…`、`locker 0x577eabda…` |
+| potato.fm | 官网 “PotatoPad: plant a coin, live on Uniswap V3” | 前端配置：`padAddress 0x88bb90a9…`、`curvePadAddress 0xbe2acd90…` |
+| lemon.fun | 官网 “Lemon.fun - Launch Tokens on Robinhood Chain” | 前端配置：lemon 发射后建池用的 Sushi V3 工厂 `0xe51960f1…`（另有公开 API `/api/public/launchpad/*`，但 token deployer 只在服务端） |
+| Coinbarrel（Arc + BSC） | `docs.coinbarrel.com` 有独立的 Arc / BSC 部署登记表 | Arc `Launcher 0x80c7a448…`（Hook V5 在 Arc 主网开放）；BSC `Launcher 0x7e086b1f…`（文档注明合约已上线但应用准入暂停、尚无 BSC 代币） |
+| arrowfinance | `arrowfinance.io` 是 Robinhood Chain 上的 CDP 借贷协议 | 它自己的 “Launchpad” 入口就是已核实的 ArrowPad，不需要再单独接 |
+
+**核查后确认不存在 / 不是发射台，直接忽略：**
+
+| 平台 | 核查结果 |
+|---|---|
+| motion | `motion.fun` 是 GoDaddy 建站器上的 “Launching Soon” 占位页（版权 2024），没有任何产品、合约或链上活动 |
+| dyorswap | `dyorswap.fun` 无法解析，`dyorswap.com` 在售，`dyorswap.io` 返回 SSL 525 |
+| mintfast | `mintfast.fun` 无法解析，`mintfast.xyz` 只有 114 字节空页 |
+| launchhood / leavehood | `.fun` 与 `.xyz` 都无法解析 |
+| oro | `oro.fun` 是 Telegram 上的预测市场（“Oro — Yes or No. Predict and Win”），`oro.xyz` 是待售域名 |
+| sushi | Dedaub 把它列为发射平台，但 Sushi 是 DEX；Robinhood 上 lemon.fun 用的就是 Sushi V3 工厂，已并入 lemon.fun 条目 |
+
+**确认存在但确实没有公开合约地址（继续 blocked）：**
+
+| 平台 | 为什么还拿不到 |
+|---|---|
+| holoworld (HoloLaunch) | 官方 X 2026-07-15 宣布上线 Robinhood Chain，Binance Square 也有报道；但官网与 `docs.holoworld.com` 的全量目录（llms.txt）里都没有合约页 |
+| arena | `arena.exchange` 能打开，但页面内没有任何 chain 4663 配置或合约地址；Dedaub 把它列为 Avalanche + Robinhood 平台 |
+
+## 第二步：上链核实
+
+所有新地址都跑了一遍真实 RPC，结果（Robinhood 新增 17 个目标）：
+
+| 目标 | 结果 |
+|---|---|
+| hyper.meme factoryV4 | VERIFIED-LIVE，5,500 万区块内 7 条事件 |
+| hyper.meme curveImplV4 | HISTORICAL（实现合约，from-genesis 证明有事件，自身不直接发日志） |
+| pmav HOOK / HOOK_V22 / FLYWHEEL | VERIFIED-LIVE（最近一次约 2 天前） |
+| circus barcusLaunchpad | VERIFIED-LIVE，500 万区块内 1,621 条事件（最近约 5.7 天前） |
+| circus barcusLocker | VERIFIED-LIVE，2,500 万区块内 8 条事件 |
+| circus circusLens | CODE-ONLY（只读聚合合约，不发事件） |
+| lunch launcher / pairLauncher / v4Launcher / v4PairHook | 全部 VERIFIED-LIVE，其中 `v4PairHook` 最近一次约 2 小时前 |
+| memecoin.fun factory / locker | VERIFIED-LIVE（最近约 6 天前） |
+| potato padAddress / curvePadAddress | VERIFIED-LIVE |
+| lemon.fun V3 工厂 | VERIFIED-LIVE，500 万区块内 43 条 `PoolCreated` |
+| Coinbarrel Arc Launcher | HISTORICAL（from-genesis 查询被拒，证明发过事件） |
+| Coinbarrel BSC Launcher | CODE-ONLY —— 与官方文档“合约已上线但应用准入暂停、尚无 BSC 代币”完全一致 |
+| hyper.meme HyperEVM factory | HISTORICAL；HyperEVM 公共 RPC 拒绝大区块跨度，只能用小窗口 |
+
+## 本轮工具与配置改动
+
+- `config/live_targets.json`：Robinhood 目标从 69 增至 86，新增 Arc 的 Coinbarrel、BSC 的 Coinbarrel、HyperEVM 的 hyper.meme；blocked 列表改成两类——“存在但无公开来源”与“核查确认不存在/不是发射台，忽略”。
+- 新增测试 `LiveTargetConfigTests`：每个目标必须有地址和来源，每条 blocked 必须写明原因与下一步，并断言本轮确认不存在的平台确实被记录为“忽略”。

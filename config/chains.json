@@ -55,7 +55,9 @@
       "native": "USDC",
       "gmgn_supported": true,
       "enabled": false,
-      "platforms": [],
+      "platforms": [
+        "coinbarrel"
+      ],
       "launchpads": [
         {
           "name": "uniswap_v4_pool_manager",
@@ -80,6 +82,15 @@
           "enabled": false,
           "family": "evm",
           "source": "developers.uniswap.org/docs/liquidity/liquidity-launchpad/deployments（Uniswap 官方部署表）；LBPStrategy v3.3.0（Arc）；live-verify 2026-09-21：代码存在但 20 区块窗口内无事件（code-only）"
+        },
+        {
+          "name": "coinbarrel_launcher_arc",
+          "address": "0x80c7a44817ac4bfa0ce9241386791157e7fd9544",
+          "fact_status": "unverified",
+          "enabled": false,
+          "family": "evm",
+          "platform": "coinbarrel",
+          "source": "docs.coinbarrel.com/developers/arc-contract-addresses（官方部署登记表：Launcher，Hook V5 在 Arc 主网开放，activation block 20494577）；live-verify 2026-09-21：from-genesis 查询被拒（匹配日志过多）证明历史上发射过事件；最近窗口内 0 条"
         }
       ]
     },
@@ -300,7 +311,8 @@
         "clanker",
         "lunafun",
         "pool_uniswap",
-        "pool_pancake"
+        "pool_pancake",
+        "coinbarrel"
       ],
       "launchpads": [
         {
@@ -486,6 +498,15 @@
           "enabled": false,
           "family": "evm",
           "source": "clanker.gitbook.io/documentation/references/deployed-contracts（官方部署表）；文档标注 Binance: 97（BSC 56 上待核实）；live-verify 2026-09-21：read-verified（owner()=0xf0b0d6cca326e48008, TOKEN_SUPPLY()=10000000000000000000）"
+        },
+        {
+          "name": "coinbarrel_launcher_bsc",
+          "address": "0x7e086b1fff3db54ab26ca0a8304dd83577f958e8",
+          "fact_status": "unverified",
+          "enabled": false,
+          "family": "evm",
+          "platform": "coinbarrel",
+          "source": "docs.coinbarrel.com/developers/bsc-contract-addresses（官方部署登记表：Launcher；文档注明合约已上线但应用准入暂停、尚无 BSC 代币）；live-verify 2026-09-21：代码存在但窗口内 0 事件（code-only）"
         }
       ]
     },
@@ -647,7 +668,9 @@
       "native": "HYPE",
       "gmgn_supported": true,
       "enabled": false,
-      "platforms": [],
+      "platforms": [
+        "hyper.meme"
+      ],
       "launchpads": [
         {
           "name": "hyperswap_v3_factory",
@@ -664,6 +687,15 @@
           "enabled": false,
           "family": "evm",
           "source": "docs.hyperswap.exchange/docs/amm/contracts/hyper-evm/v3/（Non-fungible Position Manager）；live-verify 2026-09-21：代码存在但 20 区块窗口内无事件（code-only）"
+        },
+        {
+          "name": "hyper_meme_factory",
+          "address": "0x2b593d685de902f215b04dbb1bf225dc65126597",
+          "fact_status": "unverified",
+          "enabled": false,
+          "family": "evm",
+          "platform": "hyper.meme",
+          "source": "hyper.meme 官方前端配置（chain 999：factory，factoryStartBlock=39374084）；HyperEVM 公共 RPC 拒绝大区块跨度，只能用极小窗口；live-verify 2026-09-21：from-genesis 查询被拒（匹配日志过多）证明历史上发射过事件；最近窗口内 0 条"
         }
       ]
     },
@@ -707,7 +739,13 @@
         "hoodfun",
         "coinbarrel",
         "arrowpad",
-        "stroid"
+        "stroid",
+        "hyper.meme",
+        "pmav.fun",
+        "lunch.fun",
+        "memecoin.fun",
+        "potato.fm",
+        "lemon.fun"
       ],
       "launchpads": [
         {
@@ -1282,6 +1320,159 @@
           "family": "evm",
           "platform": "stroid",
           "source": "stroid.fun 应用构建配置（chain 4663：feeHook.v3）；live-verify 2026-09-21：58000000 区块内 4 条事件"
+        },
+        {
+          "name": "hyper_meme_factory_v4",
+          "address": "0x08a95be2bc4a3dcf1488ebd4145004d5948297e9",
+          "fact_status": "verified",
+          "enabled": false,
+          "family": "evm",
+          "platform": "hyper.meme",
+          "source": "hyper.meme 官方前端配置（chain 4663 段：factoryV4/tokenImplV4/curveImplV4/lockerV4，factoryV4StartBlock=9613990）；live-verify 2026-09-21：55000000 区块内 7 条事件（TokenCreated=7）"
+        },
+        {
+          "name": "hyper_meme_curve_impl_v4",
+          "address": "0x1579ec5a49a31ba6ad0d1fcefc05ade11df4e643",
+          "fact_status": "unverified",
+          "enabled": false,
+          "family": "evm",
+          "platform": "hyper.meme",
+          "source": "hyper.meme 官方前端配置（chain 4663：curveImplV4）；live-verify 2026-09-21：from-genesis 有 1 条历史事件，最近一次在区块 9613945；最近窗口内 0 条"
+        },
+        {
+          "name": "pmav_hook",
+          "address": "0x97472ae141ff13a4d317328bc4f3f95172fba8cc",
+          "fact_status": "verified",
+          "enabled": false,
+          "family": "evm",
+          "platform": "pmav.fun",
+          "source": "pmav.fun 官方页面内联配置（HOOK，链 4663；同页标注 code-verified on chain 4663）；live-verify 2026-09-21：5000000 区块内 15 条事件（Trade=14, CreatorFeesClaimed=1）"
+        },
+        {
+          "name": "pmav_hook_v22",
+          "address": "0x2d0e12fec42cea31022c37e9d714db6d2d49a8cc",
+          "fact_status": "verified",
+          "enabled": false,
+          "family": "evm",
+          "platform": "pmav.fun",
+          "source": "pmav.fun 官方页面内联配置（HOOK_V22 / PERM_CAP_HOOKS）；live-verify 2026-09-21：5000000 区块内 3 条事件（Trade=3）"
+        },
+        {
+          "name": "pmav_flywheel_factory",
+          "address": "0xdbe590c96cabb40ed85a8eae4ad1be9e40f011e1",
+          "fact_status": "verified",
+          "enabled": false,
+          "family": "evm",
+          "platform": "pmav.fun",
+          "source": "pmav.fun 官方页面内联配置（FLYWHEEL.FACTORY）；live-verify 2026-09-21：55000000 区块内 47 条事件（HookAllowed=34, RewardsEnabled=12, RootPublisherChanged=1）"
+        },
+        {
+          "name": "circus_launchpad",
+          "address": "0xb7fa26c6fcb8801cabc538b82a6e80ae1c43cb00",
+          "fact_status": "verified",
+          "enabled": false,
+          "family": "evm",
+          "platform": "circus",
+          "source": "circus.trade 官方前端合约表（barcusLaunchpad / circusQuoteLaunchpad，chain 4663）；live-verify 2026-09-21：5000000 区块内 1621 条事件"
+        },
+        {
+          "name": "circus_locker",
+          "address": "0xa256bc02dbb92ed1cb607a7de7b0bbebca29e930",
+          "fact_status": "verified",
+          "enabled": false,
+          "family": "evm",
+          "platform": "circus",
+          "source": "circus.trade 官方前端合约表（barcusLocker）；live-verify 2026-09-21：25000000 区块内 8 条事件（Withdrawn=4, Compounded=2, Harvested=2）"
+        },
+        {
+          "name": "circus_lens",
+          "address": "0x15bd5b371f1d206e39528054be35973964c91887",
+          "fact_status": "unverified",
+          "enabled": false,
+          "family": "evm",
+          "platform": "circus",
+          "source": "circus.trade 官方前端合约表（circusLens）；live-verify 2026-09-21：代码存在但窗口内 0 事件（code-only）"
+        },
+        {
+          "name": "lunch_launcher",
+          "address": "0xf5ac14e7691ef44b15b59fcc6a756e41a3e5efd6",
+          "fact_status": "verified",
+          "enabled": false,
+          "family": "evm",
+          "platform": "lunch.fun",
+          "source": "lunch.fun 官方前端 ADDR 表（launcher，weth 指向 Robinhood WETH）；live-verify 2026-09-21：55000000 区块内 1388 条事件（Upgraded=5）"
+        },
+        {
+          "name": "lunch_pair_launcher",
+          "address": "0x568e12b312751992dcfe387cfc8ec7d63e941103",
+          "fact_status": "verified",
+          "enabled": false,
+          "family": "evm",
+          "platform": "lunch.fun",
+          "source": "lunch.fun 官方前端 ADDR 表（pairLauncher）；live-verify 2026-09-21：500000 区块内 8 条事件"
+        },
+        {
+          "name": "lunch_v4_launcher",
+          "address": "0xc783221ab1db0244203458417981b4631e80b988",
+          "fact_status": "verified",
+          "enabled": false,
+          "family": "evm",
+          "platform": "lunch.fun",
+          "source": "lunch.fun 官方前端 ADDR 表（v4Launcher）；live-verify 2026-09-21：5000000 区块内 219 条事件"
+        },
+        {
+          "name": "lunch_v4_pair_hook",
+          "address": "0x4eb1976978756bd56802d8162f2271844924e0cc",
+          "fact_status": "unverified",
+          "enabled": false,
+          "family": "evm",
+          "platform": "lunch.fun",
+          "source": "lunch.fun 官方前端 ADDR 表（v4PairHook）；live-verify 2026-09-21：代码存在但窗口内 0 事件（code-only）"
+        },
+        {
+          "name": "memecoin_fun_factory",
+          "address": "0x5b5e19d685c9564b17c670b891cf55ce37aeb364",
+          "fact_status": "verified",
+          "enabled": false,
+          "family": "evm",
+          "platform": "memecoin.fun",
+          "source": "memecoin.fun 官方前端配置（chainId 4663 段 launchFactory/tokenImplementation/locker/quoteLocker）；live-verify 2026-09-21：6000000 区块内 6 条事件"
+        },
+        {
+          "name": "memecoin_fun_locker",
+          "address": "0x577eabdafc2bbf4807a1c454bbd4de3641cf50f4",
+          "fact_status": "verified",
+          "enabled": false,
+          "family": "evm",
+          "platform": "memecoin.fun",
+          "source": "memecoin.fun 官方前端配置（chainId 4663 段 locker）；live-verify 2026-09-21：11000000 区块内 2 条事件（FeesCollected=2）"
+        },
+        {
+          "name": "potato_pad",
+          "address": "0x88bb90a984b4f61d971d71b25c81b187aee4ca07",
+          "fact_status": "verified",
+          "enabled": false,
+          "family": "evm",
+          "platform": "potato.fm",
+          "source": "potato.fm 官方前端配置（padAddress，weth 指向 Robinhood WETH）；live-verify 2026-09-21：55000000 区块内 1 条事件"
+        },
+        {
+          "name": "potato_curve_pad",
+          "address": "0xbe2acd9044516399aa4c697c299571664fbe9d4b",
+          "fact_status": "verified",
+          "enabled": false,
+          "family": "evm",
+          "platform": "potato.fm",
+          "source": "potato.fm 官方前端配置（curvePadAddress，curvePadStartBlock=20461687）；live-verify 2026-09-21：32000000 区块内 5 条事件（TokenCreated=2, CurveOpened=2, DevBuy=1）"
+        },
+        {
+          "name": "lemon_v3_factory",
+          "address": "0xe51960f1b45f1c9fb6d166e6a884f866fc70433b",
+          "fact_status": "verified",
+          "enabled": false,
+          "family": "evm",
+          "platform": "lemon.fun",
+          "source": "lemon.fun 官方前端配置（B.factory + Sushi V3 NPM 0x51d0e518…，即 lemon 发射后建池的 V3 工厂）；live-verify 2026-09-21：5000000 区块内 43 条事件（PoolCreated=43）"
         }
       ]
     },

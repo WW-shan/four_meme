@@ -95,5 +95,7 @@
 - 2026-09-21：全量结果 **152 个目标：108 VERIFIED-LIVE、13 HISTORICAL、28 CODE-ONLY、3 FAILED**（第二轮为 121 个目标 / 52 VERIFIED-LIVE）。
 - 2026-09-21：X10.7 完成——看板新增链/平台/时间窗过滤与每链来源健康条（`/api/v1/scanner/chains`）；单链断流显示 `stale`，不渲染成“热度下降”。跨链热度不合并。
 - 2026-09-21：X10.8 工具链完成——影子记录带 `chain` 标签，`python scripts/run_scanner.py chains --db ...` 输出每链独立闸门；2–4 周影子数据本身仍需真实运行时间，未完成。
-- 待办：X10.8 每链 2–4 周影子数据；BSC/Base/Stable 免费 RPC 的窗口限制导致低频平台只能用 `CODE-ONLY`/`HISTORICAL` 判定，需要付费 archive key 才能收紧。
+- 2026-09-21：第四轮（先确认平台是否存在，再找合约）——hyper.meme、pmav.fun、circus、lunch.fun、memecoin.fun、potato.fm、lemon.fun 七个平台先做存在性核查（官网/官方 X/媒体 + 直接访问域名），再从官方前端配置里取出合约并逐条上链核实；Coinbarrel 补上 Arc 与 BSC 部署（Arc Hook V5 已开放，BSC 合约在线但准入暂停）；arrowfinance 确认其 Launchpad 就是已核实的 ArrowPad。核查后确认 motion / dyorswap / mintfast / launchhood / leavehood 不存在、oro 不是发射台、sushi 是 DEX，全部记为“忽略”。holoworld(HoloLaunch) 与 arena 确认存在但没有任何公开合约地址，保持 blocked 并写明下一步。
+- 2026-09-21：全量结果 **172 个目标：120 VERIFIED-LIVE、16 HISTORICAL、33 CODE-ONLY、3 FAILED**（第三轮为 152 个目标 / 108 VERIFIED-LIVE）。
+- 待办：X10.8 每链 2–4 周影子数据；BSC/Base/Stable/HyperEVM 免费 RPC 的窗口限制导致低频平台只能用 `CODE-ONLY`/`HISTORICAL` 判定，需要付费 archive key 才能收紧。
 - 实盘：`ENABLE_TRADING=false`，未启用。
