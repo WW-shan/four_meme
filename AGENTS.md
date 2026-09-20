@@ -62,10 +62,7 @@ Nearest child `AGENTS.md` wins for files in its subtree. Use this root file for 
 ## GOAL TASK PHASE GATE
 
 - Treat long-running goal work as a serial task chain unless the user explicitly authorizes parallel task tracks.
-- Before opening a new non-archive `.ccg/tasks/*` task, inspect active tasks and `git status`; if completed work is pending archive, commit, or push, close that work first.
-- Do not start a follow-up research or implementation node while the current node is unarchived, uncommitted, or unpushed.
-- If the current node is not complete, continue it or mark it blocked; do not create a replacement task.
-- Every goal-work status update must state whether the current node is archived, committed, and pushed.
+- Inspect the current work and `git status` before starting a follow-up task; finish or explicitly mark the current task blocked first.
 
 ## SCOREBOARD CLOSEOUT GATE
 
@@ -73,12 +70,6 @@ Nearest child `AGENTS.md` wins for files in its subtree. Use this root file for 
 - If a round changes the experiment conclusion, live-risk interpretation, or next model direction, append the scoreboard note before archive/commit/push.
 - Treat "no scoreboard update" as an intentional decision that must be recorded in the round's `evidence.md`, `review.md`, or scoreboard note itself.
 - Do not rely on memory or prior rounds to satisfy the scoreboard requirement; re-check the scoreboard in every new round.
-
-## CCG LOCAL-ONLY GATE
-
-- `.ccg/**` is local workflow state only. Do not force-add, commit, or push `.ccg/**` task files.
-- Keep CCG task files out of GitHub while still using them locally for task tracking.
-- Before committing or pushing, verify `git ls-files .ccg` is empty.
 
 ## GITHUB PUBLISHING GATE
 
