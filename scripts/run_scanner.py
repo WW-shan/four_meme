@@ -18,7 +18,7 @@ from src.radar.events import launch_from_event  # noqa: E402
 from src.radar.store import ScannerStore  # noqa: E402
 from src.safety.orchestrator import build_report  # noqa: E402
 from src.shadow.executor import shadow_buy, shadow_sell  # noqa: E402
-from src.shadow.report import ShadowGateConfig, build_gate_report  # noqa: E402
+from src.shadow.report import ShadowGateConfig, build_gate_report, records_from_store  # noqa: E402
 
 
 def _load(path: str) -> dict:
@@ -73,7 +73,10 @@ def command_radar(args) -> int:
 
 
 def command_gate(args) -> int:
-    records = _load(args.records)
+    if getattr(args, "db", None):
+        records = records_from_store(ScannerStore(args.db))
+    else:
+        records = _load(args.records)
     if isinstance(records, dict):
         records = records.get("records", [])
     report = build_gate_report(records, ShadowGateConfig())
@@ -109,8 +112,9 @@ def main(argv=None) -> int:
     radar = sub.add_parser("radar", help="Decode a listener event JSON into a launch record")
     radar.add_argument("--event", required=True)
     radar.set_defaults(func=command_radar)
-    gate = sub.add_parser("gate", help="Evaluate the shadow P&L gate over closed trades JSON")
-    gate.add_argument("--records", required=True)
+    gate = sub.add_parser("gate", help="Evaluate the shadow P&L gate over closed trades")
+    gate.add_argument("--records", help="Closed trades JSON file")
+    gate.add_argument("--db", help="Scanner SQLite database with shadow_close records")
     gate.set_defaults(func=command_gate)
     serve = sub.add_parser("serve", help="Serve the read-only scanner API")
     serve.add_argument("--db", default="data/scanner/evidence.sqlite")

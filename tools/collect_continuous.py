@@ -228,6 +228,22 @@ class ContinuousCollector:
             self.listener.register_handler('TradeStop', self._handle_event)
             self.listener.register_handler('LiquidityAdded', self._handle_event)
 
+            # Optional read-only scanner pipeline. Disabled unless explicitly enabled.
+            self.scanner = None
+            if os.getenv('SCANNER_ENABLED', 'false').strip().lower() == 'true':
+                from config.scanner_config import ScannerConfig
+                from src.radar.pipeline import ScannerPipeline
+                from src.radar.store import ScannerStore
+
+                scanner_config = ScannerConfig.load(os.getenv('SCANNER_CONFIG') or None)
+                self.scanner = ScannerPipeline(
+                    ScannerStore(os.getenv('SCANNER_DB', 'data/scanner/evidence.sqlite')),
+                    scanner_config,
+                )
+                self.listener.register_handler('TokenCreate', self._handle_scanner_event)
+                self.listener.register_handler('LiquidityAdded', self._handle_scanner_event)
+                logger.info("🔎 Scanner pipeline enabled (read-only): %s", scanner_config.mode)
+
             restored_metadata = self.collector.load_token_metadata_index()
             if restored_metadata <= 0:
                 restored_metadata = self.collector.load_token_metadata_from_lifecycle_files()
@@ -406,6 +422,11 @@ class ContinuousCollector:
                 break
             except Exception as e:
                 logger.error(f"保存 collector checkpoint 失败: {e}")
+
+    async def _handle_scanner_event(self, event_name: str, event_data: dict):
+        """Persist launch/graduation evidence for the read-only scanner pipeline."""
+        if self.scanner is not None:
+            await self.scanner.handle_event(event_name, event_data)
 
     async def _handle_event(self, event_name: str, event_data: dict):
         """监听器回调仅入队，避免在回调中做重处理。"""

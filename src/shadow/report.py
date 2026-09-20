@@ -75,3 +75,17 @@ def build_gate_report(records: list[dict], config: ShadowGateConfig | None = Non
         reasons.append("latency_p95_too_high")
     return ShadowGateReport(trades, net, win_rate, top_share, half_delta, latency_p95,
                             "pass" if not reasons else "reject", tuple(reasons))
+
+
+def records_from_store(store) -> list[dict]:
+    """Reconstruct gate inputs from shadow_close records written by ShadowTracker."""
+    records = []
+    for row in store.rows("shadow_close", limit=10_000):
+        payload = row.get("payload") or {}
+        records.append({
+            "token": payload.get("token") or row.get("entity"),
+            "pnl_quote": float(payload.get("pnl_quote", 0.0)),
+            "quote_amount": float(payload.get("quote_amount", 0.0)),
+            "latency_seconds": float(payload.get("latency_seconds", 0.0)),
+        })
+    return records

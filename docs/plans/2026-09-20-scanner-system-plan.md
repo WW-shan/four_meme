@@ -8,13 +8,13 @@ Owner：Codex。执行方式：串行阶段（P0 → P9），每个阶段完成�
 | 阶段 | 状态 | 已完成 | 待完成/阻塞 |
 |---|---|---|---|
 | P0 数据口径 | ✅ 完成 | 主题注册表、v1/v2 严格解码、LiquidityAdded 毕业、报价分类、买卖 minOut、received_at、dataset quote 守卫、tests/core discover 修复 | — |
-| P1 雷达+快照 | 🟡 代码完成 | `src/radar/`（store/events/collector/api/solana）、`src/safety/fetchers.py`、`src/safety/snapshot.py`、CLI `radar/serve` | 真实 provider 抓取需个人 key；运行时接入现有 listener |
+| P1 雷达+快照 | 🟡 运行时就绪 | `src/radar/`（store/events/collector/api/solana/pipeline）、`src/safety/fetchers.py`、`src/safety/snapshot.py`、CLI `radar/serve`、`tools/collect_continuous.py` 的 `SCANNER_ENABLED` 只读接入 | 真实 provider 抓取需个人 key |
 | P2 安全过滤 | 🟡 代码完成 | `src/safety/filters.py`（13 个过滤器）、orchestrator、ScannerConfig 阈值、fail-closed、学习模式 | 用真实快照填充并跑 2–4 周归因 |
 | P3 钱包流 | 🟡 代码完成 | `src/walletflow/`（scoring/pipeline/registry/gmgn）、scout score n≥30、净流入、deployer、bundle cohort | GMGN 凭据下的实盘摄取 |
 | P4 决策层 | ✅ 完成 | `src/decision/engine.py` 规则、reason codes、过期、风险预算 | — |
 | P5 影子执行 | 🟡 代码完成 | `src/shadow/`（executor/exits/tracker/report）、TP 阶梯/止损/追踪/时间/rug/熔断 | 2–4 周影子运行数据 |
-| P6 看板/API | 🟡 部分 | `src/radar/api.py` 只读 API、CLI `serve` | 注意力看板中的三视图接入 |
-| P7 验证闸门 | 🟡 代码完成 | `src/shadow/report.py` 指标与闸门判定 | 真实影子数据积累 |
+| P6 看板/API | ✅ 完成 | `src/radar/api.py` 只读 API + 三视图看板（即时发现/严格深审/影子跟踪）、CLI `serve` | — |
+| P7 验证闸门 | 🟡 数据待积累 | `src/shadow/report.py` 指标与闸门判定、`records_from_store`、CLI `gate --db` | 2–4 周真实影子数据 |
 | P8 实盘闸门 | 🟡 代码完成 | `src/decision/live_gate.py` 默认关闭、需影子通过+操作者确认 | 用户明确授权与小额实盘 |
 | P9 多链 | 🟡 适配层 | `src/radar/solana.py` 归一化与校验 | Geyser/Jito 实盘接入与凭据 |
 
@@ -300,6 +300,8 @@ LIVE_TRADING_ENABLED=false            # 与现有 ENABLE_TRADING 分离
 - 2026-09-20：P0 完成并验证：修复 listener 主题漂移/伪造主题/v1 布局、`minOut=0`、`minAmount=1`、报价分类、毕业事件、received_at 与 dataset quote 守卫；`tests/core/__init__.py` 补齐后 `unittest discover` 覆盖 1471 项。
 - 2026-09-20：P1–P5 代码层与闸门代码完成：radar/snapshot fetchers、安全过滤器、钱包流、决策引擎、影子执行与退出、验收闸门、只读 API、Solana 归一化；`tests/scanner/` 56 项通过。
 - 待运行/阻塞：真实 provider 凭证、2–4 周影子数据、BSC 私有通道收益验证、Solana Geyser/Jito 实盘接入、用户明确授权的小额实盘。
+- 2026-09-20：补齐运行时接线：`tools/collect_continuous.py` 增加 `SCANNER_ENABLED` 只读扫描开关（默认关闭）；`src/radar/pipeline.py` 串起雷达→快照→安全报告→决策→影子；scanner 看板三视图与 `/api/v1/scanner/{launches,graduations,safety,decisions,shadow}`；`records_from_store` + `gate --db` 直接用影子库评估闸门。
+- 验证：`PYTHON_DOTENV_DISABLED=1 python3 -m unittest discover` = 1474 tests, 1 skipped, 0 failures；`tests/scanner/` = 59 tests。
 
 ## 10. Scoreboard 收口
 

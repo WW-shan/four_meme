@@ -23,6 +23,14 @@ class ShadowTracker:
             baseline_liquidity=baseline_liquidity,
         )
         self._record("shadow_open", fill.token, {"fill": fill.__dict__, "baseline_liquidity": baseline_liquidity}, fill.at)
+        self.realized_quote = getattr(self, "realized_quote", {})
+        self.realized_quote[fill.token] = 0.0
+        self.entry_tokens = getattr(self, "entry_tokens", {})
+        self.entry_tokens[fill.token] = fill.token_amount
+        self.entry_quote = getattr(self, "entry_quote", {})
+        self.entry_quote[fill.token] = fill.quote_amount
+        self.opened_at = getattr(self, "opened_at", {})
+        self.opened_at[fill.token] = fill.at
         return position
 
     def update(self, token: str, price: float, *, now: float, liquidity_usd: float | None = None) -> ExitAction | None:
@@ -42,9 +50,22 @@ class ShadowTracker:
             index = int(action.reason.rsplit("_", 1)[1]) - 1
             state.filled_tp_levels.add(index)
         position.exits.append({"reason": action.reason, "fraction": fraction, "price": price, "at": now})
-        self._record("shadow_exit", token, {"reason": action.reason, "fraction": fraction, "price": price}, now)
+        entry_tokens = getattr(self, "entry_tokens", {}).get(token, 0.0)
+        fee_pct = position.entry_fill.fee_pct
+        proceeds = fraction * entry_tokens * price * (1 - fee_pct / 100)
+        realized = getattr(self, "realized_quote", {})
+        realized[token] = realized.get(token, 0.0) + proceeds
+        self._record("shadow_exit", token,
+                     {"reason": action.reason, "fraction": fraction, "price": price, "realized_quote": proceeds}, now)
         if state.remaining_fraction <= 1e-9:
-            self._record("shadow_close", token, {"reason": action.reason, "price": price}, now)
+            entry_quote = getattr(self, "entry_quote", {}).get(token, 0.0)
+            latency = max(0.0, now - getattr(self, "opened_at", {}).get(token, now))
+            self._record("shadow_close", token, {
+                "reason": action.reason, "price": price,
+                "pnl_quote": realized[token] - entry_quote,
+                "quote_amount": entry_quote,
+                "latency_seconds": latency,
+            }, now)
         return ExitAction(action.reason, fraction, price, now)
 
     def _record(self, kind: str, token: str, payload: dict, at: float) -> None:
