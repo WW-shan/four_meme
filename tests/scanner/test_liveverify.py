@@ -306,3 +306,46 @@ class HistoricalStatusTests(unittest.TestCase):
         }
         text = render_markdown(payload)
         self.assertIn("HISTORICAL", text)
+
+
+class LiveTargetConfigTests(unittest.TestCase):
+    """The target list must stay self-documenting: every address has a source, every
+    blocked platform explains why it is blocked and what would unblock it."""
+
+    @classmethod
+    def setUpClass(cls):
+        import json
+        from pathlib import Path
+
+        root = Path(__file__).resolve().parents[2]
+        cls.config = json.loads((root / "config" / "live_targets.json").read_text(encoding="utf-8"))
+
+    def test_every_target_has_an_address_and_a_source(self):
+        for chain, spec in self.config["chains"].items():
+            for target in spec.get("targets", []):
+                with self.subTest(chain=chain, target=target.get("id")):
+                    self.assertTrue(target.get("address"), "target without address")
+                    self.assertTrue(target.get("source"), "target without source")
+
+    def test_every_blocked_entry_has_reason_and_next_step(self):
+        for chain, spec in self.config["chains"].items():
+            for blocked in spec.get("blocked", []):
+                with self.subTest(chain=chain, platform=blocked.get("platform")):
+                    self.assertTrue(blocked.get("blocked_reason"), "blocked without reason")
+                    self.assertTrue(blocked.get("next_step"), "blocked without next step")
+
+    def test_platforms_checked_and_confirmed_not_to_exist_are_recorded_as_ignored(self):
+        robinhood = self.config["chains"]["robinhood"]["blocked"]
+        reasons = {item["platform"]: item["blocked_reason"] for item in robinhood}
+        for platform in ("motion", "dyorswap", "mintfast", "launchhood", "leavehood"):
+            with self.subTest(platform=platform):
+                self.assertIn("不存在", reasons[platform])
+        self.assertIn("不是发射台", reasons["oro"])
+
+    def test_round3_platforms_are_present_with_verified_sources(self):
+        robinhood = {target["id"]: target for target in self.config["chains"]["robinhood"]["targets"]}
+        for target_id in ("hyper_meme_factory_v4", "pmav_hook", "circus_launchpad", "lunch_launcher",
+                          "memecoin_fun_factory", "potato_pad", "lemon_v3_factory"):
+            with self.subTest(target=target_id):
+                self.assertIn(target_id, robinhood)
+                self.assertTrue(robinhood[target_id]["source"])
