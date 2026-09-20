@@ -59,3 +59,31 @@ class DecisionEngineTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class LearningModeDecisionTests(unittest.TestCase):
+    """A learning-mode report only blocks on honeypot_sim, so it must never authorise a buy."""
+
+    def _report(self, mode):
+        # Only honeypot_sim is known; every other critical field is unknown.
+        return build_report(TOKEN, {"honeypot_sim": True}, FilterThresholds(), mode=mode)
+
+    def test_learning_report_cannot_produce_a_buy(self):
+        report = self._report("learning")
+        self.assertEqual("pass", report.verdict)  # learning mode is lax by design
+        decision = decide(token=TOKEN, report=report, funding_confirmed=True, mcap_usd=45_000,
+                          mcap_min_usd=20_000, mcap_max_usd=120_000,
+                          budget=RiskBudget(), state=PortfolioState())
+        self.assertEqual("reject", decision.action)
+        self.assertIn("safety_mode_not_safe", decision.reason_codes)
+        self.assertEqual(0.0, decision.size_quote)
+
+    def test_safe_report_is_unaffected(self):
+        report = self._report("safe")
+        self.assertEqual("reject", report.verdict)  # unknown critical fields fail closed
+        decision = decide(token=TOKEN, report=report, funding_confirmed=True, mcap_usd=45_000,
+                          mcap_min_usd=20_000, mcap_max_usd=120_000,
+                          budget=RiskBudget(), state=PortfolioState())
+        self.assertEqual("reject", decision.action)
+        self.assertIn("safety_reject", decision.reason_codes)
+        self.assertNotIn("safety_mode_not_safe", decision.reason_codes)

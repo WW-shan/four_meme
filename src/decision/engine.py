@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from dataclasses import asdict, dataclass, field
+from dataclasses import asdict, dataclass
 import time
 
 from src.safety.orchestrator import SafetyReport
@@ -79,6 +79,11 @@ def decide(
         raise ValueError("mode must be shadow or live")
     created = time.time() if now is None else float(now)
     reasons: list[str] = []
+    if report.mode != "safe":
+        # A learning-mode report only blocks on honeypot_sim, so almost every unknown field
+        # still "passes". Trading off that verdict would be fail-open, so the decision layer
+        # refuses to buy no matter what the report says.
+        reasons.append("safety_mode_not_safe")
     if report.verdict != "pass":
         reasons.append("safety_reject")
     if not funding_confirmed:
