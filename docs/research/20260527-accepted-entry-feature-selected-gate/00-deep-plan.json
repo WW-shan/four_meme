@@ -1,0 +1,131 @@
+{
+  "ok": true,
+  "mode": "deep_research",
+  "query_mode": "deep",
+  "question": "For a live meme-token trading bot with repeated accepted-entry time-exit losses, how should actual trade-log attribution, meta-labeling, survival/time-to-event labels, and conservative offline policy evaluation guide a feature-selected accepted-entry keep or post-entry exit overlay using only decision-time features and strict validation/final/stress gates?",
+  "trigger_source": "explicit_cli",
+  "difficulty": "high",
+  "intent_signals": {
+    "recency_requirement": "current",
+    "docs_api_intent": false,
+    "locale_domain_scope": "global",
+    "known_url": false,
+    "source_authority_need": "high",
+    "claim_risk": "high",
+    "cross_validation_need": "high",
+    "breadth_depth_budget": "standard"
+  },
+  "decomposition": [
+    {
+      "id": "sq1",
+      "question": "For a live meme-token trading bot with repeated accepted-entry time-exit losses, how should actual trade-log attribution, meta-labeling, survival/time-to-event labels, and conservative offline policy evaluation guide a feature-selected accepted-entry keep or post-entry exit overlay using only decision-time features and strict validation/final/stress gates? 的整体问题轮廓和候选来源是什么？",
+      "reason": "先做 broad discovery，避免一开始把问题拆错。",
+      "required_capabilities": [
+        "broad_discovery"
+      ]
+    },
+    {
+      "id": "sq2",
+      "question": "For a live meme-token trading bot with repeated accepted-entry time-exit losses, how should actual trade-log attribution, meta-labeling, survival/time-to-event labels, and conservative offline policy evaluation guide a feature-selected accepted-entry keep or post-entry exit overlay using only decision-time features and strict validation/final/stress gates? 的最新或中文/国内来源如何交叉验证？",
+      "reason": "Current or China-scoped prompts benefit from Zhipu web-search reinforcement.",
+      "required_capabilities": [
+        "current_or_locale_source_discovery"
+      ]
+    }
+  ],
+  "capability_plan": [
+    {
+      "capability": "broad_discovery",
+      "tools": [
+        "search"
+      ],
+      "reason": "Find the initial answer shape and candidate sources."
+    },
+    {
+      "capability": "current_or_locale_source_discovery",
+      "tools": [
+        "zhipu-search"
+      ],
+      "reason": "Reinforce Chinese, domestic, or current web evidence."
+    },
+    {
+      "capability": "cross_validation",
+      "tools": [
+        "search",
+        "exa-search"
+      ],
+      "reason": "Compare independent sources before final claims."
+    },
+    {
+      "capability": "page_evidence",
+      "tools": [
+        "fetch"
+      ],
+      "reason": "Fetch key URLs before claim-level conclusions."
+    }
+  ],
+  "evidence_policy": "fetch_before_claim",
+  "preflight": {
+    "tool": "doctor",
+    "command": "smart-search doctor --format json",
+    "when": "configuration or provider availability is uncertain",
+    "executed_by_deep_command": false
+  },
+  "steps": [
+    {
+      "id": "s1",
+      "subquestion_id": "sq1",
+      "tool": "search",
+      "purpose": "broad discovery and routing metadata",
+      "command": "smart-search search \"For a live meme-token trading bot with repeated accepted-entry time-exit losses, how should actual trade-log attribution, meta-labeling, survival/time-to-event labels, and conservative offline policy evaluation guide a feature-selected accepted-entry keep or post-entry exit overlay using only decision-time features and strict validation/final/stress gates?\" --validation balanced --extra-sources 3 --format json --output \"C:/tmp/smart-search-evidence/20260527-1904-for-a-live-meme-token-trading-bot-with-repeated-/01-search.json\"",
+      "output_path": "C:/tmp/smart-search-evidence/20260527-1904-for-a-live-meme-token-trading-bot-with-repeated-/01-search.json"
+    },
+    {
+      "id": "s2",
+      "subquestion_id": "sq2",
+      "tool": "zhipu-search",
+      "purpose": "current or locale-specific source discovery",
+      "command": "smart-search zhipu-search \"For a live meme-token trading bot with repeated accepted-entry time-exit losses, how should actual trade-log attribution, meta-labeling, survival/time-to-event labels, and conservative offline policy evaluation guide a feature-selected accepted-entry keep or post-entry exit overlay using only decision-time features and strict validation/final/stress gates?\" --count 5 --format json --output \"C:/tmp/smart-search-evidence/20260527-1904-for-a-live-meme-token-trading-bot-with-repeated-/02-zhipu.json\"",
+      "output_path": "C:/tmp/smart-search-evidence/20260527-1904-for-a-live-meme-token-trading-bot-with-repeated-/02-zhipu.json"
+    },
+    {
+      "id": "s3",
+      "subquestion_id": "sq2",
+      "tool": "exa-search",
+      "purpose": "low-noise cross-source discovery",
+      "command": "smart-search exa-search \"For a live meme-token trading bot with repeated accepted-entry time-exit losses, how should actual trade-log attribution, meta-labeling, survival/time-to-event labels, and conservative offline policy evaluation guide a feature-selected accepted-entry keep or post-entry exit overlay using only decision-time features and strict validation/final/stress gates?\" --num-results 5 --format json --output \"C:/tmp/smart-search-evidence/20260527-1904-for-a-live-meme-token-trading-bot-with-repeated-/03-exa.json\"",
+      "output_path": "C:/tmp/smart-search-evidence/20260527-1904-for-a-live-meme-token-trading-bot-with-repeated-/03-exa.json"
+    },
+    {
+      "id": "s4",
+      "subquestion_id": "sq2",
+      "tool": "fetch",
+      "purpose": "fetch key URLs before final claims",
+      "command": "smart-search fetch \"<key-url>\" --format markdown --output \"C:/tmp/smart-search-evidence/20260527-1904-for-a-live-meme-token-trading-bot-with-repeated-/04-fetch.md\"",
+      "output_path": "C:/tmp/smart-search-evidence/20260527-1904-for-a-live-meme-token-trading-bot-with-repeated-/04-fetch.md"
+    }
+  ],
+  "gap_check": {
+    "required": true,
+    "rule": "fetch missing evidence for key claims or downgrade unsupported claims to unverified candidates",
+    "unsupported_claim_action": "downgrade_to_unverified_candidate"
+  },
+  "final_answer_policy": "cite fetched evidence, list unverified candidates, and include key commands",
+  "usage_boundary": {
+    "search": "smart-search search runs live fast/broad search immediately.",
+    "deep": "smart-search deep is an offline planner; it does not execute provider calls or fetch pages.",
+    "execution": "An AI agent or user executes the listed steps with existing CLI commands, then performs gap_check."
+  },
+  "allowed_tools": [
+    "context7-docs",
+    "context7-library",
+    "exa-search",
+    "exa-similar",
+    "fetch",
+    "map",
+    "search",
+    "zhipu-search"
+  ],
+  "evidence_dir": "C:/tmp/smart-search-evidence/20260527-1904-for-a-live-meme-token-trading-bot-with-repeated-",
+  "elapsed_ms": 0.96
+}

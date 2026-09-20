@@ -1,0 +1,183 @@
+{
+  "ok": true,
+  "error_type": "",
+  "error": "",
+  "session_id": "8fbad9c7d47f",
+  "query": "off-policy evaluation review reinforcement learning tutorial accessible counterfactual risk minimization trading",
+  "platform": "",
+  "model": "grok-4.20-fast",
+  "primary_api_mode": "xai-responses",
+  "content": "**Counterfactual Risk Minimization (CRM) provides a practical framework for off-policy evaluation (OPE) and off-policy learning (OPL) in reinforcement learning (RL).** It originated for batch learning from logged bandit feedback and has been adapted to sequential RL settings, where decisions are sequential and long-term rewards matter. [[1]](https://arxiv.org/abs/1502.02362) [[2]](https://arxiv.org/pdf/2212.06355)\n\nIn **plain language**, classic RL (supervised learning analogy) breaks if your data comes from a different policy (e.g., a different trading algorithm). CRM fixes this safely by using **propensity scoring** (inverse importance sampling) to reweight outcomes so new policies get credit for what they *would* have done, even in unseen scenarios. It’s like running unbiased counterfactual “what-if” experiments offline—without ever risking real money. No more double-dipping the same old dataset or suffering high-variance importance weights.\n\n### Core of Off-Policy Evaluation (OPE)\nOPE estimates how well a new **target policy** (e.g., a better trading RL agent) would perform using only historical data collected by a **behavior (logging) policy**.\n\nThis is crucial for RL applications such as algorithmic trading, where live A/B testing is expensive, risky, or impractical. Data never replays; a new ML strategy can’t be tried on real capital without first verifying it offline.\n\n### CRM Tutorial/Review: Key Principles and Connection to RL\nThe foundational CRM tutorial is Swaminathan & Joachims (2015): “Counterfactual Risk Minimization: Learning from Logged Bandit Feedback” (arXiv:1502.02302; extends the ICML 2015 work). [[3]](https://proceedings.mlr.press/v37/swaminathan15.html) [[1]](https://arxiv.org/abs/1502.02362)\n\n**Setup (bandit case, which generalizes to full RL):**\n- State/context \\(x\\) (e.g., market features at time \\(t\\)).\n- Action \\(y\\) (e.g., trade order size or asset choice).\n- Logging policy \\(\\pi_0(y \\mid x)\\): historically produced the data.\n- Target policy \\(\\pi(y \\mid x)\\): the new one you want to evaluate/improve.\n- Propensity (probability) \\(p(y \\mid x) = \\pi_0(y \\mid x)\\).\n- (Cardinal) loss/reward \\(\\delta\\) observed only for the logged action.\n\nThe true (counterfactual) risk is:\n\\[\nR(\\pi) = \\mathbb{E}_{x \\sim D} \\left[ \\mathbb{E}_{y \\sim \\pi(\\cdot \\mid x)} \\left[ \\mathbb{E} \\left[ \\delta \\mid x, y \\right] \\right] \\right]\n\\]\n\n**Unbiased estimation via importance sampling (IPS):**\n\\[\n\\hat{R}(\\pi) = \\frac{1}{n} \\sum_{i=1}^n \\frac{\\pi(y_i \\mid x_i)}{\\pi_0(y_i \\mid x_i)} \\delta_i\n\\]\nwhere \\(\\delta_i\\) is the logged reward.\n\n**CRM principle**: Choose \\(\\pi\\) that minimizes \\(\\hat{R}(\\pi) + \\lambda \\cdot \\widehat{\\text{Var}}(\\hat{R}(\\pi}))\\) (or similar bounds). This controls variance and guards against over-optimism—exactly why it’s robust for real trading deployments. [[3]](https://proceedings.mlr.press/v37/swaminathan15.html)\n\n**Practical extensions to full RL (sequential decisions):**\n- Use temporal-difference or model-based estimators on top of IPS/CIPS (clipped IPS) weights.\n- Important papers: Uehara et al. (2022) “A Review of Off-Policy Evaluation in Reinforcement Learning” (surveys estimators, variance bounds, doubly robust methods, efficiency results). [[2]](https://arxiv.org/pdf/2212.06355)\n- Double robust (DR) estimators reduce variance dramatically when a model of the reward or dynamics is good.\n- Modern impl: Proportional-Importance-Sampling, Minimax-Q, and FQI-style methods.\n\n**Optimization for policy improvement (OPL):**\nOnce you have a reliable OPE estimate, you can optimize \\(\\pi\\) by gradient descent on the CRM objective (or use actor-critic with OPE regularization). Proximal-point algorithms help handle non-convex continuous-action spaces common in trading. [[4]](https://causalrlworkshop.github.io/pdf/CLDM_6.pdf)\n\n### CRM in Algorithmic Trading (with RL)\nTrading RL (e.g., continuous-action portfolio optimization, multi-currency agents, reinforcement learning with risk penalties like CVaR or drawdown) is a natural fit for CRM. [[5]](https://builder.aws.com/content/344Nhq9Kg2Ujz7miPvcL3AvYuf8/exploring-counterfactual-learning-in-multi-currency-trading-a-journey-of-curiosity-and-customer-centric-innovation) [[6]](https://rpc.cfainstitute.org/research/foundation/2025/chapter-6-reinforcement-learning-inverse-reinforcement-learning)\n\n- **Why it helps**: Historical market data (always the only feasible source). You cannot A/B-test new strategies on live capital. CRM lets you evaluate and iteratively improve RL policies offline while controlling estimation error.\n- Real-world example: Recent work applies counterfactual learning to multi-currency trading, explicitly handling leverage limits, risk management, and coordination across assets via reward engineering. [[5]](https://builder.aws.com/content/344Nhq9Kg2Ujz7miPvcL3AvYuf8/exploring-counterfactual-learning-in-multi-currency-trading-a-journey-of-curiosity-and-customer-centric-innovation)\n- Broader RL + finance context: Encode risk first-class (mean-variance, CVaR, distributional returns) in the reward; use CRM-style OPE for safe model selection before any live deployment. [[6]](https://rpc.cfainstitute.org/research/foundation/2025/chapter-6-reinforcement-learning-inverse-reinforcement-learning)\n\n### Implementation Sketch (Simple Bandit-to-RL Example)\nAssume discrete actions (extendable to continuous with clipping/soft-clipping). Historical dataset: \\((x_i, a_i, r_i, \\pi_0(a_i \\mid x_i))\\).\n\n1. Compute IPS weights: \\(w_i = \\frac{\\pi(a_i \\mid x_i)}{\\pi_0(a_i \\mid x_i)}\\) (clip: \\(\\min(1, \\text{ratio})\\) or use CIPS).\n2. For OPE: \\(\\hat{v}(\\pi) = \\frac{1}{n} \\sum w_i r_i\\) (or DR for lower variance).\n3. For OPL/CRM: Solve \\(\\min_\\pi \\hat{v}(\\pi) + \\lambda \\widehat{\\text{Var}}_\\text{IPS}}\\) (often via gradient on a parametric policy). [[3]](https://proceedings.mlr.press/v37/swaminathan15.html)\n\nIn trading code, pair with OpenAI Gym-like environments or libraries (e.g., TF-Agents, Stable-Baselines3) that support custom importance weighting in the evaluator.\n\n### Practical Tips & Caveats\n- **Variance control**: Use clipping, self-normalized estimators, or DR. Monitor effective sample size (ESS = \\(1 / \\sum w_i^2\\))—if ESS drops too low, the policy is unsafe to deploy.\n- **Hyperparameters**: Tune clipping threshold \\(M\\) via cross-validation on held-out data.\n- **Risk in trading**: Always combine with hard risk guards (leverage, drawdown limits) even when CRM says “optimistic but low-uncertainty.”\n- **State of the art (2026)**: No single killer tutorial dominates; combine the 2015 CRM paper with the 2022 OPE review for breadth, and the 2025 AWS multi-currency demo for domain application. [[5]](https://builder.aws.com/content/344Nhq9Kg2Ujz7miPvcL3AvYuf8/exploring-counterfactual-learning-in-multi-currency-trading-a-journey-of-curiosity-and-customer-centric-innovation)\n\nThis combination of CRM + OPE gives production-grade RL trading systems a trustworthy way to iterate from live logs to better policies. Ready to code a prototype? Or dive deeper into any estimator/implementation detail?",
+  "sources": [
+    {
+      "url": "https://arxiv.org/abs/1502.02362",
+      "title": "Counterfactual Risk Minimization: Learning from Logged ..."
+    },
+    {
+      "url": "https://arxiv.org/pdf/2212.06355",
+      "title": "A Review of Off-Policy Evaluation in Reinforcement Learning"
+    },
+    {
+      "url": "https://proceedings.mlr.press/v37/swaminathan15.html",
+      "title": "Counterfactual Risk Minimization: Learning from Logged ..."
+    },
+    {
+      "url": "https://causalrlworkshop.github.io/pdf/CLDM_6.pdf",
+      "title": "OPTIMIZATION APPROACHES FOR COUNTERFACTUAL ..."
+    },
+    {
+      "url": "https://builder.aws.com/content/344Nhq9Kg2Ujz7miPvcL3AvYuf8/exploring-counterfactual-learning-in-multi-currency-trading-a-journey-of-curiosity-and-customer-centric-innovation",
+      "title": "Exploring Counterfactual Learning in Multi-Currency Trading"
+    },
+    {
+      "url": "https://rpc.cfainstitute.org/research/foundation/2025/chapter-6-reinforcement-learning-inverse-reinforcement-learning",
+      "title": "Chapter 6: Reinforcement Learning and Inverse ..."
+    },
+    {
+      "url": "https://usaito.github.io/files/KDD2022_TutorialProposal.pdf",
+      "provider": "tavily",
+      "title": "[PDF] Counterfactual Evaluation and Learning for Interactive Systems",
+      "description": "KEYWORDS counterfactual inference, off-policy evaluation and learning, con-textual bandits, reinforcement learning, recommender systems ACM Reference Format: Yuta Saito and Thorsten Joachims. 2022. Counterfactual Evaluation and Learning for Interactive Systems: Foundations, Implementations, and Recent Advances. In Proceedings of the 28th ACM SIGKDD Conference on Knowledge Discovery and Data Mining (KDD ’22), August 14–18, 2022, Washington, DC, USA. ACM, New York, NY, USA, 2 pages. \n3542601 1 TUTORIAL OUTLINE This tutorial consists of the following contents (total 3 hours). [...] Counterfactual Evaluation and Learning for Interactive Systems: Foundations, Implementations, and Recent Advances Yuta Saito Cornell University Ithaca, NY, USA ys552@cornell.edu Thorsten Joachims Cornell University Ithaca, NY, USA tj@cs.cornell.edu ABSTRACT Counterfactual estimators enable the use of existing log data to estimate how some new target policy would have performed, if it had been used instead of the policy that logged the data. We say that those estimators work \"off-policy\", since the policy that logged the data is different from the target policy. In this way, counterfactual estimators enable Off-policy Evaluation (OPE) akin to an unbiased offline A/B test, as well as learning new decision-making policies through Off-policy Learning (OPL). The goal of this tutorial is to [...] Off-policy Learning (OPL). The goal of this tutorial is to summarize Foundations, Implementations, and Recent Advances of OPE and OPL (OPE/OPL), with applications in recommendation, search, and an ever growing range of interactive systems. Specifi-cally, we will introduce the fundamentals of OPE/OPL and provide theoretical and empirical comparisons of conventional methods."
+    },
+    {
+      "url": "https://sites.google.com/cornell.edu/recsys2021tutorial",
+      "provider": "tavily",
+      "title": "RecSys2021 Tutorial",
+      "description": "Counterfactual estimators enable the use of existing log data to estimate how some new target recommendation policy would have performed, if it had been used instead of the policy that logged the data. We say that those estimators work \"off-policy\", since the policy that logged the data is different from the target policy. In this way, counterfactual estimators enable Off-policy Evaluation (OPE) akin to an unbiased offline A/B test, as well as learning new recommendation policies through Off-policy Learning (OPL). The goal of this tutorial is to summarize Foundations, Implementations, and Recent Advances of OPE/OPL. Specifically, we will introduce the fundamentals of OPE/OPL and provide theoretical and empirical comparisons of conventional methods. Then, we will cover emerging practical"
+    }
+  ],
+  "sources_count": 8,
+  "primary_sources": [
+    {
+      "url": "https://arxiv.org/abs/1502.02362",
+      "title": "Counterfactual Risk Minimization: Learning from Logged ..."
+    },
+    {
+      "url": "https://arxiv.org/pdf/2212.06355",
+      "title": "A Review of Off-Policy Evaluation in Reinforcement Learning"
+    },
+    {
+      "url": "https://proceedings.mlr.press/v37/swaminathan15.html",
+      "title": "Counterfactual Risk Minimization: Learning from Logged ..."
+    },
+    {
+      "url": "https://causalrlworkshop.github.io/pdf/CLDM_6.pdf",
+      "title": "OPTIMIZATION APPROACHES FOR COUNTERFACTUAL ..."
+    },
+    {
+      "url": "https://builder.aws.com/content/344Nhq9Kg2Ujz7miPvcL3AvYuf8/exploring-counterfactual-learning-in-multi-currency-trading-a-journey-of-curiosity-and-customer-centric-innovation",
+      "title": "Exploring Counterfactual Learning in Multi-Currency Trading"
+    },
+    {
+      "url": "https://rpc.cfainstitute.org/research/foundation/2025/chapter-6-reinforcement-learning-inverse-reinforcement-learning",
+      "title": "Chapter 6: Reinforcement Learning and Inverse ..."
+    }
+  ],
+  "primary_sources_count": 6,
+  "extra_sources": [
+    {
+      "url": "https://usaito.github.io/files/KDD2022_TutorialProposal.pdf",
+      "provider": "tavily",
+      "title": "[PDF] Counterfactual Evaluation and Learning for Interactive Systems",
+      "description": "KEYWORDS counterfactual inference, off-policy evaluation and learning, con-textual bandits, reinforcement learning, recommender systems ACM Reference Format: Yuta Saito and Thorsten Joachims. 2022. Counterfactual Evaluation and Learning for Interactive Systems: Foundations, Implementations, and Recent Advances. In Proceedings of the 28th ACM SIGKDD Conference on Knowledge Discovery and Data Mining (KDD ’22), August 14–18, 2022, Washington, DC, USA. ACM, New York, NY, USA, 2 pages. \n3542601 1 TUTORIAL OUTLINE This tutorial consists of the following contents (total 3 hours). [...] Counterfactual Evaluation and Learning for Interactive Systems: Foundations, Implementations, and Recent Advances Yuta Saito Cornell University Ithaca, NY, USA ys552@cornell.edu Thorsten Joachims Cornell University Ithaca, NY, USA tj@cs.cornell.edu ABSTRACT Counterfactual estimators enable the use of existing log data to estimate how some new target policy would have performed, if it had been used instead of the policy that logged the data. We say that those estimators work \"off-policy\", since the policy that logged the data is different from the target policy. In this way, counterfactual estimators enable Off-policy Evaluation (OPE) akin to an unbiased offline A/B test, as well as learning new decision-making policies through Off-policy Learning (OPL). The goal of this tutorial is to [...] Off-policy Learning (OPL). The goal of this tutorial is to summarize Foundations, Implementations, and Recent Advances of OPE and OPL (OPE/OPL), with applications in recommendation, search, and an ever growing range of interactive systems. Specifi-cally, we will introduce the fundamentals of OPE/OPL and provide theoretical and empirical comparisons of conventional methods."
+    },
+    {
+      "url": "https://sites.google.com/cornell.edu/recsys2021tutorial",
+      "provider": "tavily",
+      "title": "RecSys2021 Tutorial",
+      "description": "Counterfactual estimators enable the use of existing log data to estimate how some new target recommendation policy would have performed, if it had been used instead of the policy that logged the data. We say that those estimators work \"off-policy\", since the policy that logged the data is different from the target policy. In this way, counterfactual estimators enable Off-policy Evaluation (OPE) akin to an unbiased offline A/B test, as well as learning new recommendation policies through Off-policy Learning (OPL). The goal of this tutorial is to summarize Foundations, Implementations, and Recent Advances of OPE/OPL. Specifically, we will introduce the fundamentals of OPE/OPL and provide theoretical and empirical comparisons of conventional methods. Then, we will cover emerging practical"
+    },
+    {
+      "url": "https://arxiv.org/pdf/2212.06355",
+      "provider": "tavily",
+      "title": "[PDF] A Review of Off-Policy Evaluation in Reinforcement Learning - arXiv",
+      "description": "The second method is minimax Q-learning (Uehara, Huang and Jiang, 2020). The follow-ing observation forms the basis of the method: based on the Bellman equation (15), we have for any discriminator function f that Epb[f(s,a){r + γq(s′,πe) −q(s,a)}] = 0. [...] The ofﬂine dataset can be converted into state-action-reward-next-state tuples {S[i],A[i],R[i],S′[i]}N i=1 where S[i] ∼pb(·), A[i] ∼πb(·|S[i]), (R[i],S′[i]) ∼p(·,·|A[i],S[i]), (12) where N = nH and pb denotes the marginal distribution of the state in the observed data. [...] history-dependent policy under the memoryless assumption (Bertsekas, 2012)."
+    }
+  ],
+  "extra_sources_count": 3,
+  "source_warning": "extra_sources are retrieved in parallel and are not automatically used to verify generated content; use fetch on key URLs for claim-level evidence.",
+  "routing_decision": {
+    "docs_intent": false,
+    "zh_current_intent": false,
+    "web_current_intent": false,
+    "fetch_intent": false,
+    "supplemental_paths": [],
+    "validation_level": "balanced",
+    "fallback_mode": "auto",
+    "providers": "auto",
+    "main_search_chain": [
+      "xai-responses"
+    ]
+  },
+  "providers_used": [
+    "xAI Responses",
+    "tavily"
+  ],
+  "provider_attempts": [
+    {
+      "capability": "main_search",
+      "provider": "xAI Responses",
+      "status": "ok",
+      "error_type": "",
+      "error": "",
+      "elapsed_ms": 19805.48,
+      "result_count": 1
+    },
+    {
+      "capability": "web_search",
+      "provider": "tavily",
+      "status": "ok",
+      "error_type": "",
+      "error": "",
+      "elapsed_ms": 22245.61,
+      "result_count": 3
+    }
+  ],
+  "fallback_used": false,
+  "validation_level": "balanced",
+  "minimum_profile_ok": true,
+  "capability_status": {
+    "main_search": {
+      "configured": [
+        "xai-responses"
+      ],
+      "fallback_chain": [
+        "xai-responses",
+        "openai-compatible"
+      ],
+      "ok": true
+    },
+    "web_search": {
+      "configured": [
+        "tavily"
+      ],
+      "fallback_chain": [
+        "zhipu",
+        "tavily",
+        "firecrawl"
+      ],
+      "ok": true
+    },
+    "docs_search": {
+      "configured": [
+        "context7"
+      ],
+      "fallback_chain": [
+        "exa",
+        "context7"
+      ],
+      "ok": true
+    },
+    "web_fetch": {
+      "configured": [
+        "tavily"
+      ],
+      "fallback_chain": [
+        "tavily",
+        "firecrawl"
+      ],
+      "ok": true
+    }
+  },
+  "elapsed_ms": 22245.65
+}

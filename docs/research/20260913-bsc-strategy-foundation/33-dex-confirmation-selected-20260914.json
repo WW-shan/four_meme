@@ -1,0 +1,1834 @@
+{
+  "data_coverage": {
+    "as_of_timestamp": 1789318176.667581,
+    "as_of_utc": "2026-09-13T16:49:36.667581+00:00",
+    "base_token_count": 234933,
+    "dex_enriched_token_count": 127,
+    "dex_enrichment_rate_among_graduated": 0.9844961240310077,
+    "graduated_input_count": 129,
+    "graduated_token_count": 129,
+    "market_context_days": 45,
+    "market_context_path": "docs/research/20260913-bsc-strategy-foundation/18-bsc-market-metrics-20260914.json",
+    "market_context_source_url": "https://api.llama.fi/overview/dexs/bsc?excludeTotalDataChart=false&excludeTotalDataChartBreakdown=false",
+    "ok_bar_count": 12630,
+    "ok_token_count": 127,
+    "proxy_enabled": true,
+    "source_output": "data/research/post_graduation_ohlcv_20260914_final.json",
+    "status_counts": {
+      "ok": 127,
+      "skipped": 2
+    }
+  },
+  "experiment_type": "bsc_sequential_dex_confirmation",
+  "generated_at": "2026-09-14T08:47:51.020623+00:00",
+  "horizons": {
+    "21600": {
+      "artifacts": {
+        "classifier": "data/models/20260914_dex_confirmation_v2_selected/horizon_21600s/confirmation_classifier.cbm",
+        "feature_schema": "data/models/20260914_dex_confirmation_v2_selected/horizon_21600s/feature_schema.json",
+        "ranker": "data/models/20260914_dex_confirmation_v2_selected/horizon_21600s/confirmation_ranker.cbm"
+      },
+      "decision": "research_only_until_final_walk_forward_and_stress_support",
+      "experiment_type": "bsc_sequential_dex_confirmation_ranker",
+      "feature_importance": [
+        {
+          "feature": "symbol_prior_launches_24h",
+          "importance": 30.720728907473102
+        },
+        {
+          "feature": "entry_age_seconds",
+          "importance": 28.796840288781528
+        },
+        {
+          "feature": "volume_2min",
+          "importance": 24.928119643949348
+        },
+        {
+          "feature": "buyer_set_churn_10s_vs_prev50s",
+          "importance": 15.554311159796017
+        },
+        {
+          "feature": "time_since_launch",
+          "importance": 0.0
+        },
+        {
+          "feature": "candidate_sequence",
+          "importance": 0.0
+        },
+        {
+          "feature": "bsc_dex_volume_24h_usd_log",
+          "importance": 0.0
+        },
+        {
+          "feature": "bsc_dex_volume_vs_7d_avg",
+          "importance": 0.0
+        },
+        {
+          "feature": "market_context_available",
+          "importance": 0.0
+        },
+        {
+          "feature": "creator_prior_launches_1h",
+          "importance": 0.0
+        },
+        {
+          "feature": "creator_prior_launches_24h",
+          "importance": 0.0
+        },
+        {
+          "feature": "creator_prior_graduations_7d",
+          "importance": 0.0
+        },
+        {
+          "feature": "symbol_prior_launches_1h",
+          "importance": 0.0
+        },
+        {
+          "feature": "global_launches_1h",
+          "importance": 0.0
+        },
+        {
+          "feature": "global_graduations_24h",
+          "importance": 0.0
+        },
+        {
+          "feature": "volume_10s",
+          "importance": 0.0
+        },
+        {
+          "feature": "volume_30s",
+          "importance": 0.0
+        },
+        {
+          "feature": "volume_1min",
+          "importance": 0.0
+        },
+        {
+          "feature": "volume_5min",
+          "importance": 0.0
+        },
+        {
+          "feature": "buy_pressure",
+          "importance": 0.0
+        },
+        {
+          "feature": "price_change_pct",
+          "importance": 0.0
+        },
+        {
+          "feature": "price_momentum",
+          "importance": 0.0
+        },
+        {
+          "feature": "price_volatility",
+          "importance": 0.0
+        },
+        {
+          "feature": "volume_acceleration",
+          "importance": 0.0
+        },
+        {
+          "feature": "buy_volume_slope_10_30",
+          "importance": 0.0
+        },
+        {
+          "feature": "buy_volume_slope_30_60",
+          "importance": 0.0
+        },
+        {
+          "feature": "buy_count_slope_10_30",
+          "importance": 0.0
+        },
+        {
+          "feature": "unique_buyers_slope_10_30",
+          "importance": 0.0
+        },
+        {
+          "feature": "recent_new_buyer_ratio_10s",
+          "importance": 0.0
+        },
+        {
+          "feature": "recent_repeat_buyer_ratio_30s",
+          "importance": 0.0
+        }
+      ],
+      "inputs": {
+        "candidate_count": 7857,
+        "confirmation_config": {
+          "confirmation_bars": 3,
+          "max_confirmation_wait_hours": 8,
+          "min_market_volume_ratio": 0.5,
+          "min_price_retention_pct": -50.0,
+          "min_volume_retention_ratio": 0.05,
+          "replay": {
+            "entry_delay_seconds": 3,
+            "exit_delay_seconds": 3,
+            "fee_bps": 100.0,
+            "fixed_stake_bnb": 0.1,
+            "incomplete_policy": "last_observation",
+            "initial_equity_bnb": 1.0,
+            "max_entry_age_seconds": 300,
+            "max_open_positions": 8,
+            "min_entry_buy_count": 5,
+            "min_entry_unique_buyers": 3,
+            "ranking_group_seconds": 3600,
+            "slippage_bps": 200.0,
+            "stop_loss_pct": null,
+            "trailing_stop_pct": 40.0
+          }
+        },
+        "feature_names": [
+          "time_since_launch",
+          "entry_age_seconds",
+          "candidate_sequence",
+          "bsc_dex_volume_24h_usd_log",
+          "bsc_dex_volume_vs_7d_avg",
+          "market_context_available",
+          "creator_prior_launches_1h",
+          "creator_prior_launches_24h",
+          "creator_prior_graduations_7d",
+          "symbol_prior_launches_1h",
+          "symbol_prior_launches_24h",
+          "global_launches_1h",
+          "global_graduations_24h",
+          "volume_10s",
+          "volume_30s",
+          "volume_1min",
+          "volume_2min",
+          "volume_5min",
+          "buy_pressure",
+          "price_change_pct",
+          "price_momentum",
+          "price_volatility",
+          "volume_acceleration",
+          "buy_volume_slope_10_30",
+          "buy_volume_slope_30_60",
+          "buy_count_slope_10_30",
+          "unique_buyers_slope_10_30",
+          "recent_new_buyer_ratio_10s",
+          "recent_repeat_buyer_ratio_30s",
+          "buyer_set_churn_10s_vs_prev50s",
+          "holder_concentration_top5",
+          "max_holder_ratio",
+          "creator_buy_share",
+          "creator_sell_share",
+          "round_trip_buy_volume_ratio",
+          "volume_price_divergence",
+          "sell_pressure_30s",
+          "sell_pressure_change_10_60",
+          "signed_imbalance_30s",
+          "signed_imbalance_60s"
+        ],
+        "horizon_seconds": 21600,
+        "token_count": 3000
+      },
+      "model": {
+        "classifier": "trained_fresh",
+        "ranker": "trained_fresh"
+      },
+      "path_coverage": {
+        "candidate_count": 7857,
+        "complete_confirmed_count": 155,
+        "confirmation_rate": 0.020109456535573375,
+        "confirmed_entry_count": 158,
+        "status_counts": {
+          "missing_entry": 7702,
+          "ok": 155
+        }
+      },
+      "research_acceptance": {
+        "checks": {
+          "final_complete_only_net_profit_positive": false,
+          "final_net_profit_positive": false,
+          "harsh_stress_non_negative": false,
+          "minimum_final_complete_trades_10": false,
+          "minimum_final_trades_20": false,
+          "moderate_stress_non_negative": false,
+          "two_positive_walk_forward_folds": false
+        },
+        "passes": false,
+        "runtime_switch": "none"
+      },
+      "safe_for_live_switch": false,
+      "schema_version": 1,
+      "selected_threshold": 0.0002673991403183897,
+      "splits": {
+        "final": {
+          "candidate_count": 1585,
+          "complete_confirmed_count": 22,
+          "complete_only_portfolio": {
+            "capacity_skips": 0,
+            "cash_insufficient_skips": 0,
+            "duplicate_token_skips": 0,
+            "entry_failures": 0,
+            "final_equity_bnb": 0.9992438262530589,
+            "max_drawdown_pct": 8.983635879841678,
+            "net_profit_bnb": -0.0007561737469411467,
+            "net_return_pct": -0.07561737469411467,
+            "signal_count": 2,
+            "threshold": 0.0002673991403183897,
+            "trade_count": 2
+          },
+          "confirmed_entry_baseline": {
+            "capacity_skips": 0,
+            "cash_insufficient_skips": 0,
+            "duplicate_token_skips": 12,
+            "entry_failures": 1563,
+            "final_equity_bnb": 0.6695997267860619,
+            "max_drawdown_pct": 39.08555219261083,
+            "net_profit_bnb": -0.33040027321393806,
+            "net_return_pct": -33.04002732139381,
+            "signal_count": 1585,
+            "threshold": -1e+30,
+            "trade_count": 10
+          },
+          "confirmed_entry_count": 22,
+          "portfolio": {
+            "capacity_skips": 0,
+            "cash_insufficient_skips": 0,
+            "duplicate_token_skips": 0,
+            "entry_failures": 52,
+            "final_equity_bnb": 0.9992438262530589,
+            "max_drawdown_pct": 8.983635879841678,
+            "net_profit_bnb": -0.0007561737469411467,
+            "net_return_pct": -0.07561737469411467,
+            "signal_count": 54,
+            "threshold": 0.0002673991403183897,
+            "trade_count": 2
+          }
+        },
+        "train": {
+          "candidate_count": 4626,
+          "complete_confirmed_count": 97,
+          "complete_only_portfolio": {
+            "capacity_skips": 0,
+            "cash_insufficient_skips": 0,
+            "duplicate_token_skips": 9,
+            "entry_failures": 0,
+            "final_equity_bnb": 0.8025079271499185,
+            "max_drawdown_pct": 42.073256509493525,
+            "net_profit_bnb": -0.19749207285008152,
+            "net_return_pct": -19.749207285008154,
+            "signal_count": 23,
+            "threshold": 0.0002673991403183897,
+            "trade_count": 14
+          },
+          "confirmed_entry_baseline": {
+            "capacity_skips": 0,
+            "cash_insufficient_skips": 6,
+            "duplicate_token_skips": 58,
+            "entry_failures": 4529,
+            "final_equity_bnb": 0.2376546997827757,
+            "max_drawdown_pct": 90.92918080719262,
+            "net_profit_bnb": -0.7623453002172242,
+            "net_return_pct": -76.23453002172242,
+            "signal_count": 4626,
+            "threshold": -1e+30,
+            "trade_count": 33
+          },
+          "confirmed_entry_count": 100,
+          "portfolio": {
+            "capacity_skips": 0,
+            "cash_insufficient_skips": 0,
+            "duplicate_token_skips": 9,
+            "entry_failures": 283,
+            "final_equity_bnb": 0.8025079271499185,
+            "max_drawdown_pct": 42.073256509493525,
+            "net_profit_bnb": -0.19749207285008152,
+            "net_return_pct": -19.749207285008154,
+            "signal_count": 306,
+            "threshold": 0.0002673991403183897,
+            "trade_count": 14
+          }
+        },
+        "validation": {
+          "candidate_count": 1448,
+          "complete_confirmed_count": 28,
+          "complete_only_portfolio": {
+            "capacity_skips": 0,
+            "cash_insufficient_skips": 0,
+            "duplicate_token_skips": 2,
+            "entry_failures": 0,
+            "final_equity_bnb": 0.8208149351158841,
+            "max_drawdown_pct": 17.91850648841159,
+            "net_profit_bnb": -0.1791850648841159,
+            "net_return_pct": -17.91850648841159,
+            "signal_count": 5,
+            "threshold": 0.0002673991403183897,
+            "trade_count": 3
+          },
+          "confirmed_entry_baseline": {
+            "capacity_skips": 0,
+            "cash_insufficient_skips": 0,
+            "duplicate_token_skips": 17,
+            "entry_failures": 1420,
+            "final_equity_bnb": 0.7566771155285601,
+            "max_drawdown_pct": 25.78058195484768,
+            "net_profit_bnb": -0.2433228844714399,
+            "net_return_pct": -24.33228844714399,
+            "signal_count": 1448,
+            "threshold": -1e+30,
+            "trade_count": 11
+          },
+          "confirmed_entry_count": 28,
+          "portfolio": {
+            "capacity_skips": 0,
+            "cash_insufficient_skips": 0,
+            "duplicate_token_skips": 2,
+            "entry_failures": 61,
+            "final_equity_bnb": 0.8208149351158841,
+            "max_drawdown_pct": 17.91850648841159,
+            "net_profit_bnb": -0.1791850648841159,
+            "net_return_pct": -17.91850648841159,
+            "signal_count": 66,
+            "threshold": 0.0002673991403183897,
+            "trade_count": 3
+          }
+        }
+      },
+      "status": "ok",
+      "stress_replay": {
+        "base": {
+          "complete_only": {
+            "capacity_skips": 0,
+            "cash_insufficient_skips": 0,
+            "duplicate_token_skips": 0,
+            "entry_failures": 0,
+            "final_equity_bnb": 0.9992438262530589,
+            "max_drawdown_pct": 8.983635879841678,
+            "net_profit_bnb": -0.0007561737469411467,
+            "net_return_pct": -0.07561737469411467,
+            "signal_count": 2,
+            "threshold": 0.0002673991403183897,
+            "trade_count": 2
+          },
+          "final": {
+            "capacity_skips": 0,
+            "cash_insufficient_skips": 0,
+            "duplicate_token_skips": 0,
+            "entry_failures": 52,
+            "final_equity_bnb": 0.9992438262530589,
+            "max_drawdown_pct": 8.983635879841678,
+            "net_profit_bnb": -0.0007561737469411467,
+            "net_return_pct": -0.07561737469411467,
+            "signal_count": 54,
+            "threshold": 0.0002673991403183897,
+            "trade_count": 2
+          },
+          "validation": {
+            "capacity_skips": 0,
+            "cash_insufficient_skips": 0,
+            "duplicate_token_skips": 2,
+            "entry_failures": 61,
+            "final_equity_bnb": 0.8208149351158841,
+            "max_drawdown_pct": 17.91850648841159,
+            "net_profit_bnb": -0.1791850648841159,
+            "net_return_pct": -17.91850648841159,
+            "signal_count": 66,
+            "threshold": 0.0002673991403183897,
+            "trade_count": 3
+          }
+        },
+        "harsh": {
+          "complete_only": {
+            "capacity_skips": 0,
+            "cash_insufficient_skips": 0,
+            "duplicate_token_skips": 0,
+            "entry_failures": 0,
+            "final_equity_bnb": 0.9713606579571603,
+            "max_drawdown_pct": 10.525320460728693,
+            "net_profit_bnb": -0.02863934204283969,
+            "net_return_pct": -2.863934204283969,
+            "signal_count": 2,
+            "threshold": 0.0002673991403183897,
+            "trade_count": 2
+          },
+          "final": {
+            "capacity_skips": 0,
+            "cash_insufficient_skips": 0,
+            "duplicate_token_skips": 0,
+            "entry_failures": 52,
+            "final_equity_bnb": 0.9713606579571603,
+            "max_drawdown_pct": 10.525320460728693,
+            "net_profit_bnb": -0.02863934204283969,
+            "net_return_pct": -2.863934204283969,
+            "signal_count": 54,
+            "threshold": 0.0002673991403183897,
+            "trade_count": 2
+          },
+          "validation": {
+            "capacity_skips": 0,
+            "cash_insufficient_skips": 0,
+            "duplicate_token_skips": 2,
+            "entry_failures": 61,
+            "final_equity_bnb": 0.8076048727303482,
+            "max_drawdown_pct": 19.23951272696518,
+            "net_profit_bnb": -0.1923951272696518,
+            "net_return_pct": -19.23951272696518,
+            "signal_count": 66,
+            "threshold": 0.0002673991403183897,
+            "trade_count": 3
+          }
+        },
+        "moderate": {
+          "complete_only": {
+            "capacity_skips": 0,
+            "cash_insufficient_skips": 0,
+            "duplicate_token_skips": 0,
+            "entry_failures": 0,
+            "final_equity_bnb": 0.9895089444309522,
+            "max_drawdown_pct": 9.521885946786423,
+            "net_profit_bnb": -0.010491055569047836,
+            "net_return_pct": -1.0491055569047836,
+            "signal_count": 2,
+            "threshold": 0.0002673991403183897,
+            "trade_count": 2
+          },
+          "final": {
+            "capacity_skips": 0,
+            "cash_insufficient_skips": 0,
+            "duplicate_token_skips": 0,
+            "entry_failures": 52,
+            "final_equity_bnb": 0.9895089444309522,
+            "max_drawdown_pct": 9.521885946786423,
+            "net_profit_bnb": -0.010491055569047836,
+            "net_return_pct": -1.0491055569047836,
+            "signal_count": 54,
+            "threshold": 0.0002673991403183897,
+            "trade_count": 2
+          },
+          "validation": {
+            "capacity_skips": 0,
+            "cash_insufficient_skips": 0,
+            "duplicate_token_skips": 2,
+            "entry_failures": 61,
+            "final_equity_bnb": 0.8149120213959804,
+            "max_drawdown_pct": 18.50879786040196,
+            "net_profit_bnb": -0.1850879786040196,
+            "net_return_pct": -18.50879786040196,
+            "signal_count": 66,
+            "threshold": 0.0002673991403183897,
+            "trade_count": 3
+          }
+        }
+      },
+      "threshold_grid_validation": [
+        {
+          "capacity_skips": 0,
+          "cash_insufficient_skips": 0,
+          "duplicate_token_skips": 2,
+          "entry_failures": 61,
+          "final_equity_bnb": 0.8208149351158841,
+          "max_drawdown_pct": 17.91850648841159,
+          "net_profit_bnb": -0.1791850648841159,
+          "net_return_pct": -17.91850648841159,
+          "signal_count": 66,
+          "threshold": 0.0002673991403183897,
+          "trade_count": 3
+        }
+      ],
+      "walk_forward": [
+        {
+          "eval_complete_count": 6,
+          "eval_count": 1222,
+          "fold": 1,
+          "portfolio": {
+            "capacity_skips": 0,
+            "cash_insufficient_skips": 0,
+            "duplicate_token_skips": 0,
+            "entry_failures": 300,
+            "final_equity_bnb": 1.0,
+            "max_drawdown_pct": 0.0,
+            "net_profit_bnb": 0.0,
+            "net_return_pct": 0.0,
+            "signal_count": 300,
+            "threshold": 0.0002504730237013287,
+            "trade_count": 0
+          },
+          "status": "ok",
+          "threshold_from_train_p90": 0.0002504730237013287,
+          "train_count": 88
+        },
+        {
+          "eval_complete_count": 22,
+          "eval_count": 1195,
+          "fold": 2,
+          "portfolio": {
+            "capacity_skips": 0,
+            "cash_insufficient_skips": 0,
+            "duplicate_token_skips": 1,
+            "entry_failures": 53,
+            "final_equity_bnb": 0.9208149350934187,
+            "max_drawdown_pct": 7.918506490658128,
+            "net_profit_bnb": -0.07918506490658128,
+            "net_return_pct": -7.918506490658128,
+            "signal_count": 56,
+            "threshold": 0.0002673991403183897,
+            "trade_count": 2
+          },
+          "status": "ok",
+          "threshold_from_train_p90": 0.0002673991403183897,
+          "train_count": 97
+        },
+        {
+          "eval_complete_count": 28,
+          "eval_count": 1185,
+          "fold": 3,
+          "portfolio": {
+            "capacity_skips": 0,
+            "cash_insufficient_skips": 0,
+            "duplicate_token_skips": 3,
+            "entry_failures": 33,
+            "final_equity_bnb": 0.9369171115182365,
+            "max_drawdown_pct": 15.21630735332391,
+            "net_profit_bnb": -0.06308288848176347,
+            "net_return_pct": -6.308288848176346,
+            "signal_count": 40,
+            "threshold": 0.001020073096354545,
+            "trade_count": 4
+          },
+          "status": "ok",
+          "threshold_from_train_p90": 0.001020073096354545,
+          "train_count": 119
+        }
+      ]
+    },
+    "259200": {
+      "artifacts": {
+        "classifier": "data/models/20260914_dex_confirmation_v2_selected/horizon_259200s/confirmation_classifier.cbm",
+        "feature_schema": "data/models/20260914_dex_confirmation_v2_selected/horizon_259200s/feature_schema.json",
+        "ranker": "data/models/20260914_dex_confirmation_v2_selected/horizon_259200s/confirmation_ranker.cbm"
+      },
+      "decision": "research_only_until_final_walk_forward_and_stress_support",
+      "experiment_type": "bsc_sequential_dex_confirmation_ranker",
+      "feature_importance": [
+        {
+          "feature": "creator_prior_launches_1h",
+          "importance": 28.711638521775264
+        },
+        {
+          "feature": "global_launches_1h",
+          "importance": 26.89275205454047
+        },
+        {
+          "feature": "volume_30s",
+          "importance": 24.76034422872283
+        },
+        {
+          "feature": "creator_prior_launches_24h",
+          "importance": 19.635265194961445
+        },
+        {
+          "feature": "time_since_launch",
+          "importance": 0.0
+        },
+        {
+          "feature": "entry_age_seconds",
+          "importance": 0.0
+        },
+        {
+          "feature": "candidate_sequence",
+          "importance": 0.0
+        },
+        {
+          "feature": "bsc_dex_volume_24h_usd_log",
+          "importance": 0.0
+        },
+        {
+          "feature": "bsc_dex_volume_vs_7d_avg",
+          "importance": 0.0
+        },
+        {
+          "feature": "market_context_available",
+          "importance": 0.0
+        },
+        {
+          "feature": "creator_prior_graduations_7d",
+          "importance": 0.0
+        },
+        {
+          "feature": "symbol_prior_launches_1h",
+          "importance": 0.0
+        },
+        {
+          "feature": "symbol_prior_launches_24h",
+          "importance": 0.0
+        },
+        {
+          "feature": "global_graduations_24h",
+          "importance": 0.0
+        },
+        {
+          "feature": "volume_10s",
+          "importance": 0.0
+        },
+        {
+          "feature": "volume_1min",
+          "importance": 0.0
+        },
+        {
+          "feature": "volume_2min",
+          "importance": 0.0
+        },
+        {
+          "feature": "volume_5min",
+          "importance": 0.0
+        },
+        {
+          "feature": "buy_pressure",
+          "importance": 0.0
+        },
+        {
+          "feature": "price_change_pct",
+          "importance": 0.0
+        },
+        {
+          "feature": "price_momentum",
+          "importance": 0.0
+        },
+        {
+          "feature": "price_volatility",
+          "importance": 0.0
+        },
+        {
+          "feature": "volume_acceleration",
+          "importance": 0.0
+        },
+        {
+          "feature": "buy_volume_slope_10_30",
+          "importance": 0.0
+        },
+        {
+          "feature": "buy_volume_slope_30_60",
+          "importance": 0.0
+        },
+        {
+          "feature": "buy_count_slope_10_30",
+          "importance": 0.0
+        },
+        {
+          "feature": "unique_buyers_slope_10_30",
+          "importance": 0.0
+        },
+        {
+          "feature": "recent_new_buyer_ratio_10s",
+          "importance": 0.0
+        },
+        {
+          "feature": "recent_repeat_buyer_ratio_30s",
+          "importance": 0.0
+        },
+        {
+          "feature": "buyer_set_churn_10s_vs_prev50s",
+          "importance": 0.0
+        }
+      ],
+      "inputs": {
+        "candidate_count": 7857,
+        "confirmation_config": {
+          "confirmation_bars": 3,
+          "max_confirmation_wait_hours": 8,
+          "min_market_volume_ratio": 0.5,
+          "min_price_retention_pct": -50.0,
+          "min_volume_retention_ratio": 0.05,
+          "replay": {
+            "entry_delay_seconds": 3,
+            "exit_delay_seconds": 3,
+            "fee_bps": 100.0,
+            "fixed_stake_bnb": 0.1,
+            "incomplete_policy": "last_observation",
+            "initial_equity_bnb": 1.0,
+            "max_entry_age_seconds": 300,
+            "max_open_positions": 8,
+            "min_entry_buy_count": 5,
+            "min_entry_unique_buyers": 3,
+            "ranking_group_seconds": 3600,
+            "slippage_bps": 200.0,
+            "stop_loss_pct": null,
+            "trailing_stop_pct": 40.0
+          }
+        },
+        "feature_names": [
+          "time_since_launch",
+          "entry_age_seconds",
+          "candidate_sequence",
+          "bsc_dex_volume_24h_usd_log",
+          "bsc_dex_volume_vs_7d_avg",
+          "market_context_available",
+          "creator_prior_launches_1h",
+          "creator_prior_launches_24h",
+          "creator_prior_graduations_7d",
+          "symbol_prior_launches_1h",
+          "symbol_prior_launches_24h",
+          "global_launches_1h",
+          "global_graduations_24h",
+          "volume_10s",
+          "volume_30s",
+          "volume_1min",
+          "volume_2min",
+          "volume_5min",
+          "buy_pressure",
+          "price_change_pct",
+          "price_momentum",
+          "price_volatility",
+          "volume_acceleration",
+          "buy_volume_slope_10_30",
+          "buy_volume_slope_30_60",
+          "buy_count_slope_10_30",
+          "unique_buyers_slope_10_30",
+          "recent_new_buyer_ratio_10s",
+          "recent_repeat_buyer_ratio_30s",
+          "buyer_set_churn_10s_vs_prev50s",
+          "holder_concentration_top5",
+          "max_holder_ratio",
+          "creator_buy_share",
+          "creator_sell_share",
+          "round_trip_buy_volume_ratio",
+          "volume_price_divergence",
+          "sell_pressure_30s",
+          "sell_pressure_change_10_60",
+          "signed_imbalance_30s",
+          "signed_imbalance_60s"
+        ],
+        "horizon_seconds": 259200,
+        "token_count": 3000
+      },
+      "model": {
+        "classifier": "trained_fresh",
+        "ranker": "trained_fresh"
+      },
+      "path_coverage": {
+        "candidate_count": 7857,
+        "complete_confirmed_count": 155,
+        "confirmation_rate": 0.020109456535573375,
+        "confirmed_entry_count": 158,
+        "status_counts": {
+          "incomplete_last_observation": 3,
+          "missing_entry": 7699,
+          "ok": 155
+        }
+      },
+      "research_acceptance": {
+        "checks": {
+          "final_complete_only_net_profit_positive": false,
+          "final_net_profit_positive": false,
+          "harsh_stress_non_negative": false,
+          "minimum_final_complete_trades_10": false,
+          "minimum_final_trades_20": false,
+          "moderate_stress_non_negative": false,
+          "two_positive_walk_forward_folds": false
+        },
+        "passes": false,
+        "runtime_switch": "none"
+      },
+      "safe_for_live_switch": false,
+      "schema_version": 1,
+      "selected_threshold": 0.0005422038458147525,
+      "splits": {
+        "final": {
+          "candidate_count": 1585,
+          "complete_confirmed_count": 19,
+          "complete_only_portfolio": {
+            "capacity_skips": 0,
+            "cash_insufficient_skips": 0,
+            "duplicate_token_skips": 5,
+            "entry_failures": 0,
+            "final_equity_bnb": 0.736959989874097,
+            "max_drawdown_pct": 52.07225875859469,
+            "net_profit_bnb": -0.26304001012590295,
+            "net_return_pct": -26.304001012590295,
+            "signal_count": 11,
+            "threshold": 0.0005422038458147525,
+            "trade_count": 6
+          },
+          "confirmed_entry_baseline": {
+            "capacity_skips": 0,
+            "cash_insufficient_skips": 0,
+            "duplicate_token_skips": 12,
+            "entry_failures": 1563,
+            "final_equity_bnb": 0.4971176086909289,
+            "max_drawdown_pct": 82.07225875859469,
+            "net_profit_bnb": -0.5028823913090711,
+            "net_return_pct": -50.28823913090711,
+            "signal_count": 1585,
+            "threshold": -1e+30,
+            "trade_count": 10
+          },
+          "confirmed_entry_count": 22,
+          "portfolio": {
+            "capacity_skips": 0,
+            "cash_insufficient_skips": 0,
+            "duplicate_token_skips": 7,
+            "entry_failures": 845,
+            "final_equity_bnb": 0.6531951580138391,
+            "max_drawdown_pct": 52.07225875859469,
+            "net_profit_bnb": -0.3468048419861609,
+            "net_return_pct": -34.68048419861609,
+            "signal_count": 859,
+            "threshold": 0.0005422038458147525,
+            "trade_count": 7
+          }
+        },
+        "train": {
+          "candidate_count": 3884,
+          "complete_confirmed_count": 94,
+          "complete_only_portfolio": {
+            "capacity_skips": 0,
+            "cash_insufficient_skips": 0,
+            "duplicate_token_skips": 8,
+            "entry_failures": 0,
+            "final_equity_bnb": 0.8613384703715325,
+            "max_drawdown_pct": 30.8627268875761,
+            "net_profit_bnb": -0.13866152962846745,
+            "net_return_pct": -13.866152962846744,
+            "signal_count": 13,
+            "threshold": 0.0005422038458147525,
+            "trade_count": 5
+          },
+          "confirmed_entry_baseline": {
+            "capacity_skips": 0,
+            "cash_insufficient_skips": 36,
+            "duplicate_token_skips": 36,
+            "entry_failures": 3790,
+            "final_equity_bnb": 0.25513033642043514,
+            "max_drawdown_pct": 90.77081284655473,
+            "net_profit_bnb": -0.7448696635795649,
+            "net_return_pct": -74.48696635795649,
+            "signal_count": 3884,
+            "threshold": -1e+30,
+            "trade_count": 22
+          },
+          "confirmed_entry_count": 94,
+          "portfolio": {
+            "capacity_skips": 0,
+            "cash_insufficient_skips": 0,
+            "duplicate_token_skips": 8,
+            "entry_failures": 494,
+            "final_equity_bnb": 0.8613384703715325,
+            "max_drawdown_pct": 30.8627268875761,
+            "net_profit_bnb": -0.13866152962846745,
+            "net_return_pct": -13.866152962846744,
+            "signal_count": 507,
+            "threshold": 0.0005422038458147525,
+            "trade_count": 5
+          }
+        },
+        "validation": {
+          "candidate_count": 809,
+          "complete_confirmed_count": 17,
+          "complete_only_portfolio": {
+            "capacity_skips": 0,
+            "cash_insufficient_skips": 0,
+            "duplicate_token_skips": 2,
+            "entry_failures": 0,
+            "final_equity_bnb": 1.0172509838747248,
+            "max_drawdown_pct": 0.0,
+            "net_profit_bnb": 0.01725098387472479,
+            "net_return_pct": 1.725098387472479,
+            "signal_count": 3,
+            "threshold": 0.0005422038458147525,
+            "trade_count": 1
+          },
+          "confirmed_entry_baseline": {
+            "capacity_skips": 0,
+            "cash_insufficient_skips": 0,
+            "duplicate_token_skips": 10,
+            "entry_failures": 792,
+            "final_equity_bnb": 0.7391233392738811,
+            "max_drawdown_pct": 57.77614653787489,
+            "net_profit_bnb": -0.2608766607261189,
+            "net_return_pct": -26.087666072611892,
+            "signal_count": 809,
+            "threshold": -1e+30,
+            "trade_count": 7
+          },
+          "confirmed_entry_count": 17,
+          "portfolio": {
+            "capacity_skips": 0,
+            "cash_insufficient_skips": 0,
+            "duplicate_token_skips": 2,
+            "entry_failures": 209,
+            "final_equity_bnb": 1.0172509838747248,
+            "max_drawdown_pct": 0.0,
+            "net_profit_bnb": 0.01725098387472479,
+            "net_return_pct": 1.725098387472479,
+            "signal_count": 212,
+            "threshold": 0.0005422038458147525,
+            "trade_count": 1
+          }
+        }
+      },
+      "status": "ok",
+      "stress_replay": {
+        "base": {
+          "complete_only": {
+            "capacity_skips": 0,
+            "cash_insufficient_skips": 0,
+            "duplicate_token_skips": 5,
+            "entry_failures": 0,
+            "final_equity_bnb": 0.736959989874097,
+            "max_drawdown_pct": 52.07225875859469,
+            "net_profit_bnb": -0.26304001012590295,
+            "net_return_pct": -26.304001012590295,
+            "signal_count": 11,
+            "threshold": 0.0005422038458147525,
+            "trade_count": 6
+          },
+          "final": {
+            "capacity_skips": 0,
+            "cash_insufficient_skips": 0,
+            "duplicate_token_skips": 7,
+            "entry_failures": 845,
+            "final_equity_bnb": 0.6531951580138391,
+            "max_drawdown_pct": 52.07225875859469,
+            "net_profit_bnb": -0.3468048419861609,
+            "net_return_pct": -34.68048419861609,
+            "signal_count": 859,
+            "threshold": 0.0005422038458147525,
+            "trade_count": 7
+          },
+          "validation": {
+            "capacity_skips": 0,
+            "cash_insufficient_skips": 0,
+            "duplicate_token_skips": 2,
+            "entry_failures": 209,
+            "final_equity_bnb": 1.0172509838747248,
+            "max_drawdown_pct": 0.0,
+            "net_profit_bnb": 0.01725098387472479,
+            "net_return_pct": 1.725098387472479,
+            "signal_count": 212,
+            "threshold": 0.0005422038458147525,
+            "trade_count": 1
+          }
+        },
+        "harsh": {
+          "complete_only": {
+            "capacity_skips": 0,
+            "cash_insufficient_skips": 0,
+            "duplicate_token_skips": 5,
+            "entry_failures": 0,
+            "final_equity_bnb": 0.6898041392596319,
+            "max_drawdown_pct": 53.18170614975091,
+            "net_profit_bnb": -0.3101958607403681,
+            "net_return_pct": -31.01958607403681,
+            "signal_count": 11,
+            "threshold": 0.0005422038458147525,
+            "trade_count": 6
+          },
+          "final": {
+            "capacity_skips": 0,
+            "cash_insufficient_skips": 0,
+            "duplicate_token_skips": 7,
+            "entry_failures": 845,
+            "final_equity_bnb": 0.6037672775248941,
+            "max_drawdown_pct": 53.18170614975091,
+            "net_profit_bnb": -0.3962327224751059,
+            "net_return_pct": -39.623272247510585,
+            "signal_count": 859,
+            "threshold": 0.0005422038458147525,
+            "trade_count": 7
+          },
+          "validation": {
+            "capacity_skips": 0,
+            "cash_insufficient_skips": 0,
+            "duplicate_token_skips": 2,
+            "entry_failures": 209,
+            "final_equity_bnb": 1.000842300214503,
+            "max_drawdown_pct": 0.0,
+            "net_profit_bnb": 0.0008423002145030445,
+            "net_return_pct": 0.08423002145030445,
+            "signal_count": 212,
+            "threshold": 0.0005422038458147525,
+            "trade_count": 1
+          }
+        },
+        "moderate": {
+          "complete_only": {
+            "capacity_skips": 0,
+            "cash_insufficient_skips": 0,
+            "duplicate_token_skips": 5,
+            "entry_failures": 0,
+            "final_equity_bnb": 0.7204964148570404,
+            "max_drawdown_pct": 52.45960137067293,
+            "net_profit_bnb": -0.2795035851429596,
+            "net_return_pct": -27.95035851429596,
+            "signal_count": 11,
+            "threshold": 0.0005422038458147525,
+            "trade_count": 6
+          },
+          "final": {
+            "capacity_skips": 0,
+            "cash_insufficient_skips": 0,
+            "duplicate_token_skips": 7,
+            "entry_failures": 845,
+            "final_equity_bnb": 0.6359383466582991,
+            "max_drawdown_pct": 52.45960137067293,
+            "net_profit_bnb": -0.36406165334170093,
+            "net_return_pct": -36.40616533417009,
+            "signal_count": 859,
+            "threshold": 0.0005422038458147525,
+            "trade_count": 7
+          },
+          "validation": {
+            "capacity_skips": 0,
+            "cash_insufficient_skips": 0,
+            "duplicate_token_skips": 2,
+            "entry_failures": 209,
+            "final_equity_bnb": 1.0115222017437469,
+            "max_drawdown_pct": 0.0,
+            "net_profit_bnb": 0.011522201743746852,
+            "net_return_pct": 1.1522201743746852,
+            "signal_count": 212,
+            "threshold": 0.0005422038458147525,
+            "trade_count": 1
+          }
+        }
+      },
+      "threshold_grid_validation": [
+        {
+          "capacity_skips": 0,
+          "cash_insufficient_skips": 0,
+          "duplicate_token_skips": 3,
+          "entry_failures": 254,
+          "final_equity_bnb": 0.9990322033797743,
+          "max_drawdown_pct": 11.821878049495037,
+          "net_profit_bnb": -0.0009677966202257249,
+          "net_return_pct": -0.09677966202257249,
+          "signal_count": 259,
+          "threshold": 0.00034842804535990785,
+          "trade_count": 2
+        },
+        {
+          "capacity_skips": 0,
+          "cash_insufficient_skips": 0,
+          "duplicate_token_skips": 2,
+          "entry_failures": 209,
+          "final_equity_bnb": 1.0172509838747248,
+          "max_drawdown_pct": 0.0,
+          "net_profit_bnb": 0.01725098387472479,
+          "net_return_pct": 1.725098387472479,
+          "signal_count": 212,
+          "threshold": 0.0005422038458147525,
+          "trade_count": 1
+        }
+      ],
+      "walk_forward": [
+        {
+          "eval_complete_count": 6,
+          "eval_count": 1222,
+          "fold": 1,
+          "portfolio": {
+            "capacity_skips": 0,
+            "cash_insufficient_skips": 0,
+            "duplicate_token_skips": 0,
+            "entry_failures": 100,
+            "final_equity_bnb": 1.0,
+            "max_drawdown_pct": 0.0,
+            "net_profit_bnb": 0.0,
+            "net_return_pct": 0.0,
+            "signal_count": 100,
+            "threshold": 0.00038229960140047755,
+            "trade_count": 0
+          },
+          "status": "ok",
+          "threshold_from_train_p90": 0.00038229960140047755,
+          "train_count": 76
+        },
+        {
+          "eval_complete_count": 22,
+          "eval_count": 1195,
+          "fold": 2,
+          "portfolio": {
+            "capacity_skips": 0,
+            "cash_insufficient_skips": 0,
+            "duplicate_token_skips": 5,
+            "entry_failures": 405,
+            "final_equity_bnb": 1.01599387496827,
+            "max_drawdown_pct": 14.607003049355088,
+            "net_profit_bnb": 0.015993874968269983,
+            "net_return_pct": 1.5993874968269983,
+            "signal_count": 413,
+            "threshold": 0.0005422038458147525,
+            "trade_count": 3
+          },
+          "status": "ok",
+          "threshold_from_train_p90": 0.0005422038458147525,
+          "train_count": 94
+        },
+        {
+          "eval_complete_count": 28,
+          "eval_count": 1185,
+          "fold": 3,
+          "portfolio": {
+            "capacity_skips": 0,
+            "cash_insufficient_skips": 0,
+            "duplicate_token_skips": 1,
+            "entry_failures": 137,
+            "final_equity_bnb": 0.6225498995708617,
+            "max_drawdown_pct": 61.861082071431184,
+            "net_profit_bnb": -0.3774501004291383,
+            "net_return_pct": -37.745010042913826,
+            "signal_count": 145,
+            "threshold": 0.0005201998027378519,
+            "trade_count": 7
+          },
+          "status": "ok",
+          "threshold_from_train_p90": 0.0005201998027378519,
+          "train_count": 117
+        }
+      ]
+    },
+    "86400": {
+      "artifacts": {
+        "classifier": "data/models/20260914_dex_confirmation_v2_selected/horizon_86400s/confirmation_classifier.cbm",
+        "feature_schema": "data/models/20260914_dex_confirmation_v2_selected/horizon_86400s/feature_schema.json",
+        "ranker": "data/models/20260914_dex_confirmation_v2_selected/horizon_86400s/confirmation_ranker.cbm"
+      },
+      "decision": "research_only_until_final_walk_forward_and_stress_support",
+      "experiment_type": "bsc_sequential_dex_confirmation_ranker",
+      "feature_importance": [
+        {
+          "feature": "symbol_prior_launches_1h",
+          "importance": 26.861053232873743
+        },
+        {
+          "feature": "bsc_dex_volume_24h_usd_log",
+          "importance": 25.850304999791785
+        },
+        {
+          "feature": "global_graduations_24h",
+          "importance": 25.76574948584813
+        },
+        {
+          "feature": "volume_1min",
+          "importance": 21.522892281486335
+        },
+        {
+          "feature": "time_since_launch",
+          "importance": 0.0
+        },
+        {
+          "feature": "entry_age_seconds",
+          "importance": 0.0
+        },
+        {
+          "feature": "candidate_sequence",
+          "importance": 0.0
+        },
+        {
+          "feature": "bsc_dex_volume_vs_7d_avg",
+          "importance": 0.0
+        },
+        {
+          "feature": "market_context_available",
+          "importance": 0.0
+        },
+        {
+          "feature": "creator_prior_launches_1h",
+          "importance": 0.0
+        },
+        {
+          "feature": "creator_prior_launches_24h",
+          "importance": 0.0
+        },
+        {
+          "feature": "creator_prior_graduations_7d",
+          "importance": 0.0
+        },
+        {
+          "feature": "symbol_prior_launches_24h",
+          "importance": 0.0
+        },
+        {
+          "feature": "global_launches_1h",
+          "importance": 0.0
+        },
+        {
+          "feature": "volume_10s",
+          "importance": 0.0
+        },
+        {
+          "feature": "volume_30s",
+          "importance": 0.0
+        },
+        {
+          "feature": "volume_2min",
+          "importance": 0.0
+        },
+        {
+          "feature": "volume_5min",
+          "importance": 0.0
+        },
+        {
+          "feature": "buy_pressure",
+          "importance": 0.0
+        },
+        {
+          "feature": "price_change_pct",
+          "importance": 0.0
+        },
+        {
+          "feature": "price_momentum",
+          "importance": 0.0
+        },
+        {
+          "feature": "price_volatility",
+          "importance": 0.0
+        },
+        {
+          "feature": "volume_acceleration",
+          "importance": 0.0
+        },
+        {
+          "feature": "buy_volume_slope_10_30",
+          "importance": 0.0
+        },
+        {
+          "feature": "buy_volume_slope_30_60",
+          "importance": 0.0
+        },
+        {
+          "feature": "buy_count_slope_10_30",
+          "importance": 0.0
+        },
+        {
+          "feature": "unique_buyers_slope_10_30",
+          "importance": 0.0
+        },
+        {
+          "feature": "recent_new_buyer_ratio_10s",
+          "importance": 0.0
+        },
+        {
+          "feature": "recent_repeat_buyer_ratio_30s",
+          "importance": 0.0
+        },
+        {
+          "feature": "buyer_set_churn_10s_vs_prev50s",
+          "importance": 0.0
+        }
+      ],
+      "inputs": {
+        "candidate_count": 7857,
+        "confirmation_config": {
+          "confirmation_bars": 3,
+          "max_confirmation_wait_hours": 8,
+          "min_market_volume_ratio": 0.5,
+          "min_price_retention_pct": -50.0,
+          "min_volume_retention_ratio": 0.05,
+          "replay": {
+            "entry_delay_seconds": 3,
+            "exit_delay_seconds": 3,
+            "fee_bps": 100.0,
+            "fixed_stake_bnb": 0.1,
+            "incomplete_policy": "last_observation",
+            "initial_equity_bnb": 1.0,
+            "max_entry_age_seconds": 300,
+            "max_open_positions": 8,
+            "min_entry_buy_count": 5,
+            "min_entry_unique_buyers": 3,
+            "ranking_group_seconds": 3600,
+            "slippage_bps": 200.0,
+            "stop_loss_pct": null,
+            "trailing_stop_pct": 40.0
+          }
+        },
+        "feature_names": [
+          "time_since_launch",
+          "entry_age_seconds",
+          "candidate_sequence",
+          "bsc_dex_volume_24h_usd_log",
+          "bsc_dex_volume_vs_7d_avg",
+          "market_context_available",
+          "creator_prior_launches_1h",
+          "creator_prior_launches_24h",
+          "creator_prior_graduations_7d",
+          "symbol_prior_launches_1h",
+          "symbol_prior_launches_24h",
+          "global_launches_1h",
+          "global_graduations_24h",
+          "volume_10s",
+          "volume_30s",
+          "volume_1min",
+          "volume_2min",
+          "volume_5min",
+          "buy_pressure",
+          "price_change_pct",
+          "price_momentum",
+          "price_volatility",
+          "volume_acceleration",
+          "buy_volume_slope_10_30",
+          "buy_volume_slope_30_60",
+          "buy_count_slope_10_30",
+          "unique_buyers_slope_10_30",
+          "recent_new_buyer_ratio_10s",
+          "recent_repeat_buyer_ratio_30s",
+          "buyer_set_churn_10s_vs_prev50s",
+          "holder_concentration_top5",
+          "max_holder_ratio",
+          "creator_buy_share",
+          "creator_sell_share",
+          "round_trip_buy_volume_ratio",
+          "volume_price_divergence",
+          "sell_pressure_30s",
+          "sell_pressure_change_10_60",
+          "signed_imbalance_30s",
+          "signed_imbalance_60s"
+        ],
+        "horizon_seconds": 86400,
+        "token_count": 3000
+      },
+      "model": {
+        "classifier": "trained_fresh",
+        "ranker": "trained_fresh"
+      },
+      "path_coverage": {
+        "candidate_count": 7857,
+        "complete_confirmed_count": 158,
+        "confirmation_rate": 0.020109456535573375,
+        "confirmed_entry_count": 158,
+        "status_counts": {
+          "missing_entry": 7699,
+          "ok": 158
+        }
+      },
+      "research_acceptance": {
+        "checks": {
+          "final_complete_only_net_profit_positive": false,
+          "final_net_profit_positive": false,
+          "harsh_stress_non_negative": true,
+          "minimum_final_complete_trades_10": false,
+          "minimum_final_trades_20": false,
+          "moderate_stress_non_negative": true,
+          "two_positive_walk_forward_folds": false
+        },
+        "passes": false,
+        "runtime_switch": "none"
+      },
+      "safe_for_live_switch": false,
+      "schema_version": 1,
+      "selected_threshold": 0.00036130631252187235,
+      "splits": {
+        "final": {
+          "candidate_count": 1585,
+          "complete_confirmed_count": 22,
+          "complete_only_portfolio": {
+            "capacity_skips": 0,
+            "cash_insufficient_skips": 0,
+            "duplicate_token_skips": 0,
+            "entry_failures": 0,
+            "final_equity_bnb": 1.0,
+            "max_drawdown_pct": 0.0,
+            "net_profit_bnb": 0.0,
+            "net_return_pct": 0.0,
+            "signal_count": 0,
+            "threshold": 0.00036130631252187235,
+            "trade_count": 0
+          },
+          "confirmed_entry_baseline": {
+            "capacity_skips": 0,
+            "cash_insufficient_skips": 0,
+            "duplicate_token_skips": 12,
+            "entry_failures": 1563,
+            "final_equity_bnb": 0.5645765263504877,
+            "max_drawdown_pct": 52.15757238043811,
+            "net_profit_bnb": -0.4354234736495123,
+            "net_return_pct": -43.542347364951226,
+            "signal_count": 1585,
+            "threshold": -1e+30,
+            "trade_count": 10
+          },
+          "confirmed_entry_count": 22,
+          "portfolio": {
+            "capacity_skips": 0,
+            "cash_insufficient_skips": 0,
+            "duplicate_token_skips": 0,
+            "entry_failures": 0,
+            "final_equity_bnb": 1.0,
+            "max_drawdown_pct": 0.0,
+            "net_profit_bnb": 0.0,
+            "net_return_pct": 0.0,
+            "signal_count": 0,
+            "threshold": 0.00036130631252187235,
+            "trade_count": 0
+          }
+        },
+        "train": {
+          "candidate_count": 4464,
+          "complete_confirmed_count": 100,
+          "complete_only_portfolio": {
+            "capacity_skips": 0,
+            "cash_insufficient_skips": 0,
+            "duplicate_token_skips": 7,
+            "entry_failures": 0,
+            "final_equity_bnb": 0.7596378053914478,
+            "max_drawdown_pct": 36.73957888872792,
+            "net_profit_bnb": -0.24036219460855224,
+            "net_return_pct": -24.036219460855225,
+            "signal_count": 15,
+            "threshold": 0.00036130631252187235,
+            "trade_count": 8
+          },
+          "confirmed_entry_baseline": {
+            "capacity_skips": 0,
+            "cash_insufficient_skips": 27,
+            "duplicate_token_skips": 46,
+            "entry_failures": 4364,
+            "final_equity_bnb": 0.253411423422311,
+            "max_drawdown_pct": 93.94587540326027,
+            "net_profit_bnb": -0.746588576577689,
+            "net_return_pct": -74.65885765776889,
+            "signal_count": 4464,
+            "threshold": -1e+30,
+            "trade_count": 27
+          },
+          "confirmed_entry_count": 100,
+          "portfolio": {
+            "capacity_skips": 0,
+            "cash_insufficient_skips": 0,
+            "duplicate_token_skips": 7,
+            "entry_failures": 405,
+            "final_equity_bnb": 0.7596378053914478,
+            "max_drawdown_pct": 36.73957888872792,
+            "net_profit_bnb": -0.24036219460855224,
+            "net_return_pct": -24.036219460855225,
+            "signal_count": 420,
+            "threshold": 0.00036130631252187235,
+            "trade_count": 8
+          }
+        },
+        "validation": {
+          "candidate_count": 1251,
+          "complete_confirmed_count": 25,
+          "complete_only_portfolio": {
+            "capacity_skips": 0,
+            "cash_insufficient_skips": 0,
+            "duplicate_token_skips": 0,
+            "entry_failures": 0,
+            "final_equity_bnb": 1.0,
+            "max_drawdown_pct": 0.0,
+            "net_profit_bnb": 0.0,
+            "net_return_pct": 0.0,
+            "signal_count": 0,
+            "threshold": 0.00036130631252187235,
+            "trade_count": 0
+          },
+          "confirmed_entry_baseline": {
+            "capacity_skips": 0,
+            "cash_insufficient_skips": 0,
+            "duplicate_token_skips": 15,
+            "entry_failures": 1226,
+            "final_equity_bnb": 0.7451504425943869,
+            "max_drawdown_pct": 43.10429837935895,
+            "net_profit_bnb": -0.2548495574056131,
+            "net_return_pct": -25.48495574056131,
+            "signal_count": 1251,
+            "threshold": -1e+30,
+            "trade_count": 10
+          },
+          "confirmed_entry_count": 25,
+          "portfolio": {
+            "capacity_skips": 0,
+            "cash_insufficient_skips": 0,
+            "duplicate_token_skips": 0,
+            "entry_failures": 0,
+            "final_equity_bnb": 1.0,
+            "max_drawdown_pct": 0.0,
+            "net_profit_bnb": 0.0,
+            "net_return_pct": 0.0,
+            "signal_count": 0,
+            "threshold": 0.00036130631252187235,
+            "trade_count": 0
+          }
+        }
+      },
+      "status": "ok",
+      "stress_replay": {
+        "base": {
+          "complete_only": {
+            "capacity_skips": 0,
+            "cash_insufficient_skips": 0,
+            "duplicate_token_skips": 0,
+            "entry_failures": 0,
+            "final_equity_bnb": 1.0,
+            "max_drawdown_pct": 0.0,
+            "net_profit_bnb": 0.0,
+            "net_return_pct": 0.0,
+            "signal_count": 0,
+            "threshold": 0.00036130631252187235,
+            "trade_count": 0
+          },
+          "final": {
+            "capacity_skips": 0,
+            "cash_insufficient_skips": 0,
+            "duplicate_token_skips": 0,
+            "entry_failures": 0,
+            "final_equity_bnb": 1.0,
+            "max_drawdown_pct": 0.0,
+            "net_profit_bnb": 0.0,
+            "net_return_pct": 0.0,
+            "signal_count": 0,
+            "threshold": 0.00036130631252187235,
+            "trade_count": 0
+          },
+          "validation": {
+            "capacity_skips": 0,
+            "cash_insufficient_skips": 0,
+            "duplicate_token_skips": 0,
+            "entry_failures": 0,
+            "final_equity_bnb": 1.0,
+            "max_drawdown_pct": 0.0,
+            "net_profit_bnb": 0.0,
+            "net_return_pct": 0.0,
+            "signal_count": 0,
+            "threshold": 0.00036130631252187235,
+            "trade_count": 0
+          }
+        },
+        "harsh": {
+          "complete_only": {
+            "capacity_skips": 0,
+            "cash_insufficient_skips": 0,
+            "duplicate_token_skips": 0,
+            "entry_failures": 0,
+            "final_equity_bnb": 1.0,
+            "max_drawdown_pct": 0.0,
+            "net_profit_bnb": 0.0,
+            "net_return_pct": 0.0,
+            "signal_count": 0,
+            "threshold": 0.00036130631252187235,
+            "trade_count": 0
+          },
+          "final": {
+            "capacity_skips": 0,
+            "cash_insufficient_skips": 0,
+            "duplicate_token_skips": 0,
+            "entry_failures": 0,
+            "final_equity_bnb": 1.0,
+            "max_drawdown_pct": 0.0,
+            "net_profit_bnb": 0.0,
+            "net_return_pct": 0.0,
+            "signal_count": 0,
+            "threshold": 0.00036130631252187235,
+            "trade_count": 0
+          },
+          "validation": {
+            "capacity_skips": 0,
+            "cash_insufficient_skips": 0,
+            "duplicate_token_skips": 0,
+            "entry_failures": 0,
+            "final_equity_bnb": 1.0,
+            "max_drawdown_pct": 0.0,
+            "net_profit_bnb": 0.0,
+            "net_return_pct": 0.0,
+            "signal_count": 0,
+            "threshold": 0.00036130631252187235,
+            "trade_count": 0
+          }
+        },
+        "moderate": {
+          "complete_only": {
+            "capacity_skips": 0,
+            "cash_insufficient_skips": 0,
+            "duplicate_token_skips": 0,
+            "entry_failures": 0,
+            "final_equity_bnb": 1.0,
+            "max_drawdown_pct": 0.0,
+            "net_profit_bnb": 0.0,
+            "net_return_pct": 0.0,
+            "signal_count": 0,
+            "threshold": 0.00036130631252187235,
+            "trade_count": 0
+          },
+          "final": {
+            "capacity_skips": 0,
+            "cash_insufficient_skips": 0,
+            "duplicate_token_skips": 0,
+            "entry_failures": 0,
+            "final_equity_bnb": 1.0,
+            "max_drawdown_pct": 0.0,
+            "net_profit_bnb": 0.0,
+            "net_return_pct": 0.0,
+            "signal_count": 0,
+            "threshold": 0.00036130631252187235,
+            "trade_count": 0
+          },
+          "validation": {
+            "capacity_skips": 0,
+            "cash_insufficient_skips": 0,
+            "duplicate_token_skips": 0,
+            "entry_failures": 0,
+            "final_equity_bnb": 1.0,
+            "max_drawdown_pct": 0.0,
+            "net_profit_bnb": 0.0,
+            "net_return_pct": 0.0,
+            "signal_count": 0,
+            "threshold": 0.00036130631252187235,
+            "trade_count": 0
+          }
+        }
+      },
+      "threshold_grid_validation": [
+        {
+          "capacity_skips": 0,
+          "cash_insufficient_skips": 0,
+          "duplicate_token_skips": 7,
+          "entry_failures": 448,
+          "final_equity_bnb": 0.8068500880610199,
+          "max_drawdown_pct": 36.93433383269564,
+          "net_profit_bnb": -0.19314991193898012,
+          "net_return_pct": -19.314991193898013,
+          "signal_count": 464,
+          "threshold": 0.0003230604512282364,
+          "trade_count": 9
+        },
+        {
+          "capacity_skips": 0,
+          "cash_insufficient_skips": 0,
+          "duplicate_token_skips": 0,
+          "entry_failures": 0,
+          "final_equity_bnb": 1.0,
+          "max_drawdown_pct": 0.0,
+          "net_profit_bnb": 0.0,
+          "net_return_pct": 0.0,
+          "signal_count": 0,
+          "threshold": 0.00036130631252187235,
+          "trade_count": 0
+        }
+      ],
+      "walk_forward": [
+        {
+          "eval_complete_count": 6,
+          "eval_count": 1222,
+          "fold": 1,
+          "portfolio": {
+            "capacity_skips": 0,
+            "cash_insufficient_skips": 0,
+            "duplicate_token_skips": 3,
+            "entry_failures": 487,
+            "final_equity_bnb": 0.9000546190514176,
+            "max_drawdown_pct": 12.54808371600472,
+            "net_profit_bnb": -0.09994538094858241,
+            "net_return_pct": -9.99453809485824,
+            "signal_count": 492,
+            "threshold": 0.0003254745787520367,
+            "trade_count": 2
+          },
+          "status": "ok",
+          "threshold_from_train_p90": 0.0003254745787520367,
+          "train_count": 86
+        },
+        {
+          "eval_complete_count": 22,
+          "eval_count": 1195,
+          "fold": 2,
+          "portfolio": {
+            "capacity_skips": 0,
+            "cash_insufficient_skips": 0,
+            "duplicate_token_skips": 0,
+            "entry_failures": 0,
+            "final_equity_bnb": 1.0,
+            "max_drawdown_pct": 0.0,
+            "net_profit_bnb": 0.0,
+            "net_return_pct": 0.0,
+            "signal_count": 0,
+            "threshold": 0.00036130631252187235,
+            "trade_count": 0
+          },
+          "status": "ok",
+          "threshold_from_train_p90": 0.00036130631252187235,
+          "train_count": 100
+        },
+        {
+          "eval_complete_count": 28,
+          "eval_count": 1185,
+          "fold": 3,
+          "portfolio": {
+            "capacity_skips": 0,
+            "cash_insufficient_skips": 0,
+            "duplicate_token_skips": 0,
+            "entry_failures": 0,
+            "final_equity_bnb": 1.0,
+            "max_drawdown_pct": 0.0,
+            "net_profit_bnb": 0.0,
+            "net_return_pct": 0.0,
+            "signal_count": 0,
+            "threshold": 0.0005037859306380057,
+            "trade_count": 0
+          },
+          "status": "ok",
+          "threshold_from_train_p90": 0.0005037859306380057,
+          "train_count": 119
+        }
+      ]
+    }
+  },
+  "inputs": {
+    "confirmation_config": {
+      "confirmation_bars": 3,
+      "max_confirmation_wait_hours": 8,
+      "min_market_volume_ratio": 0.5,
+      "min_price_retention_pct": -50.0,
+      "min_volume_retention_ratio": 0.05,
+      "trailing_stop_pct": 40.0
+    },
+    "dex_output": "data/research/post_graduation_ohlcv_20260914_final.json",
+    "feature_names": [
+      "time_since_launch",
+      "entry_age_seconds",
+      "candidate_sequence",
+      "bsc_dex_volume_24h_usd_log",
+      "bsc_dex_volume_vs_7d_avg",
+      "market_context_available",
+      "creator_prior_launches_1h",
+      "creator_prior_launches_24h",
+      "creator_prior_graduations_7d",
+      "symbol_prior_launches_1h",
+      "symbol_prior_launches_24h",
+      "global_launches_1h",
+      "global_graduations_24h",
+      "volume_10s",
+      "volume_30s",
+      "volume_1min",
+      "volume_2min",
+      "volume_5min",
+      "buy_pressure",
+      "price_change_pct",
+      "price_momentum",
+      "price_volatility",
+      "volume_acceleration",
+      "buy_volume_slope_10_30",
+      "buy_volume_slope_30_60",
+      "buy_count_slope_10_30",
+      "unique_buyers_slope_10_30",
+      "recent_new_buyer_ratio_10s",
+      "recent_repeat_buyer_ratio_30s",
+      "buyer_set_churn_10s_vs_prev50s",
+      "holder_concentration_top5",
+      "max_holder_ratio",
+      "creator_buy_share",
+      "creator_sell_share",
+      "round_trip_buy_volume_ratio",
+      "volume_price_divergence",
+      "sell_pressure_30s",
+      "sell_pressure_change_10_60",
+      "signed_imbalance_30s",
+      "signed_imbalance_60s"
+    ],
+    "horizons": [
+      21600,
+      86400,
+      259200
+    ],
+    "lifecycle_dir": "data/training/latest_bsc_20260914_31d_final",
+    "lifecycle_files": [
+      "data/training/latest_bsc_20260914_31d_final/lifecycle_incremental_20260913_173804.jsonl",
+      "data/training/latest_bsc_20260914_31d_final/lifecycle_incremental_20260913_173805.jsonl",
+      "data/training/latest_bsc_20260914_31d_final/lifecycle_incremental_20260913_173806.jsonl"
+    ],
+    "market_metrics": "docs/research/20260913-bsc-strategy-foundation/18-bsc-market-metrics-20260914.json",
+    "max_candidates_per_token": 3
+  },
+  "safe_for_live_switch": false,
+  "schema_version": 1
+}

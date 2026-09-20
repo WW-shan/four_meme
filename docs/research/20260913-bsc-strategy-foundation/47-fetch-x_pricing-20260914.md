@@ -1,0 +1,273 @@
+> ## Documentation Index
+>
+> Fetch the complete documentation index at:</llms.txt>
+>
+> Use this file to discover all available pages before exploring further.
+
+[X home page![light logo](https://mintcdn.com/x-preview/CX6FNhUUR8mtNZ97/logo/light.svg?fit=max&auto=format&n=CX6FNhUUR8mtNZ97&q=85&s=b2e6f2ff399e1bc5cd0c588f9644983d)![dark logo](https://mintcdn.com/x-preview/CX6FNhUUR8mtNZ97/logo/dark.svg?fit=max&auto=format&n=CX6FNhUUR8mtNZ97&q=85&s=d7b8656c2bcee6e9d5c947f6419e8b82)](/)
+
+* [Support](/support)
+* [Developer Console](https://developer.x.com/en/portal/petition/essential/basic-info)
+
+[X home page![light logo](https://mintcdn.com/x-preview/CX6FNhUUR8mtNZ97/logo/light.svg?fit=max&auto=format&n=CX6FNhUUR8mtNZ97&q=85&s=b2e6f2ff399e1bc5cd0c588f9644983d)![dark logo](https://mintcdn.com/x-preview/CX6FNhUUR8mtNZ97/logo/dark.svg?fit=max&auto=format&n=CX6FNhUUR8mtNZ97&q=85&s=d7b8656c2bcee6e9d5c947f6419e8b82)](/)
+
+Pay-per-use
+
+# X API pay-per-usage pricing and credits
+
+The X API uses pay-per-usage pricing with no subscriptions. Buy credits, set spending limits, and earn up to 20% back in free xAI API credits.
+
+The X API uses **pay-per-usage** pricing. No subscriptions—pay only for what you use. 
+
+---
+
+## [​](#how-it-works) How it works
+
+![](https://mintcdn.com/x-preview/ygI6sSJPehlc0qNT/icons/xds/icon-coins.svg?fit=max&auto=format&n=ygI6sSJPehlc0qNT&q=85&s=d8b17de3fb4032d86b77606ea95fcb55)
+
+## Credit-based
+
+Purchase credits upfront in the Developer Console. Credits are deducted as you make API requests.
+
+![](https://mintcdn.com/x-preview/ygI6sSJPehlc0qNT/icons/xds/icon-code.svg?fit=max&auto=format&n=ygI6sSJPehlc0qNT&q=85&s=488e23401b19225b89acc0136d242219)
+
+## Per-endpoint pricing
+
+Different endpoints have different costs. View current rates in the Developer Console.
+
+## No commitments
+
+No contracts, subscriptions, or minimum spend. Start and stop anytime.
+
+## Real-time tracking
+
+Monitor usage and costs live in the Developer Console.
+
+Earn free [xAI API](https://docs.x.ai) credits when you purchase X API credits—up to 20% back based on your spend. [Learn more](#free-xai-api-credits)
+
+---
+
+## [​](#credit-consumption-details) Credit consumption details
+
+All prices are per resource fetched (reads) or per request (writes/actions). [Purchase credits](https://console.x.com) in the Developer Console.
+
+### [​](#read-operations) Read operations
+
+Charged per resource returned in the response.
+
+| Resource | Unit cost |
+| --- | --- |
+| **Posts: Read** | $0.005 per resource |
+| **User: Read** | $0.010 per resource |
+| **DM Event: Read** | $0.010 per resource |
+| **Following/Followers: Read** | $0.010 per resource |
+| **List: Read** | $0.005 per resource |
+| **Space: Read** | $0.005 per resource |
+| **Community: Read** | $0.005 per resource |
+| **Note: Read** | $0.005 per resource |
+| **Like: Read** | $0.001 per resource |
+| **Mute: Read** | $0.001 per resource |
+| **Block: Read** | $0.001 per resource |
+| **Profile Update: Read** | $0.005 per resource |
+
+Pay-per-usage plans are capped at **3 million Post reads per monthly billing cycle**. If you need higher volume, upgrade to an [Enterprise plan](/forms/enterprise-api-interest).
+
+### [​](#write-operations) Write operations
+
+Charged per request.
+
+| Action | Unit cost |
+| --- | --- |
+| **Post: Create** | $0.015 per request |
+| **Post: Create (with URL)** | $0.200 per request |
+| **Post: Create (summoned)** | $0.010 per request |
+| **DM Interaction: Create** | $0.015 per request |
+| **User Interaction: Create** | $0.015 per request |
+| **Interaction: Delete** | $0.010 per request |
+| **Content: Manage** | $0.005 per request |
+| **List: Create** | $0.010 per request |
+| **List: Manage** | $0.005 per request |
+| **Bookmark** | $0.005 per request |
+| **Media Metadata** | $0.005 per request |
+| **Privacy: Update** | $0.010 per request |
+| **Mute: Delete** | $0.005 per request |
+| **Counts: Recent** | $0.005 per request |
+| **Counts: All** | $0.010 per request |
+| **Trends** | $0.010 per request |
+
+Prices are subject to change. Current rates are always available in the [Developer Console](https://console.x.com) and on the [developer.x.com pricing page](https://developer.x.com/#pricing).
+
+### [​](#webhook-events) Webhook events
+
+Webhook events delivered through the [X Activity API](/x-api/activity/introduction) are billed per event delivered, using the same event names shown in the Activity API docs. You are charged once per billable event, deduplicated within the same 24-hour UTC window as other resources.
+
+| Event | Cost per event |
+| --- | --- |
+| `post.create` | $0.005 |
+| `post.delete` | Not billed |
+| `follow.follow` | $0.010 |
+| `follow.unfollow` | $0.010 |
+| `mute.mute` | $0.001 |
+| `mute.unmute` | $0.001 |
+| `block.block` | $0.001 |
+| `block.unblock` | $0.001 |
+| `profile.update.*` | $0.005 |
+| `chat.received` | $0.010 |
+| `chat.sent` | Not billed |
+| `chat.conversation_join` | Not billed |
+| `dm.received` | $0.010 |
+| `dm.sent` | Not billed |
+| `dm.read` | Not billed |
+| `dm.indicate_typing` | Not billed |
+| `news.new` | $0.005 |
+| `spaces.start` | $0.005 |
+| `spaces.end` | $0.005 |
+
+---
+
+## [​](#owned-reads) Owned Reads
+
+Owned Reads are requests made by your own developer app for your own data (posts, bookmarks, followers, likes, lists, and more). These endpoints are priced at **$0.001 per resource** (1,000 resources for $1). The following endpoints qualify for Owned Read pricing when `{id}` matches the authenticated user and that user is the owner of the developer app:
+
+| Endpoint | Description |
+| --- | --- |
+| `GET /2/users/{id}/tweets` | Your own posts |
+| `GET /2/users/{id}/mentions` | Your mentions |
+| `GET /2/users/{id}/liked_tweets` | Posts you liked |
+| `GET /2/users/{id}/bookmarks` | Your bookmarks |
+| `GET /2/users/{id}/followers` | Your followers |
+| `GET /2/users/{id}/following` | Accounts you follow |
+| `GET /2/users/{id}/blocking` | Accounts you blocked |
+| `GET /2/users/{id}/muting` | Accounts you muted |
+| `GET /2/users/{id}/owned_lists` | Lists you own |
+| `GET /2/users/{id}/followed_lists` | Lists you follow |
+| `GET /2/users/{id}/list_memberships` | Lists you belong to |
+| `GET /2/users/{id}/pinned_lists` | Your pinned lists |
+
+Owned Reads make it significantly cheaper to build apps that work with a user’s own data, such as dashboard apps, personal analytics, or account management tools.
+
+---
+
+## [​](#deduplication) Deduplication
+
+All resources are deduplicated within a **24-hour UTC day window**. If you request and are charged for a resource (such as a Post), requesting the same resource again within that window will not incur an additional charge. This means:
+
+* Requesting the same Post multiple times in a day counts as one charge
+* The deduplication window resets at midnight UTC
+* This applies to all billable resources (Posts, users, etc.)
+
+Deduplication is a **soft guarantee**. While it occurs in the vast majority of cases, there may be specific edge cases like service outages that result in resources not being deduplicated.
+
+---
+
+## [​](#credit-balance) Credit balance
+
+Your credit balance is displayed in the Developer Console. Credits are deducted in real-time as you make API requests.
+
+Monitor your credit balance regularly to avoid service interruptions. Add credits before your balance reaches zero to ensure uninterrupted API access.***Note:** It is possible for an account credit balance to go slightly negative. In this case, API requests will be blocked until you add credits to cover the negative balance.*
+
+### [​](#auto-recharge) Auto-recharge
+
+Enable auto-recharge to automatically top up your credit balance and avoid service interruptions. Configure this in the Developer Console:
+
+| Setting | Description |
+| --- | --- |
+| **Recharge amount** | The amount to add when auto-recharge triggers (e.g., $25) |
+| **Trigger threshold** | Auto-recharge activates when your balance falls below this amount (e.g., $5) |
+
+#### [​](#when-the-trigger-fires) When the trigger fires
+
+Auto-recharge triggers the first time your balance drops below the trigger threshold after having been **at or above** it. A balance exactly equal to the threshold counts as armed: if you purchase $5 of credits with a $5 trigger threshold, your very first spend takes the balance below the threshold and a top-up is triggered.
+
+Auto-recharge requires a saved payment method set as your default. You can cancel anytime in the Developer Console or by contacting support.
+
+#### [​](#auto-recharge-safeguards) Auto-recharge safeguards
+
+To protect you from runaway or unexpectedly large charges, auto-recharge has two built-in limits:
+
+* **One top-up per 5-minute window.** Automatic charges can trigger at most once every 5 minutes, so a sudden burst of usage cannot stack multiple recharges back-to-back.
+* **Paused at zero or negative balance.** Auto-recharge does not run while your account balance is zero or negative. Add credits manually to resume automatic top-ups.
+
+If your usage is bursty enough to drain a full recharge in under 5 minutes, you can still see “out of credits” errors even with auto-recharge on. Raise your **Recharge amount** so a single top-up comfortably outlasts a 5-minute window of your peak consumption.
+
+---
+
+### [​](#spending-limits) Spending limits
+
+Set a maximum amount you can spend per billing cycle to control costs. When the limit is reached, API requests will be blocked until the next billing cycle.
+
+| Option | Description |
+| --- | --- |
+| **Spending limit** | Set a specific dollar amount as your maximum spend per billing cycle |
+
+Use spending limits to prevent unexpected charges, especially during development and testing.
+
+---
+
+## [​](#free-xai-api-credits) Free xAI API credits
+
+When you purchase X API credits, you can earn free [xAI API](https://docs.x.ai) credits based on your cumulative spend during a billing cycle.
+
+To receive free xAI credits, you must link your xAI team to your X developer account. You can do this by visiting your account settings in the [developer console](https://console.x.com).
+
+### [​](#how-it-works-2) How it works
+
+Your cumulative spend is tracked throughout each billing cycle. As you cross spending thresholds, you unlock higher reward rates. When a new billing cycle starts, your cumulative spend resets to $0.
+
+| Cumulative spend | Rate |
+| --- | --- |
+| $0 – $199 | 0% |
+| $200 – $499 | 10% |
+| $500 – $999 | 15% |
+| $1,000+ | 20% |
+
+The rate applies to your **entire cumulative balance**, but you only receive the delta—what’s newly owed minus what was already credited.
+
+### [​](#example) Example
+
+Suppose you make several purchases throughout a billing cycle:
+
+| Purchase | Rate | Total owed | Already credited | You receive |
+| --- | --- | --- | --- | --- |
+| $100 | 0% | $0 | $0 | **$0** |
+| $100 | 10% | $20 | $0 | **$20** |
+| $150 | 10% | $35 | $20 | **$15** |
+| $150 | 15% | $75 | $35 | **$40** |
+| $250 | 15% | $112.50 | $75 | **$37.50** |
+| $250 | 20% | $200 | $112.50 | **$87.50** |
+| **$1,000** | **$200** |
+
+This is the same amount you’d receive from a single $1,000 purchase—the order and size of purchases doesn’t affect your total rewards.
+
+View your xAI credit balance and manage your account at [console.x.ai](https://console.x.ai). For more details on xAI API billing, see the [xAI billing documentation](https://docs.x.ai/docs/key-information/billing).
+
+---
+
+## [​](#monitoring-usage) Monitoring usage
+
+Track your API usage programmatically with the [Usage endpoint](/x-api/usage/introduction):
+
+```
+curl "https://api.x.com/2/usage/tweets" \ curl "https://api.x.com/2/usage/tweets"  \ -H "Authorization: Bearer $BEARER_TOKEN" -H "Authorization: Bearer $BEARER_TOKEN "
+```
+
+This returns daily Post consumption counts, helping you:
+
+* Track consumption against your budget
+* Set up alerts when approaching limits
+* Identify high-consumption endpoints
+* Generate usage reports
+
+---
+
+## [​](#next-steps) Next steps
+
+## Developer Console
+
+Purchase credits and view current pricing.
+
+![](https://mintcdn.com/x-preview/Vn2KEkZaPF9LiPi3/icons/xds/icon-bar-chart.svg?fit=max&auto=format&n=Vn2KEkZaPF9LiPi3&q=85&s=e2a41caa858b122416f0005a55a8f143)
+
+## Usage API
+
+Monitor usage programmatically.

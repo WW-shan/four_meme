@@ -1,0 +1,2939 @@
+{
+  "artifacts": {
+    "classifier": "data/models/experimental_seed_123_6h/barrier_classifier.cbm",
+    "feature_schema": "data/models/experimental_seed_123_6h/feature_schema.json",
+    "profit_ranker": "data/models/experimental_seed_123_6h/profit_ranker.cbm"
+  },
+  "decision": {
+    "final_is_holdout": true,
+    "runtime_switch": "none",
+    "selection_metric": "validation_total_return_pct_then_net_profit_bnb"
+  },
+  "experiment_type": "bsc_entry_barrier_classifier_and_profit_ranker",
+  "feature_importance": {
+    "classifier": [
+      {
+        "feature": "price_momentum",
+        "importance": 13.76165038294385
+      },
+      {
+        "feature": "volume_30s",
+        "importance": 13.377251429789736
+      },
+      {
+        "feature": "max_holder_ratio",
+        "importance": 12.895094753087266
+      },
+      {
+        "feature": "volume_10s",
+        "importance": 12.061003504724315
+      },
+      {
+        "feature": "price_volatility",
+        "importance": 11.723206047377838
+      },
+      {
+        "feature": "creator_buy_share",
+        "importance": 9.525544376704342
+      },
+      {
+        "feature": "buy_pressure",
+        "importance": 6.691135752112265
+      },
+      {
+        "feature": "round_trip_buy_volume_ratio",
+        "importance": 5.4284190085662365
+      },
+      {
+        "feature": "buy_volume_slope_30_60",
+        "importance": 3.7223147155221064
+      },
+      {
+        "feature": "sell_pressure_30s",
+        "importance": 3.019920981920096
+      },
+      {
+        "feature": "holder_concentration_top5",
+        "importance": 2.475806061996073
+      },
+      {
+        "feature": "buy_count_slope_10_30",
+        "importance": 1.9612303479254842
+      },
+      {
+        "feature": "buy_volume_slope_10_30",
+        "importance": 1.8449129844401067
+      },
+      {
+        "feature": "unique_buyers_slope_10_30",
+        "importance": 1.5125096528902897
+      }
+    ],
+    "profit_ranker": [
+      {
+        "feature": "price_momentum",
+        "importance": 35.39398172120603
+      },
+      {
+        "feature": "volume_30s",
+        "importance": 16.791765363779284
+      },
+      {
+        "feature": "max_holder_ratio",
+        "importance": 11.610310563667069
+      },
+      {
+        "feature": "creator_buy_share",
+        "importance": 10.902145467973002
+      },
+      {
+        "feature": "volume_10s",
+        "importance": 8.934520040433068
+      },
+      {
+        "feature": "price_volatility",
+        "importance": 3.3648155425994926
+      },
+      {
+        "feature": "sell_pressure_30s",
+        "importance": 3.270172624958223
+      },
+      {
+        "feature": "buy_pressure",
+        "importance": 3.012198065138189
+      },
+      {
+        "feature": "buy_volume_slope_30_60",
+        "importance": 2.108439975679212
+      },
+      {
+        "feature": "round_trip_buy_volume_ratio",
+        "importance": 2.006318277367278
+      },
+      {
+        "feature": "holder_concentration_top5",
+        "importance": 1.7596786497026915
+      },
+      {
+        "feature": "buy_volume_slope_10_30",
+        "importance": 0.8456537074964705
+      },
+      {
+        "feature": "buy_count_slope_10_30",
+        "importance": 0.0
+      },
+      {
+        "feature": "unique_buyers_slope_10_30",
+        "importance": 0.0
+      }
+    ]
+  },
+  "inputs": {
+    "candidate_count": 3022,
+    "config": {
+      "entry_delay_seconds": 3,
+      "entry_max_fill_wait_seconds": null,
+      "entry_price_protection_pct": null,
+      "exit_delay_seconds": 3,
+      "fee_bps": 100.0,
+      "fixed_stake_bnb": 0.1,
+      "incomplete_policy": "loss",
+      "initial_equity_bnb": 1,
+      "max_entry_age_seconds": 300,
+      "max_open_positions": 8,
+      "min_entry_buy_count": 5,
+      "min_entry_unique_buyers": 3,
+      "slippage_bps": 200.0
+    },
+    "feature_names": [
+      "volume_10s",
+      "volume_30s",
+      "buy_pressure",
+      "price_momentum",
+      "price_volatility",
+      "buy_volume_slope_10_30",
+      "buy_volume_slope_30_60",
+      "buy_count_slope_10_30",
+      "unique_buyers_slope_10_30",
+      "sell_pressure_30s",
+      "holder_concentration_top5",
+      "max_holder_ratio",
+      "creator_buy_share",
+      "round_trip_buy_volume_ratio"
+    ],
+    "horizon_seconds": 21600,
+    "model_params": {
+      "depth": 6,
+      "iterations": 160,
+      "learning_rate": 0.05
+    },
+    "stop_loss_pct": -30.0,
+    "target_return_pct": 20.0
+  },
+  "label_diagnostics": {
+    "barrier_positive_count": 1085,
+    "barrier_positive_rate": 0.35903375248180014,
+    "conservative_return": {
+      "rates": {
+        "ambiguous_barrier_rate": 0.0,
+        "horizon_exit_rate": 0.3739245532759762,
+        "stop_first_rate": 0.2584381204500331,
+        "target_first_rate": 0.35903375248180014
+      },
+      "returns": {
+        "compounded_return_pct": -100.0,
+        "count": 3022,
+        "max_drawdown_pct": 100.0,
+        "mean": -56.19409257084415,
+        "median": -100.0,
+        "net_profit_bnb": -169.81854774909118,
+        "p10": -100.0,
+        "p25": -100.0,
+        "p75": -5.892132631312485,
+        "p90": 26.002579574476115,
+        "positive_rate": 0.23196558570483125,
+        "profit_factor": 0.10646626119415226,
+        "total_return_pct": -169818.54774909117
+      }
+    }
+  },
+  "portfolio_backtest": {
+    "classifier": {
+      "accepted_for_runtime": false,
+      "selected_threshold": 0.8,
+      "splits": {
+        "final": {
+          "capacity_skips": 0,
+          "cash_insufficient_skips": 0,
+          "entry_failures": 0,
+          "final_equity_bnb": 1.0,
+          "initial_equity_bnb": 1.0,
+          "max_drawdown_pct": 0.0,
+          "net_profit_bnb": 0.0,
+          "net_return_pct": 0.0,
+          "signal_count": 0,
+          "threshold": 0.8,
+          "trade_count": 0
+        },
+        "train": {
+          "capacity_skips": 0,
+          "cash_insufficient_skips": 0,
+          "entry_failures": 0,
+          "final_equity_bnb": 0.7616103866567658,
+          "initial_equity_bnb": 1.0,
+          "max_drawdown_pct": 64.26841290944934,
+          "net_profit_bnb": -0.23838961334323416,
+          "net_return_pct": -23.838961334323415,
+          "signal_count": 59,
+          "threshold": 0.8,
+          "trade_count": 59
+        },
+        "validation": {
+          "capacity_skips": 0,
+          "cash_insufficient_skips": 0,
+          "entry_failures": 0,
+          "final_equity_bnb": 1.0695671002151956,
+          "initial_equity_bnb": 1.0,
+          "max_drawdown_pct": 16.070469082146005,
+          "net_profit_bnb": 0.06956710021519563,
+          "net_return_pct": 6.956710021519563,
+          "signal_count": 28,
+          "threshold": 0.8,
+          "trade_count": 28
+        }
+      },
+      "threshold_grid_validation": [
+        {
+          "capacity_skips": 0,
+          "cash_insufficient_skips": 371,
+          "entry_failures": 0,
+          "final_equity_bnb": 0.06983464500577821,
+          "initial_equity_bnb": 1.0,
+          "max_drawdown_pct": 94.54469258909042,
+          "net_profit_bnb": -0.9301653549942218,
+          "net_return_pct": -93.01653549942218,
+          "signal_count": 387,
+          "threshold": 0.5,
+          "trade_count": 16
+        },
+        {
+          "capacity_skips": 0,
+          "cash_insufficient_skips": 237,
+          "entry_failures": 0,
+          "final_equity_bnb": 0.06983464500577821,
+          "initial_equity_bnb": 1.0,
+          "max_drawdown_pct": 94.54469258909042,
+          "net_profit_bnb": -0.9301653549942218,
+          "net_return_pct": -93.01653549942218,
+          "signal_count": 253,
+          "threshold": 0.6,
+          "trade_count": 16
+        },
+        {
+          "capacity_skips": 0,
+          "cash_insufficient_skips": 0,
+          "entry_failures": 0,
+          "final_equity_bnb": 0.7111513205886173,
+          "initial_equity_bnb": 1.0,
+          "max_drawdown_pct": 42.37906533805605,
+          "net_profit_bnb": -0.2888486794113827,
+          "net_return_pct": -28.88486794113827,
+          "signal_count": 62,
+          "threshold": 0.7,
+          "trade_count": 62
+        },
+        {
+          "capacity_skips": 0,
+          "cash_insufficient_skips": 0,
+          "entry_failures": 0,
+          "final_equity_bnb": 1.0695671002151956,
+          "initial_equity_bnb": 1.0,
+          "max_drawdown_pct": 16.070469082146005,
+          "net_profit_bnb": 0.06956710021519563,
+          "net_return_pct": 6.956710021519563,
+          "signal_count": 28,
+          "threshold": 0.8,
+          "trade_count": 28
+        },
+        {
+          "capacity_skips": 0,
+          "cash_insufficient_skips": 0,
+          "entry_failures": 0,
+          "final_equity_bnb": 1.0,
+          "initial_equity_bnb": 1.0,
+          "max_drawdown_pct": 0.0,
+          "net_profit_bnb": 0.0,
+          "net_return_pct": 0.0,
+          "signal_count": 0,
+          "threshold": 0.9,
+          "trade_count": 0
+        },
+        {
+          "capacity_skips": 0,
+          "cash_insufficient_skips": 0,
+          "entry_failures": 0,
+          "final_equity_bnb": 1.0,
+          "initial_equity_bnb": 1.0,
+          "max_drawdown_pct": 0.0,
+          "net_profit_bnb": 0.0,
+          "net_return_pct": 0.0,
+          "signal_count": 0,
+          "threshold": 0.95,
+          "trade_count": 0
+        },
+        {
+          "capacity_skips": 0,
+          "cash_insufficient_skips": 0,
+          "entry_failures": 0,
+          "final_equity_bnb": 1.0,
+          "initial_equity_bnb": 1.0,
+          "max_drawdown_pct": 0.0,
+          "net_profit_bnb": 0.0,
+          "net_return_pct": 0.0,
+          "signal_count": 0,
+          "threshold": 0.98,
+          "trade_count": 0
+        },
+        {
+          "capacity_skips": 0,
+          "cash_insufficient_skips": 0,
+          "entry_failures": 0,
+          "final_equity_bnb": 1.0,
+          "initial_equity_bnb": 1.0,
+          "max_drawdown_pct": 0.0,
+          "net_profit_bnb": 0.0,
+          "net_return_pct": 0.0,
+          "signal_count": 0,
+          "threshold": 1.0,
+          "trade_count": 0
+        }
+      ]
+    },
+    "profit_ranker": {
+      "accepted_for_runtime": false,
+      "selected_threshold": 0.036407578124794414,
+      "splits": {
+        "final": {
+          "capacity_skips": 0,
+          "cash_insufficient_skips": 0,
+          "entry_failures": 0,
+          "final_equity_bnb": 0.8,
+          "initial_equity_bnb": 1.0,
+          "max_drawdown_pct": 19.999999999999996,
+          "net_profit_bnb": -0.19999999999999996,
+          "net_return_pct": -19.999999999999996,
+          "signal_count": 2,
+          "threshold": 0.036407578124794414,
+          "trade_count": 2
+        },
+        "train": {
+          "capacity_skips": 0,
+          "cash_insufficient_skips": 0,
+          "entry_failures": 0,
+          "final_equity_bnb": 0.44682727869592587,
+          "initial_equity_bnb": 1.0,
+          "max_drawdown_pct": 84.58447346098595,
+          "net_profit_bnb": -0.5531727213040741,
+          "net_return_pct": -55.31727213040741,
+          "signal_count": 70,
+          "threshold": 0.036407578124794414,
+          "trade_count": 70
+        },
+        "validation": {
+          "capacity_skips": 0,
+          "cash_insufficient_skips": 0,
+          "entry_failures": 0,
+          "final_equity_bnb": 1.297728977441693,
+          "initial_equity_bnb": 1.0,
+          "max_drawdown_pct": 11.009872646057598,
+          "net_profit_bnb": 0.2977289774416929,
+          "net_return_pct": 29.772897744169292,
+          "signal_count": 39,
+          "threshold": 0.036407578124794414,
+          "trade_count": 39
+        }
+      },
+      "threshold_grid_validation": [
+        {
+          "capacity_skips": 0,
+          "cash_insufficient_skips": 584,
+          "entry_failures": 5,
+          "final_equity_bnb": 0.038099577862569775,
+          "initial_equity_bnb": 1.0,
+          "max_drawdown_pct": 97.29244057701378,
+          "net_profit_bnb": -0.9619004221374302,
+          "net_return_pct": -96.19004221374303,
+          "signal_count": 604,
+          "threshold": -0.021319194609865734,
+          "trade_count": 15
+        },
+        {
+          "capacity_skips": 0,
+          "cash_insufficient_skips": 341,
+          "entry_failures": 1,
+          "final_equity_bnb": 0.01835529704205246,
+          "initial_equity_bnb": 1.0,
+          "max_drawdown_pct": 98.58667844077958,
+          "net_profit_bnb": -0.9816447029579476,
+          "net_return_pct": -98.16447029579476,
+          "signal_count": 361,
+          "threshold": -0.004098847313207871,
+          "trade_count": 19
+        },
+        {
+          "capacity_skips": 0,
+          "cash_insufficient_skips": 236,
+          "entry_failures": 1,
+          "final_equity_bnb": 0.054566199167341685,
+          "initial_equity_bnb": 1.0,
+          "max_drawdown_pct": 97.31152654318261,
+          "net_profit_bnb": -0.9454338008326583,
+          "net_return_pct": -94.54338008326583,
+          "signal_count": 271,
+          "threshold": 0.004520758374722187,
+          "trade_count": 34
+        },
+        {
+          "capacity_skips": 0,
+          "cash_insufficient_skips": 198,
+          "entry_failures": 0,
+          "final_equity_bnb": 0.0958182116388363,
+          "initial_equity_bnb": 1.0,
+          "max_drawdown_pct": 99.98194839708773,
+          "net_profit_bnb": -0.9041817883611637,
+          "net_return_pct": -90.41817883611637,
+          "signal_count": 227,
+          "threshold": 0.009932928847520808,
+          "trade_count": 29
+        },
+        {
+          "capacity_skips": 0,
+          "cash_insufficient_skips": 0,
+          "entry_failures": 0,
+          "final_equity_bnb": 0.4440956529641466,
+          "initial_equity_bnb": 1.0,
+          "max_drawdown_pct": 87.1715413943033,
+          "net_profit_bnb": -0.5559043470358533,
+          "net_return_pct": -55.59043470358533,
+          "signal_count": 90,
+          "threshold": 0.017292253471632033,
+          "trade_count": 90
+        },
+        {
+          "capacity_skips": 0,
+          "cash_insufficient_skips": 0,
+          "entry_failures": 0,
+          "final_equity_bnb": 1.1947845743427605,
+          "initial_equity_bnb": 1.0,
+          "max_drawdown_pct": 29.914027059397284,
+          "net_profit_bnb": 0.19478457434276053,
+          "net_return_pct": 19.478457434276052,
+          "signal_count": 68,
+          "threshold": 0.02731008932083973,
+          "trade_count": 68
+        },
+        {
+          "capacity_skips": 0,
+          "cash_insufficient_skips": 0,
+          "entry_failures": 0,
+          "final_equity_bnb": 1.297728977441693,
+          "initial_equity_bnb": 1.0,
+          "max_drawdown_pct": 11.009872646057598,
+          "net_profit_bnb": 0.2977289774416929,
+          "net_return_pct": 29.772897744169292,
+          "signal_count": 39,
+          "threshold": 0.036407578124794414,
+          "trade_count": 39
+        },
+        {
+          "capacity_skips": 0,
+          "cash_insufficient_skips": 0,
+          "entry_failures": 0,
+          "final_equity_bnb": 1.1012093974286528,
+          "initial_equity_bnb": 1.0,
+          "max_drawdown_pct": 16.97861022785279,
+          "net_profit_bnb": 0.10120939742865276,
+          "net_return_pct": 10.120939742865275,
+          "signal_count": 24,
+          "threshold": 0.04129194804192667,
+          "trade_count": 24
+        }
+      ]
+    }
+  },
+  "schema_version": 1,
+  "splits": {
+    "final": {
+      "candidate_count": 605,
+      "classifier": {
+        "baseline_all": {
+          "rates": {
+            "ambiguous_barrier_rate": 0.0,
+            "horizon_exit_rate": 0.3768595041322314,
+            "stop_first_rate": 0.2793388429752066,
+            "target_first_rate": 0.32892561983471075
+          },
+          "returns": {
+            "compounded_return_pct": -100.0,
+            "count": 605,
+            "max_drawdown_pct": 100.0,
+            "mean": -62.76140902638912,
+            "median": -100.0,
+            "net_profit_bnb": -37.970652460965425,
+            "p10": -100.0,
+            "p25": -100.0,
+            "p75": -22.11880887016403,
+            "p90": 20.571901202918962,
+            "positive_rate": 0.19504132231404958,
+            "profit_factor": 0.0716923820867638,
+            "total_return_pct": -37970.65246096542
+          }
+        },
+        "baseline_complete_only": {
+          "rates": {
+            "ambiguous_barrier_rate": 0.0,
+            "horizon_exit_rate": 0.272,
+            "stop_first_rate": 0.3,
+            "target_first_rate": 0.428
+          },
+          "returns": {
+            "compounded_return_pct": -100.0,
+            "count": 250,
+            "max_drawdown_pct": 100.0,
+            "mean": -9.88260984386166,
+            "median": -4.712853151212593,
+            "net_profit_bnb": -2.470652460965413,
+            "p10": -88.40115432946004,
+            "p25": -34.30805521639696,
+            "p75": 20.533857483904548,
+            "p90": 30.74929168021685,
+            "positive_rate": 0.472,
+            "profit_factor": 0.5427336450038002,
+            "total_return_pct": -2470.652460965413
+          }
+        },
+        "ranked": [
+          {
+            "candidate_count": 7,
+            "complete_only": {
+              "rates": {
+                "ambiguous_barrier_rate": 0.0,
+                "horizon_exit_rate": 0.0,
+                "stop_first_rate": 1.0,
+                "target_first_rate": 0.0
+              },
+              "returns": {
+                "compounded_return_pct": -90.15235982887707,
+                "count": 1,
+                "max_drawdown_pct": 90.15235982887707,
+                "mean": -90.15235982887707,
+                "median": -90.15235982887707,
+                "net_profit_bnb": -0.09015235982887708,
+                "p10": -90.15235982887707,
+                "p25": -90.15235982887707,
+                "p75": -90.15235982887707,
+                "p90": -90.15235982887707,
+                "positive_rate": 0.0,
+                "profit_factor": 0.0,
+                "total_return_pct": -90.15235982887707
+              }
+            },
+            "selection": "top_1pct",
+            "summary": {
+              "rates": {
+                "ambiguous_barrier_rate": 0.0,
+                "horizon_exit_rate": 0.2857142857142857,
+                "stop_first_rate": 0.2857142857142857,
+                "target_first_rate": 0.42857142857142855
+              },
+              "returns": {
+                "compounded_return_pct": -100.0,
+                "count": 7,
+                "max_drawdown_pct": 100.0,
+                "mean": -98.59319426126815,
+                "median": -100.0,
+                "net_profit_bnb": -0.6901523598288771,
+                "p10": -100.0,
+                "p25": -100.0,
+                "p75": -100.0,
+                "p90": -100.0,
+                "positive_rate": 0.0,
+                "profit_factor": 0.0,
+                "total_return_pct": -690.152359828877
+              }
+            }
+          },
+          {
+            "candidate_count": 31,
+            "complete_only": {
+              "rates": {
+                "ambiguous_barrier_rate": 0.0,
+                "horizon_exit_rate": 0.0,
+                "stop_first_rate": 0.6,
+                "target_first_rate": 0.4
+              },
+              "returns": {
+                "compounded_return_pct": -99.56095898425855,
+                "count": 10,
+                "max_drawdown_pct": 99.56095898425855,
+                "mean": -22.770603770923678,
+                "median": -31.26061857432975,
+                "net_profit_bnb": -0.2277060377092368,
+                "p10": -89.79419510187688,
+                "p25": -33.66409919319312,
+                "p75": 20.037754348338478,
+                "p90": 26.500283533279866,
+                "positive_rate": 0.4,
+                "profit_factor": 0.2620953367486003,
+                "total_return_pct": -227.70603770923682
+              }
+            },
+            "selection": "top_5pct",
+            "summary": {
+              "rates": {
+                "ambiguous_barrier_rate": 0.0,
+                "horizon_exit_rate": 0.0967741935483871,
+                "stop_first_rate": 0.3225806451612903,
+                "target_first_rate": 0.5806451612903226
+              },
+              "returns": {
+                "compounded_return_pct": -100.0,
+                "count": 31,
+                "max_drawdown_pct": 100.0,
+                "mean": -75.08729153900764,
+                "median": -100.0,
+                "net_profit_bnb": -2.3277060377092367,
+                "p10": -100.0,
+                "p25": -100.0,
+                "p75": -89.79419510187688,
+                "p90": 5.3621106990169976,
+                "positive_rate": 0.12903225806451613,
+                "profit_factor": 0.03357930278946641,
+                "total_return_pct": -2327.7060377092366
+              }
+            }
+          },
+          {
+            "candidate_count": 61,
+            "complete_only": {
+              "rates": {
+                "ambiguous_barrier_rate": 0.0,
+                "horizon_exit_rate": 0.19230769230769232,
+                "stop_first_rate": 0.4230769230769231,
+                "target_first_rate": 0.38461538461538464
+              },
+              "returns": {
+                "compounded_return_pct": -99.99417089219624,
+                "count": 26,
+                "max_drawdown_pct": 99.99524871049279,
+                "mean": -13.203194764121394,
+                "median": 4.377318771451577,
+                "net_profit_bnb": -0.34328306386715635,
+                "p10": -89.79419510187688,
+                "p25": -32.01930701430591,
+                "p75": 21.834951951700422,
+                "p90": 25.209533364789905,
+                "positive_rate": 0.5384615384615384,
+                "profit_factor": 0.4125305325062888,
+                "total_return_pct": -343.28306386715633
+              }
+            },
+            "selection": "top_10pct",
+            "summary": {
+              "rates": {
+                "ambiguous_barrier_rate": 0.0,
+                "horizon_exit_rate": 0.16393442622950818,
+                "stop_first_rate": 0.29508196721311475,
+                "target_first_rate": 0.5409836065573771
+              },
+              "returns": {
+                "compounded_return_pct": -100.0,
+                "count": 61,
+                "max_drawdown_pct": 100.0,
+                "mean": -63.00464039126486,
+                "median": -100.0,
+                "net_profit_bnb": -3.8432830638671565,
+                "p10": -100.0,
+                "p25": -100.0,
+                "p75": -30.372163766654626,
+                "p90": 21.834951951700422,
+                "positive_rate": 0.22950819672131148,
+                "profit_factor": 0.0590202545641507,
+                "total_return_pct": -3843.283063867156
+              }
+            }
+          },
+          {
+            "candidate_count": 25,
+            "complete_only": {
+              "rates": {
+                "ambiguous_barrier_rate": 0.0,
+                "horizon_exit_rate": 0.0,
+                "stop_first_rate": 0.5714285714285714,
+                "target_first_rate": 0.42857142857142855
+              },
+              "returns": {
+                "compounded_return_pct": -94.96547397016926,
+                "count": 7,
+                "max_drawdown_pct": 96.01932917012246,
+                "mean": -18.851341015566735,
+                "median": -30.501930134353593,
+                "net_profit_bnb": -0.13195938710896718,
+                "p10": -33.66409919319312,
+                "p25": -32.01930701430591,
+                "p75": 5.3621106990169976,
+                "p90": 20.037754348338478,
+                "positive_rate": 0.42857142857142855,
+                "profit_factor": 0.2918266683513091,
+                "total_return_pct": -131.95938710896718
+              }
+            },
+            "selection": "top_25",
+            "summary": {
+              "rates": {
+                "ambiguous_barrier_rate": 0.0,
+                "horizon_exit_rate": 0.08,
+                "stop_first_rate": 0.32,
+                "target_first_rate": 0.6
+              },
+              "returns": {
+                "compounded_return_pct": -100.0,
+                "count": 25,
+                "max_drawdown_pct": 100.0,
+                "mean": -77.27837548435869,
+                "median": -100.0,
+                "net_profit_bnb": -1.9319593871089673,
+                "p10": -100.0,
+                "p25": -100.0,
+                "p75": -90.15235982887707,
+                "p90": 5.3621106990169976,
+                "positive_rate": 0.12,
+                "profit_factor": 0.027376165274712993,
+                "total_return_pct": -1931.9593871089671
+              }
+            }
+          },
+          {
+            "candidate_count": 50,
+            "complete_only": {
+              "rates": {
+                "ambiguous_barrier_rate": 0.0,
+                "horizon_exit_rate": 0.22727272727272727,
+                "stop_first_rate": 0.45454545454545453,
+                "target_first_rate": 0.3181818181818182
+              },
+              "returns": {
+                "compounded_return_pct": -99.99423939217967,
+                "count": 22,
+                "max_drawdown_pct": 99.99524871049279,
+                "mean": -16.157254722360317,
+                "median": 4.377318771451577,
+                "net_profit_bnb": -0.3554596038919271,
+                "p10": -89.79419510187688,
+                "p25": -32.45273903167263,
+                "p75": 20.037754348338478,
+                "p90": 26.500283533279866,
+                "positive_rate": 0.5454545454545454,
+                "profit_factor": 0.3535299980592582,
+                "total_return_pct": -355.4596038919271
+              }
+            },
+            "selection": "top_50",
+            "summary": {
+              "rates": {
+                "ambiguous_barrier_rate": 0.0,
+                "horizon_exit_rate": 0.18,
+                "stop_first_rate": 0.34,
+                "target_first_rate": 0.48
+              },
+              "returns": {
+                "compounded_return_pct": -100.0,
+                "count": 50,
+                "max_drawdown_pct": 100.0,
+                "mean": -63.10919207783854,
+                "median": -100.0,
+                "net_profit_bnb": -3.155459603891927,
+                "p10": -100.0,
+                "p25": -100.0,
+                "p75": -30.372163766654626,
+                "p90": 20.037754348338478,
+                "positive_rate": 0.24,
+                "profit_factor": 0.058028744197561766,
+                "total_return_pct": -3155.4596038919267
+              }
+            }
+          },
+          {
+            "candidate_count": 114,
+            "complete_only": {
+              "rates": {
+                "ambiguous_barrier_rate": 0.0,
+                "horizon_exit_rate": 0.2830188679245283,
+                "stop_first_rate": 0.2641509433962264,
+                "target_first_rate": 0.4528301886792453
+              },
+              "returns": {
+                "compounded_return_pct": -99.99965869269484,
+                "count": 53,
+                "max_drawdown_pct": 99.99991938443883,
+                "mean": -7.359747220674875,
+                "median": 4.200466469905528,
+                "net_profit_bnb": -0.3900666026957684,
+                "p10": -61.02372927819797,
+                "p25": -31.268443846367,
+                "p75": 21.233527421585173,
+                "p90": 27.79860331214239,
+                "positive_rate": 0.5094339622641509,
+                "profit_factor": 0.6043117714316342,
+                "total_return_pct": -390.0666026957684
+              }
+            },
+            "selection": "top_1_per_hour",
+            "summary": {
+              "rates": {
+                "ambiguous_barrier_rate": 0.0,
+                "horizon_exit_rate": 0.2894736842105263,
+                "stop_first_rate": 0.2543859649122807,
+                "target_first_rate": 0.45614035087719296
+              },
+              "returns": {
+                "compounded_return_pct": -100.0,
+                "count": 114,
+                "max_drawdown_pct": 100.0,
+                "mean": -56.930408795576916,
+                "median": -100.0,
+                "net_profit_bnb": -6.490066602695769,
+                "p10": -100.0,
+                "p25": -100.0,
+                "p75": -1.7316410460899267,
+                "p90": 21.834951951700422,
+                "positive_rate": 0.23684210526315788,
+                "profit_factor": 0.08407332879945807,
+                "total_return_pct": -6490.06660269577
+              }
+            }
+          },
+          {
+            "candidate_count": 285,
+            "complete_only": {
+              "rates": {
+                "ambiguous_barrier_rate": 0.0,
+                "horizon_exit_rate": 0.2463768115942029,
+                "stop_first_rate": 0.2608695652173913,
+                "target_first_rate": 0.4927536231884058
+              },
+              "returns": {
+                "compounded_return_pct": -99.99999999999979,
+                "count": 138,
+                "max_drawdown_pct": 99.99999999999994,
+                "mean": -5.823033192071074,
+                "median": 11.118651496442244,
+                "net_profit_bnb": -0.8035785805058082,
+                "p10": -88.09033754180048,
+                "p25": -30.593058252944637,
+                "p75": 20.723866566178618,
+                "p90": 28.091780405878342,
+                "positive_rate": 0.572463768115942,
+                "profit_factor": 0.685374024238617,
+                "total_return_pct": -803.5785805058081
+              }
+            },
+            "selection": "top_3_per_hour",
+            "summary": {
+              "rates": {
+                "ambiguous_barrier_rate": 0.0,
+                "horizon_exit_rate": 0.28771929824561404,
+                "stop_first_rate": 0.2736842105263158,
+                "target_first_rate": 0.43157894736842106
+              },
+              "returns": {
+                "compounded_return_pct": -100.0,
+                "count": 285,
+                "max_drawdown_pct": 100.0,
+                "mean": -54.3985213351081,
+                "median": -100.0,
+                "net_profit_bnb": -15.503578580505817,
+                "p10": -100.0,
+                "p25": -100.0,
+                "p75": 8.57135488549703,
+                "p90": 21.834951951700422,
+                "positive_rate": 0.2771929824561403,
+                "profit_factor": 0.10145412658127363,
+                "total_return_pct": -15503.578580505817
+              }
+            }
+          }
+        ]
+      },
+      "label_positive_count": 199,
+      "label_positive_rate": 0.32892561983471075,
+      "profit_ranker": {
+        "baseline_all": {
+          "rates": {
+            "ambiguous_barrier_rate": 0.0,
+            "horizon_exit_rate": 0.3768595041322314,
+            "stop_first_rate": 0.2793388429752066,
+            "target_first_rate": 0.32892561983471075
+          },
+          "returns": {
+            "compounded_return_pct": -100.0,
+            "count": 605,
+            "max_drawdown_pct": 100.0,
+            "mean": -62.76140902638912,
+            "median": -100.0,
+            "net_profit_bnb": -37.970652460965425,
+            "p10": -100.0,
+            "p25": -100.0,
+            "p75": -22.11880887016403,
+            "p90": 20.571901202918962,
+            "positive_rate": 0.19504132231404958,
+            "profit_factor": 0.0716923820867638,
+            "total_return_pct": -37970.65246096542
+          }
+        },
+        "baseline_complete_only": {
+          "rates": {
+            "ambiguous_barrier_rate": 0.0,
+            "horizon_exit_rate": 0.272,
+            "stop_first_rate": 0.3,
+            "target_first_rate": 0.428
+          },
+          "returns": {
+            "compounded_return_pct": -100.0,
+            "count": 250,
+            "max_drawdown_pct": 100.0,
+            "mean": -9.88260984386166,
+            "median": -4.712853151212593,
+            "net_profit_bnb": -2.470652460965413,
+            "p10": -88.40115432946004,
+            "p25": -34.30805521639696,
+            "p75": 20.533857483904548,
+            "p90": 30.74929168021685,
+            "positive_rate": 0.472,
+            "profit_factor": 0.5427336450038002,
+            "total_return_pct": -2470.652460965413
+          }
+        },
+        "ranked": [
+          {
+            "candidate_count": 7,
+            "complete_only": {
+              "rates": {
+                "ambiguous_barrier_rate": 0.0,
+                "horizon_exit_rate": 0.25,
+                "stop_first_rate": 0.0,
+                "target_first_rate": 0.75
+              },
+              "returns": {
+                "compounded_return_pct": 94.20742526959576,
+                "count": 4,
+                "max_drawdown_pct": 0.0,
+                "mean": 18.11864170673678,
+                "median": 20.33376450498504,
+                "net_profit_bnb": 0.07247456682694713,
+                "p10": 11.245576256250445,
+                "p25": 20.213976146644374,
+                "p75": 20.453552863325708,
+                "p90": 20.561461560726602,
+                "positive_rate": 1.0,
+                "profit_factor": null,
+                "total_return_pct": 72.47456682694713
+              }
+            },
+            "selection": "top_1pct",
+            "summary": {
+              "rates": {
+                "ambiguous_barrier_rate": 0.0,
+                "horizon_exit_rate": 0.2857142857142857,
+                "stop_first_rate": 0.14285714285714285,
+                "target_first_rate": 0.5714285714285714
+              },
+              "returns": {
+                "compounded_return_pct": -100.0,
+                "count": 7,
+                "max_drawdown_pct": 100.0,
+                "mean": -32.50363331043612,
+                "median": 11.245576256250445,
+                "net_profit_bnb": -0.22752543317305293,
+                "p10": -100.0,
+                "p25": -100.0,
+                "p75": 20.213976146644374,
+                "p90": 20.453552863325708,
+                "positive_rate": 0.5714285714285714,
+                "profit_factor": 0.2415818894231571,
+                "total_return_pct": -227.5254331730529
+              }
+            }
+          },
+          {
+            "candidate_count": 31,
+            "complete_only": {
+              "rates": {
+                "ambiguous_barrier_rate": 0.0,
+                "horizon_exit_rate": 0.37037037037037035,
+                "stop_first_rate": 0.18518518518518517,
+                "target_first_rate": 0.4444444444444444
+              },
+              "returns": {
+                "compounded_return_pct": -99.99371264545182,
+                "count": 27,
+                "max_drawdown_pct": 99.99911070630276,
+                "mean": -6.979171575862326,
+                "median": 15.090691711239689,
+                "net_profit_bnb": -0.1884376325482828,
+                "p10": -90.11222275850908,
+                "p25": -0.07804115320405591,
+                "p75": 20.213976146644374,
+                "p90": 20.34636330674251,
+                "positive_rate": 0.7407407407407407,
+                "profit_factor": 0.6327339216444356,
+                "total_return_pct": -188.43763254828278
+              }
+            },
+            "selection": "top_5pct",
+            "summary": {
+              "rates": {
+                "ambiguous_barrier_rate": 0.0,
+                "horizon_exit_rate": 0.3548387096774194,
+                "stop_first_rate": 0.22580645161290322,
+                "target_first_rate": 0.41935483870967744
+              },
+              "returns": {
+                "compounded_return_pct": -100.0,
+                "count": 31,
+                "max_drawdown_pct": 100.0,
+                "mean": -18.981859114460736,
+                "median": 10.6907813378887,
+                "net_profit_bnb": -0.5884376325482829,
+                "p10": -100.0,
+                "p25": -89.98337738691058,
+                "p75": 20.14216917706746,
+                "p90": 20.34636330674251,
+                "positive_rate": 0.6451612903225806,
+                "profit_factor": 0.3555479135202393,
+                "total_return_pct": -588.4376325482827
+              }
+            }
+          },
+          {
+            "candidate_count": 61,
+            "complete_only": {
+              "rates": {
+                "ambiguous_barrier_rate": 0.0,
+                "horizon_exit_rate": 0.391304347826087,
+                "stop_first_rate": 0.2391304347826087,
+                "target_first_rate": 0.3695652173913043
+              },
+              "returns": {
+                "compounded_return_pct": -99.99999948562932,
+                "count": 46,
+                "max_drawdown_pct": 99.99999989518477,
+                "mean": -11.346575314632247,
+                "median": 8.583858875841988,
+                "net_profit_bnb": -0.5219424644730833,
+                "p10": -90.15235982887707,
+                "p25": -38.83655034682515,
+                "p75": 20.133369800352142,
+                "p90": 20.339463334601817,
+                "positive_rate": 0.6521739130434783,
+                "profit_factor": 0.4750134437530219,
+                "total_return_pct": -521.9424644730833
+              }
+            },
+            "selection": "top_10pct",
+            "summary": {
+              "rates": {
+                "ambiguous_barrier_rate": 0.0,
+                "horizon_exit_rate": 0.3442622950819672,
+                "stop_first_rate": 0.32786885245901637,
+                "target_first_rate": 0.32786885245901637
+              },
+              "returns": {
+                "compounded_return_pct": -100.0,
+                "count": 61,
+                "max_drawdown_pct": 100.0,
+                "mean": -33.14659777824727,
+                "median": -0.07804115320405591,
+                "net_profit_bnb": -2.0219424644730837,
+                "p10": -100.0,
+                "p25": -90.68649011468975,
+                "p75": 18.402370035034554,
+                "p90": 20.231838870152675,
+                "positive_rate": 0.4918032786885246,
+                "profit_factor": 0.18934280232531858,
+                "total_return_pct": -2021.9424644730834
+              }
+            }
+          },
+          {
+            "candidate_count": 25,
+            "complete_only": {
+              "rates": {
+                "ambiguous_barrier_rate": 0.0,
+                "horizon_exit_rate": 0.3333333333333333,
+                "stop_first_rate": 0.23809523809523808,
+                "target_first_rate": 0.42857142857142855
+              },
+              "returns": {
+                "compounded_return_pct": -99.99748259392479,
+                "count": 21,
+                "max_drawdown_pct": 99.99911070630276,
+                "mean": -13.711218065561857,
+                "median": 10.6907813378887,
+                "net_profit_bnb": -0.287935579376799,
+                "p10": -90.57219555171004,
+                "p25": -61.02372927819797,
+                "p75": 20.213976146644374,
+                "p90": 20.453552863325708,
+                "positive_rate": 0.6666666666666666,
+                "profit_factor": 0.43881182528835616,
+                "total_return_pct": -287.93557937679896
+              }
+            },
+            "selection": "top_25",
+            "summary": {
+              "rates": {
+                "ambiguous_barrier_rate": 0.0,
+                "horizon_exit_rate": 0.32,
+                "stop_first_rate": 0.28,
+                "target_first_rate": 0.4
+              },
+              "returns": {
+                "compounded_return_pct": -100.0,
+                "count": 25,
+                "max_drawdown_pct": 100.0,
+                "mean": -27.51742317507196,
+                "median": 6.879932505834119,
+                "net_profit_bnb": -0.6879355793767991,
+                "p10": -100.0,
+                "p25": -90.57219555171004,
+                "p75": 20.199585361161176,
+                "p90": 20.453552863325708,
+                "positive_rate": 0.56,
+                "profit_factor": 0.24657857524660637,
+                "total_return_pct": -687.9355793767991
+              }
+            }
+          },
+          {
+            "candidate_count": 50,
+            "complete_only": {
+              "rates": {
+                "ambiguous_barrier_rate": 0.0,
+                "horizon_exit_rate": 0.39473684210526316,
+                "stop_first_rate": 0.2631578947368421,
+                "target_first_rate": 0.34210526315789475
+              },
+              "returns": {
+                "compounded_return_pct": -99.99999501505926,
+                "count": 38,
+                "max_drawdown_pct": 99.99999823903009,
+                "mean": -11.945159039650694,
+                "median": 9.643572102037822,
+                "net_profit_bnb": -0.4539160435067263,
+                "p10": -90.11222275850908,
+                "p25": -42.517255115369444,
+                "p75": 20.14216917706746,
+                "p90": 20.34636330674251,
+                "positive_rate": 0.6842105263157895,
+                "profit_factor": 0.4746631772381564,
+                "total_return_pct": -453.91604350672634
+              }
+            },
+            "selection": "top_50",
+            "summary": {
+              "rates": {
+                "ambiguous_barrier_rate": 0.0,
+                "horizon_exit_rate": 0.36,
+                "stop_first_rate": 0.34,
+                "target_first_rate": 0.3
+              },
+              "returns": {
+                "compounded_return_pct": -100.0,
+                "count": 50,
+                "max_drawdown_pct": 100.0,
+                "mean": -33.078320870134526,
+                "median": 4.377318771451577,
+                "net_profit_bnb": -1.653916043506726,
+                "p10": -100.0,
+                "p25": -90.68649011468975,
+                "p75": 18.402370035034554,
+                "p90": 20.339463334601817,
+                "positive_rate": 0.52,
+                "profit_factor": 0.19870258368891017,
+                "total_return_pct": -1653.916043506726
+              }
+            }
+          },
+          {
+            "candidate_count": 114,
+            "complete_only": {
+              "rates": {
+                "ambiguous_barrier_rate": 0.0,
+                "horizon_exit_rate": 0.3,
+                "stop_first_rate": 0.2571428571428571,
+                "target_first_rate": 0.44285714285714284
+              },
+              "returns": {
+                "compounded_return_pct": -99.99999999908914,
+                "count": 70,
+                "max_drawdown_pct": 99.99999999965985,
+                "mean": -9.852052241921681,
+                "median": 9.920969561218696,
+                "net_profit_bnb": -0.6896436569345179,
+                "p10": -89.79035086354435,
+                "p25": -33.66409919319312,
+                "p75": 20.339463334601817,
+                "p90": 20.968494684335838,
+                "positive_rate": 0.6,
+                "profit_factor": 0.5302598136131099,
+                "total_return_pct": -689.6436569345178
+              }
+            },
+            "selection": "top_1_per_hour",
+            "summary": {
+              "rates": {
+                "ambiguous_barrier_rate": 0.0,
+                "horizon_exit_rate": 0.32456140350877194,
+                "stop_first_rate": 0.2719298245614035,
+                "target_first_rate": 0.37719298245614036
+              },
+              "returns": {
+                "compounded_return_pct": -100.0,
+                "count": 114,
+                "max_drawdown_pct": 100.0,
+                "mean": -44.645996990653664,
+                "median": -61.700436549485595,
+                "net_profit_bnb": -5.089643656934519,
+                "p10": -100.0,
+                "p25": -100.0,
+                "p75": 20.057761429657937,
+                "p90": 20.571901202918962,
+                "positive_rate": 0.3684210526315789,
+                "profit_factor": 0.1326647029565068,
+                "total_return_pct": -5089.643656934519
+              }
+            }
+          },
+          {
+            "candidate_count": 285,
+            "complete_only": {
+              "rates": {
+                "ambiguous_barrier_rate": 0.0,
+                "horizon_exit_rate": 0.27741935483870966,
+                "stop_first_rate": 0.3225806451612903,
+                "target_first_rate": 0.4
+              },
+              "returns": {
+                "compounded_return_pct": -100.0,
+                "count": 155,
+                "max_drawdown_pct": 100.0,
+                "mean": -14.95581505417479,
+                "median": -0.07804115320405591,
+                "net_profit_bnb": -2.318151333397092,
+                "p10": -89.72393909180558,
+                "p25": -37.71991020730036,
+                "p75": 20.26390858240843,
+                "p90": 24.408177710169298,
+                "positive_rate": 0.4967741935483871,
+                "profit_factor": 0.4111375715347295,
+                "total_return_pct": -2318.151333397092
+              }
+            },
+            "selection": "top_3_per_hour",
+            "summary": {
+              "rates": {
+                "ambiguous_barrier_rate": 0.0,
+                "horizon_exit_rate": 0.34035087719298246,
+                "stop_first_rate": 0.3157894736842105,
+                "target_first_rate": 0.3333333333333333
+              },
+              "returns": {
+                "compounded_return_pct": -100.0,
+                "count": 285,
+                "max_drawdown_pct": 100.0,
+                "mean": -53.74789941542839,
+                "median": -89.79419510187688,
+                "net_profit_bnb": -15.318151333397097,
+                "p10": -100.0,
+                "p25": -100.0,
+                "p75": 6.879932505834119,
+                "p90": 20.660801099774105,
+                "positive_rate": 0.27017543859649124,
+                "profit_factor": 0.09556246161799695,
+                "total_return_pct": -15318.151333397098
+              }
+            }
+          }
+        ]
+      }
+    },
+    "train": {
+      "candidate_count": 1813,
+      "classifier": {
+        "baseline_all": {
+          "rates": {
+            "ambiguous_barrier_rate": 0.0,
+            "horizon_exit_rate": 0.39768339768339767,
+            "stop_first_rate": 0.24544953116381688,
+            "target_first_rate": 0.35024820739106455
+          },
+          "returns": {
+            "compounded_return_pct": -100.0,
+            "count": 1813,
+            "max_drawdown_pct": 100.0,
+            "mean": -58.390622139910604,
+            "median": -100.0,
+            "net_profit_bnb": -105.86219793965807,
+            "p10": -100.0,
+            "p25": -100.0,
+            "p75": -11.061114296695429,
+            "p90": 27.15887094890197,
+            "positive_rate": 0.21345835631549917,
+            "profit_factor": 0.10349204947183105,
+            "total_return_pct": -105862.19793965807
+          }
+        },
+        "baseline_complete_only": {
+          "rates": {
+            "ambiguous_barrier_rate": 0.0,
+            "horizon_exit_rate": 0.2682926829268293,
+            "stop_first_rate": 0.2018970189701897,
+            "target_first_rate": 0.5298102981029811
+          },
+          "returns": {
+            "compounded_return_pct": -100.0,
+            "count": 738,
+            "max_drawdown_pct": 100.0,
+            "mean": 2.2192439842033522,
+            "median": 9.91210812251503,
+            "net_profit_bnb": 1.6378020603420744,
+            "p10": -39.83350909449418,
+            "p25": -26.143979580061693,
+            "p75": 26.95391854495397,
+            "p90": 41.052340496166416,
+            "positive_rate": 0.524390243902439,
+            "profit_factor": 1.1547602778258454,
+            "total_return_pct": 1637.8020603420744
+          }
+        },
+        "ranked": [
+          {
+            "candidate_count": 19,
+            "complete_only": {
+              "rates": {
+                "ambiguous_barrier_rate": 0.0,
+                "horizon_exit_rate": 0.1111111111111111,
+                "stop_first_rate": 0.05555555555555555,
+                "target_first_rate": 0.8333333333333334
+              },
+              "returns": {
+                "compounded_return_pct": 283.4554717278874,
+                "count": 18,
+                "max_drawdown_pct": 86.74629673705287,
+                "mean": 16.712735974219626,
+                "median": 20.185781148479265,
+                "net_profit_bnb": 0.3008292475359532,
+                "p10": -1.8652281460076914,
+                "p25": 14.679947979991304,
+                "p75": 26.900168009144522,
+                "p90": 37.54228499064585,
+                "positive_rate": 0.8333333333333334,
+                "profit_factor": 4.288341820564174,
+                "total_return_pct": 300.8292475359532
+              }
+            },
+            "selection": "top_1pct",
+            "summary": {
+              "rates": {
+                "ambiguous_barrier_rate": 0.0,
+                "horizon_exit_rate": 0.10526315789473684,
+                "stop_first_rate": 0.05263157894736842,
+                "target_first_rate": 0.8421052631578947
+              },
+              "returns": {
+                "compounded_return_pct": -100.0,
+                "count": 19,
+                "max_drawdown_pct": 100.0,
+                "mean": 10.569960396629119,
+                "median": 20.057673169041813,
+                "net_profit_bnb": 0.20082924753595321,
+                "p10": -2.8720446335478544,
+                "p25": 9.974422500705948,
+                "p75": 26.900168009144522,
+                "p90": 37.54228499064585,
+                "positive_rate": 0.7894736842105263,
+                "profit_factor": 2.048806683742827,
+                "total_return_pct": 200.82924753595321
+              }
+            }
+          },
+          {
+            "candidate_count": 91,
+            "complete_only": {
+              "rates": {
+                "ambiguous_barrier_rate": 0.0,
+                "horizon_exit_rate": 0.0410958904109589,
+                "stop_first_rate": 0.0958904109589041,
+                "target_first_rate": 0.863013698630137
+              },
+              "returns": {
+                "compounded_return_pct": 314596.447535786,
+                "count": 73,
+                "max_drawdown_pct": 94.01484806208855,
+                "mean": 21.086840186480227,
+                "median": 20.90292891670169,
+                "net_profit_bnb": 1.5393393336130567,
+                "p10": -2.8720446335478544,
+                "p25": 20.057673169041813,
+                "p75": 34.59641722260254,
+                "p90": 42.965447762583864,
+                "positive_rate": 0.8767123287671232,
+                "profit_factor": 4.58350681647717,
+                "total_return_pct": 1539.3393336130566
+              }
+            },
+            "selection": "top_5pct",
+            "summary": {
+              "rates": {
+                "ambiguous_barrier_rate": 0.0,
+                "horizon_exit_rate": 0.03296703296703297,
+                "stop_first_rate": 0.18681318681318682,
+                "target_first_rate": 0.7802197802197802
+              },
+              "returns": {
+                "compounded_return_pct": -100.0,
+                "count": 91,
+                "max_drawdown_pct": 100.0,
+                "mean": -2.864402927329049,
+                "median": 20.419036624005614,
+                "net_profit_bnb": -0.26066066638694346,
+                "p10": -100.0,
+                "p25": -42.10410426862013,
+                "p75": 31.254693542794687,
+                "p90": 40.02442328374407,
+                "positive_rate": 0.7032967032967034,
+                "profit_factor": 0.8830888602949142,
+                "total_return_pct": -260.66066638694343
+              }
+            }
+          },
+          {
+            "candidate_count": 182,
+            "complete_only": {
+              "rates": {
+                "ambiguous_barrier_rate": 0.0,
+                "horizon_exit_rate": 0.039603960396039604,
+                "stop_first_rate": 0.12871287128712872,
+                "target_first_rate": 0.8316831683168316
+              },
+              "returns": {
+                "compounded_return_pct": 258778.8500259324,
+                "count": 101,
+                "max_drawdown_pct": 94.01484806208855,
+                "mean": 17.251015797070416,
+                "median": 21.16847159876447,
+                "net_profit_bnb": 1.742352595504112,
+                "p10": -32.38227018509276,
+                "p25": 20.03208084803756,
+                "p75": 32.09607342424834,
+                "p90": 39.44403671510204,
+                "positive_rate": 0.8316831683168316,
+                "profit_factor": 3.3609424943341795,
+                "total_return_pct": 1742.3525955041118
+              }
+            },
+            "selection": "top_10pct",
+            "summary": {
+              "rates": {
+                "ambiguous_barrier_rate": 0.0,
+                "horizon_exit_rate": 0.038461538461538464,
+                "stop_first_rate": 0.18681318681318682,
+                "target_first_rate": 0.7747252747252747
+              },
+              "returns": {
+                "compounded_return_pct": -100.0,
+                "count": 182,
+                "max_drawdown_pct": 100.0,
+                "mean": -34.93212859613125,
+                "median": -32.851691409046126,
+                "net_profit_bnb": -6.357647404495889,
+                "p10": -100.0,
+                "p25": -100.0,
+                "p75": 21.70356104099602,
+                "p90": 35.40301388908122,
+                "positive_rate": 0.46153846153846156,
+                "profit_factor": 0.2806455757200233,
+                "total_return_pct": -6357.647404495889
+              }
+            }
+          },
+          {
+            "candidate_count": 25,
+            "complete_only": {
+              "rates": {
+                "ambiguous_barrier_rate": 0.0,
+                "horizon_exit_rate": 0.08695652173913043,
+                "stop_first_rate": 0.043478260869565216,
+                "target_first_rate": 0.8695652173913043
+              },
+              "returns": {
+                "compounded_return_pct": 1614.3313043116802,
+                "count": 23,
+                "max_drawdown_pct": 86.74629673705287,
+                "mean": 20.784016330212797,
+                "median": 21.30541810724571,
+                "net_profit_bnb": 0.4780323755948943,
+                "p10": -1.8652281460076914,
+                "p25": 20.00246877977505,
+                "p75": 31.254693542794687,
+                "p90": 49.40374743474838,
+                "positive_rate": 0.8695652173913043,
+                "profit_factor": 6.225335851243866,
+                "total_return_pct": 478.0323755948943
+              }
+            },
+            "selection": "top_25",
+            "summary": {
+              "rates": {
+                "ambiguous_barrier_rate": 0.0,
+                "horizon_exit_rate": 0.08,
+                "stop_first_rate": 0.04,
+                "target_first_rate": 0.88
+              },
+              "returns": {
+                "compounded_return_pct": -100.0,
+                "count": 25,
+                "max_drawdown_pct": 100.0,
+                "mean": 11.121295023795774,
+                "median": 20.608935810687967,
+                "net_profit_bnb": 0.2780323755948943,
+                "p10": -86.74629673705287,
+                "p25": 14.679947979991304,
+                "p75": 31.254693542794687,
+                "p90": 49.40374743474838,
+                "positive_rate": 0.8,
+                "profit_factor": 1.953852651303738,
+                "total_return_pct": 278.0323755948943
+              }
+            }
+          },
+          {
+            "candidate_count": 50,
+            "complete_only": {
+              "rates": {
+                "ambiguous_barrier_rate": 0.0,
+                "horizon_exit_rate": 0.05,
+                "stop_first_rate": 0.075,
+                "target_first_rate": 0.875
+              },
+              "returns": {
+                "compounded_return_pct": 41787.028990481485,
+                "count": 40,
+                "max_drawdown_pct": 86.74629673705287,
+                "mean": 22.138460076135463,
+                "median": 22.909964862554812,
+                "net_profit_bnb": 0.8855384030454183,
+                "p10": -1.8652281460076914,
+                "p25": 20.057274896888156,
+                "p75": 37.19523070836719,
+                "p90": 40.62913782532909,
+                "positive_rate": 0.875,
+                "profit_factor": 6.303298311055094,
+                "total_return_pct": 885.5384030454182
+              }
+            },
+            "selection": "top_50",
+            "summary": {
+              "rates": {
+                "ambiguous_barrier_rate": 0.0,
+                "horizon_exit_rate": 0.04,
+                "stop_first_rate": 0.16,
+                "target_first_rate": 0.8
+              },
+              "returns": {
+                "compounded_return_pct": -100.0,
+                "count": 50,
+                "max_drawdown_pct": 100.0,
+                "mean": -2.2892319390916303,
+                "median": 20.67844448143822,
+                "net_profit_bnb": -0.11446159695458157,
+                "p10": -100.0,
+                "p25": -33.391129047614555,
+                "p75": 35.40301388908122,
+                "p90": 40.02442328374407,
+                "positive_rate": 0.7,
+                "profit_factor": 0.901916301584291,
+                "total_return_pct": -114.46159695458155
+              }
+            }
+          },
+          {
+            "candidate_count": 293,
+            "complete_only": {
+              "rates": {
+                "ambiguous_barrier_rate": 0.0,
+                "horizon_exit_rate": 0.17341040462427745,
+                "stop_first_rate": 0.12138728323699421,
+                "target_first_rate": 0.7052023121387283
+              },
+              "returns": {
+                "compounded_return_pct": 4373.766293251172,
+                "count": 173,
+                "max_drawdown_pct": 99.88745357711753,
+                "mean": 12.398529853536903,
+                "median": 20.755131885083912,
+                "net_profit_bnb": 2.144945664661884,
+                "p10": -31.378971004787605,
+                "p25": -6.806353625518991,
+                "p75": 29.708952889187646,
+                "p90": 40.62913782532909,
+                "positive_rate": 0.7167630057803468,
+                "profit_factor": 2.305931354003818,
+                "total_return_pct": 2144.945664661884
+              }
+            },
+            "selection": "top_1_per_hour",
+            "summary": {
+              "rates": {
+                "ambiguous_barrier_rate": 0.0,
+                "horizon_exit_rate": 0.2627986348122867,
+                "stop_first_rate": 0.16040955631399317,
+                "target_first_rate": 0.5733788395904437
+              },
+              "returns": {
+                "compounded_return_pct": -100.0,
+                "count": 293,
+                "max_drawdown_pct": 100.0,
+                "mean": -33.6349977315294,
+                "median": -24.682223240273014,
+                "net_profit_bnb": -9.855054335338117,
+                "p10": -100.0,
+                "p25": -100.0,
+                "p75": 21.905354513331442,
+                "p90": 35.429795966656144,
+                "positive_rate": 0.4232081911262799,
+                "profit_factor": 0.27761919709645094,
+                "total_return_pct": -9855.054335338116
+              }
+            }
+          },
+          {
+            "candidate_count": 685,
+            "complete_only": {
+              "rates": {
+                "ambiguous_barrier_rate": 0.0,
+                "horizon_exit_rate": 0.21823204419889503,
+                "stop_first_rate": 0.15193370165745856,
+                "target_first_rate": 0.6298342541436464
+              },
+              "returns": {
+                "compounded_return_pct": -99.99800673407016,
+                "count": 362,
+                "max_drawdown_pct": 99.99999993313934,
+                "mean": 7.7874759673432,
+                "median": 20.383115681236674,
+                "net_profit_bnb": 2.8190663001782372,
+                "p10": -34.200041212442024,
+                "p25": -16.27353381898017,
+                "p75": 28.103582782493962,
+                "p90": 41.52954892150045,
+                "positive_rate": 0.6298342541436464,
+                "profit_factor": 1.6670062335642961,
+                "total_return_pct": 2819.066300178237
+              }
+            },
+            "selection": "top_3_per_hour",
+            "summary": {
+              "rates": {
+                "ambiguous_barrier_rate": 0.0,
+                "horizon_exit_rate": 0.3094890510948905,
+                "stop_first_rate": 0.18832116788321168,
+                "target_first_rate": 0.5007299270072992
+              },
+              "returns": {
+                "compounded_return_pct": -100.0,
+                "count": 685,
+                "max_drawdown_pct": 100.0,
+                "mean": -43.037859415798195,
+                "median": -57.973659841510596,
+                "net_profit_bnb": -29.480933699821776,
+                "p10": -100.0,
+                "p25": -100.0,
+                "p75": 20.56567378298546,
+                "p90": 32.7526169336759,
+                "positive_rate": 0.33284671532846716,
+                "profit_factor": 0.19288799331182177,
+                "total_return_pct": -29480.933699821773
+              }
+            }
+          }
+        ]
+      },
+      "label_positive_count": 635,
+      "label_positive_rate": 0.35024820739106455,
+      "profit_ranker": {
+        "baseline_all": {
+          "rates": {
+            "ambiguous_barrier_rate": 0.0,
+            "horizon_exit_rate": 0.39768339768339767,
+            "stop_first_rate": 0.24544953116381688,
+            "target_first_rate": 0.35024820739106455
+          },
+          "returns": {
+            "compounded_return_pct": -100.0,
+            "count": 1813,
+            "max_drawdown_pct": 100.0,
+            "mean": -58.390622139910604,
+            "median": -100.0,
+            "net_profit_bnb": -105.86219793965807,
+            "p10": -100.0,
+            "p25": -100.0,
+            "p75": -11.061114296695429,
+            "p90": 27.15887094890197,
+            "positive_rate": 0.21345835631549917,
+            "profit_factor": 0.10349204947183105,
+            "total_return_pct": -105862.19793965807
+          }
+        },
+        "baseline_complete_only": {
+          "rates": {
+            "ambiguous_barrier_rate": 0.0,
+            "horizon_exit_rate": 0.2682926829268293,
+            "stop_first_rate": 0.2018970189701897,
+            "target_first_rate": 0.5298102981029811
+          },
+          "returns": {
+            "compounded_return_pct": -100.0,
+            "count": 738,
+            "max_drawdown_pct": 100.0,
+            "mean": 2.2192439842033522,
+            "median": 9.91210812251503,
+            "net_profit_bnb": 1.6378020603420744,
+            "p10": -39.83350909449418,
+            "p25": -26.143979580061693,
+            "p75": 26.95391854495397,
+            "p90": 41.052340496166416,
+            "positive_rate": 0.524390243902439,
+            "profit_factor": 1.1547602778258454,
+            "total_return_pct": 1637.8020603420744
+          }
+        },
+        "ranked": [
+          {
+            "candidate_count": 19,
+            "complete_only": {
+              "rates": {
+                "ambiguous_barrier_rate": 0.0,
+                "horizon_exit_rate": 0.0,
+                "stop_first_rate": 0.14285714285714285,
+                "target_first_rate": 0.8571428571428571
+              },
+              "returns": {
+                "compounded_return_pct": 124.41962391678575,
+                "count": 14,
+                "max_drawdown_pct": 88.3584773667074,
+                "mean": 20.35427298595102,
+                "median": 20.722912995639152,
+                "net_profit_bnb": 0.2849598218033143,
+                "p10": -28.31121452829223,
+                "p25": 20.092016064561125,
+                "p75": 27.51423438211853,
+                "p90": 53.09531943067969,
+                "positive_rate": 0.8571428571428571,
+                "profit_factor": 3.442449424309549,
+                "total_return_pct": 284.9598218033143
+              }
+            },
+            "selection": "top_1pct",
+            "summary": {
+              "rates": {
+                "ambiguous_barrier_rate": 0.0,
+                "horizon_exit_rate": 0.0,
+                "stop_first_rate": 0.2631578947368421,
+                "target_first_rate": 0.7368421052631579
+              },
+              "returns": {
+                "compounded_return_pct": -100.0,
+                "count": 19,
+                "max_drawdown_pct": 100.0,
+                "mean": -11.317904115615036,
+                "median": 20.204280447879164,
+                "net_profit_bnb": -0.21504017819668572,
+                "p10": -100.0,
+                "p25": -100.0,
+                "p75": 26.460142297685586,
+                "p90": 39.44403671510204,
+                "positive_rate": 0.631578947368421,
+                "profit_factor": 0.6512879082221854,
+                "total_return_pct": -215.0401781966857
+              }
+            }
+          },
+          {
+            "candidate_count": 91,
+            "complete_only": {
+              "rates": {
+                "ambiguous_barrier_rate": 0.0,
+                "horizon_exit_rate": 0.05555555555555555,
+                "stop_first_rate": 0.1111111111111111,
+                "target_first_rate": 0.8333333333333334
+              },
+              "returns": {
+                "compounded_return_pct": 13549.451509136841,
+                "count": 72,
+                "max_drawdown_pct": 92.96491396514588,
+                "mean": 16.320122211843913,
+                "median": 20.726428189073367,
+                "net_profit_bnb": 1.1750487992527616,
+                "p10": -33.391129047614555,
+                "p25": 20.016611749143664,
+                "p75": 32.6202117270243,
+                "p90": 40.02442328374407,
+                "positive_rate": 0.8194444444444444,
+                "profit_factor": 3.180233923000006,
+                "total_return_pct": 1175.0487992527615
+              }
+            },
+            "selection": "top_5pct",
+            "summary": {
+              "rates": {
+                "ambiguous_barrier_rate": 0.0,
+                "horizon_exit_rate": 0.06593406593406594,
+                "stop_first_rate": 0.21978021978021978,
+                "target_first_rate": 0.7142857142857143
+              },
+              "returns": {
+                "compounded_return_pct": -100.0,
+                "count": 91,
+                "max_drawdown_pct": 100.0,
+                "mean": -7.966496711508114,
+                "median": 20.300018523658036,
+                "net_profit_bnb": -0.7249512007472386,
+                "p10": -100.0,
+                "p25": -57.973659841510596,
+                "p75": 26.900168009144522,
+                "p90": 38.1921468367245,
+                "positive_rate": 0.6483516483516484,
+                "profit_factor": 0.7027615973915834,
+                "total_return_pct": -724.9512007472385
+              }
+            }
+          },
+          {
+            "candidate_count": 182,
+            "complete_only": {
+              "rates": {
+                "ambiguous_barrier_rate": 0.0,
+                "horizon_exit_rate": 0.109375,
+                "stop_first_rate": 0.125,
+                "target_first_rate": 0.765625
+              },
+              "returns": {
+                "compounded_return_pct": 643362.0443114202,
+                "count": 128,
+                "max_drawdown_pct": 93.96661193479167,
+                "mean": 16.40143509969597,
+                "median": 21.165845855284417,
+                "net_profit_bnb": 2.0993836927610845,
+                "p10": -37.48844883706302,
+                "p25": 11.212261438234616,
+                "p75": 34.59641722260254,
+                "p90": 46.889103583622614,
+                "positive_rate": 0.78125,
+                "profit_factor": 2.9276960858604606,
+                "total_return_pct": 2099.383692761084
+              }
+            },
+            "selection": "top_10pct",
+            "summary": {
+              "rates": {
+                "ambiguous_barrier_rate": 0.0,
+                "horizon_exit_rate": 0.17582417582417584,
+                "stop_first_rate": 0.21978021978021978,
+                "target_first_rate": 0.6043956043956044
+              },
+              "returns": {
+                "compounded_return_pct": -100.0,
+                "count": 182,
+                "max_drawdown_pct": 100.0,
+                "mean": -18.13525443537866,
+                "median": 19.568775179958553,
+                "net_profit_bnb": -3.300616307238915,
+                "p10": -100.0,
+                "p25": -100.0,
+                "p75": 26.8083614368134,
+                "p90": 41.052340496166416,
+                "positive_rate": 0.5494505494505495,
+                "profit_factor": 0.4913570745328511,
+                "total_return_pct": -3300.616307238915
+              }
+            }
+          },
+          {
+            "candidate_count": 25,
+            "complete_only": {
+              "rates": {
+                "ambiguous_barrier_rate": 0.0,
+                "horizon_exit_rate": 0.0,
+                "stop_first_rate": 0.10526315789473684,
+                "target_first_rate": 0.8947368421052632
+              },
+              "returns": {
+                "compounded_return_pct": 631.7005553815293,
+                "count": 19,
+                "max_drawdown_pct": 88.3584773667074,
+                "mean": 22.083217903774056,
+                "median": 20.74795315218847,
+                "net_profit_bnb": 0.4195811401717071,
+                "p10": 19.99346638475883,
+                "p25": 20.204280447879164,
+                "p75": 32.34750937003727,
+                "p90": 40.62913782532909,
+                "positive_rate": 0.8947368421052632,
+                "profit_factor": 4.596316518512123,
+                "total_return_pct": 419.58114017170715
+              }
+            },
+            "selection": "top_25",
+            "summary": {
+              "rates": {
+                "ambiguous_barrier_rate": 0.0,
+                "horizon_exit_rate": 0.0,
+                "stop_first_rate": 0.24,
+                "target_first_rate": 0.76
+              },
+              "returns": {
+                "compounded_return_pct": -100.0,
+                "count": 25,
+                "max_drawdown_pct": 100.0,
+                "mean": -7.216754393131717,
+                "median": 20.470502663936863,
+                "net_profit_bnb": -0.18041885982829298,
+                "p10": -100.0,
+                "p25": -88.3584773667074,
+                "p75": 26.460142297685586,
+                "p90": 40.62913782532909,
+                "positive_rate": 0.68,
+                "profit_factor": 0.7482538164112479,
+                "total_return_pct": -180.41885982829297
+              }
+            }
+          },
+          {
+            "candidate_count": 50,
+            "complete_only": {
+              "rates": {
+                "ambiguous_barrier_rate": 0.0,
+                "horizon_exit_rate": 0.0,
+                "stop_first_rate": 0.13157894736842105,
+                "target_first_rate": 0.868421052631579
+              },
+              "returns": {
+                "compounded_return_pct": 2280.4386224937402,
+                "count": 38,
+                "max_drawdown_pct": 88.3584773667074,
+                "mean": 19.432578804473504,
+                "median": 20.76170946854501,
+                "net_profit_bnb": 0.7384379945699933,
+                "p10": -28.31121452829223,
+                "p25": 20.135936164225466,
+                "p75": 35.40301388908122,
+                "p90": 40.62913782532909,
+                "positive_rate": 0.868421052631579,
+                "profit_factor": 3.6475736236489857,
+                "total_return_pct": 738.4379945699933
+              }
+            },
+            "selection": "top_50",
+            "summary": {
+              "rates": {
+                "ambiguous_barrier_rate": 0.0,
+                "horizon_exit_rate": 0.0,
+                "stop_first_rate": 0.26,
+                "target_first_rate": 0.74
+              },
+              "returns": {
+                "compounded_return_pct": -100.0,
+                "count": 50,
+                "max_drawdown_pct": 100.0,
+                "mean": -9.231240108600138,
+                "median": 20.444769643971238,
+                "net_profit_bnb": -0.461562005430007,
+                "p10": -100.0,
+                "p25": -88.3584773667074,
+                "p75": 32.34750937003727,
+                "p90": 40.02442328374407,
+                "positive_rate": 0.66,
+                "profit_factor": 0.6879041834424958,
+                "total_return_pct": -461.56200543000705
+              }
+            }
+          },
+          {
+            "candidate_count": 293,
+            "complete_only": {
+              "rates": {
+                "ambiguous_barrier_rate": 0.0,
+                "horizon_exit_rate": 0.21578947368421053,
+                "stop_first_rate": 0.1631578947368421,
+                "target_first_rate": 0.6210526315789474
+              },
+              "returns": {
+                "compounded_return_pct": -99.85436392089481,
+                "count": 190,
+                "max_drawdown_pct": 99.99985432268062,
+                "mean": 7.90435785308236,
+                "median": 20.06979463638705,
+                "net_profit_bnb": 1.5018279920856483,
+                "p10": -38.03223694035578,
+                "p25": -14.205674958293068,
+                "p75": 27.533886361039393,
+                "p90": 42.965447762583864,
+                "positive_rate": 0.6368421052631579,
+                "profit_factor": 1.67541214275627,
+                "total_return_pct": 1501.8279920856482
+              }
+            },
+            "selection": "top_1_per_hour",
+            "summary": {
+              "rates": {
+                "ambiguous_barrier_rate": 0.0,
+                "horizon_exit_rate": 0.32081911262798635,
+                "stop_first_rate": 0.20136518771331058,
+                "target_first_rate": 0.47440273037542663
+              },
+              "returns": {
+                "compounded_return_pct": -100.0,
+                "count": 293,
+                "max_drawdown_pct": 100.0,
+                "mean": -30.027890811994375,
+                "median": -19.690508564381137,
+                "net_profit_bnb": -8.79817200791435,
+                "p10": -100.0,
+                "p25": -100.0,
+                "p75": 20.76828705200611,
+                "p90": 37.23243025718772,
+                "positive_rate": 0.4129692832764505,
+                "profit_factor": 0.29747107883173557,
+                "total_return_pct": -8798.172007914349
+              }
+            }
+          },
+          {
+            "candidate_count": 685,
+            "complete_only": {
+              "rates": {
+                "ambiguous_barrier_rate": 0.0,
+                "horizon_exit_rate": 0.24415584415584415,
+                "stop_first_rate": 0.18701298701298702,
+                "target_first_rate": 0.5688311688311688
+              },
+              "returns": {
+                "compounded_return_pct": -99.99999999999949,
+                "count": 385,
+                "max_drawdown_pct": 100.0,
+                "mean": 3.6197915667463945,
+                "median": 19.65992739651106,
+                "net_profit_bnb": 1.3936197531973618,
+                "p10": -44.74672318247991,
+                "p25": -24.494929418048518,
+                "p75": 26.8083614368134,
+                "p90": 42.63689315062915,
+                "positive_rate": 0.5662337662337662,
+                "profit_factor": 1.255981828340869,
+                "total_return_pct": 1393.6197531973617
+              }
+            },
+            "selection": "top_3_per_hour",
+            "summary": {
+              "rates": {
+                "ambiguous_barrier_rate": 0.0,
+                "horizon_exit_rate": 0.3372262773722628,
+                "stop_first_rate": 0.22627737226277372,
+                "target_first_rate": 0.4306569343065693
+              },
+              "returns": {
+                "compounded_return_pct": -100.0,
+                "count": 685,
+                "max_drawdown_pct": 100.0,
+                "mean": -41.76113904642721,
+                "median": -41.744039184931005,
+                "net_profit_bnb": -28.60638024680264,
+                "p10": -100.0,
+                "p25": -100.0,
+                "p75": 20.259391449630716,
+                "p90": 32.62489136015021,
+                "positive_rate": 0.3182481751824818,
+                "profit_factor": 0.1929181850849467,
+                "total_return_pct": -28606.380246802637
+              }
+            }
+          }
+        ]
+      }
+    },
+    "validation": {
+      "candidate_count": 604,
+      "classifier": {
+        "baseline_all": {
+          "rates": {
+            "ambiguous_barrier_rate": 0.0,
+            "horizon_exit_rate": 0.2996688741721854,
+            "stop_first_rate": 0.2764900662251656,
+            "target_first_rate": 0.4155629139072848
+          },
+          "returns": {
+            "compounded_return_pct": -100.0,
+            "count": 604,
+            "max_drawdown_pct": 100.0,
+            "mean": -43.022677729251114,
+            "median": -45.23301751266602,
+            "net_profit_bnb": -25.98569734846767,
+            "p10": -100.0,
+            "p25": -100.0,
+            "p75": 20.164582468737734,
+            "p90": 27.18268753682822,
+            "positive_rate": 0.32450331125827814,
+            "profit_factor": 0.16355488584721095,
+            "total_return_pct": -25985.69734846767
+          }
+        },
+        "baseline_complete_only": {
+          "rates": {
+            "ambiguous_barrier_rate": 0.0,
+            "horizon_exit_rate": 0.21138211382113822,
+            "stop_first_rate": 0.25203252032520324,
+            "target_first_rate": 0.5365853658536586
+          },
+          "returns": {
+            "compounded_return_pct": -100.0,
+            "count": 369,
+            "max_drawdown_pct": 100.0,
+            "mean": -6.736307177419163,
+            "median": 9.744126023147626,
+            "net_profit_bnb": -2.485697348467672,
+            "p10": -88.5245465862651,
+            "p25": -33.11635345190835,
+            "p75": 21.377601603548314,
+            "p90": 32.76786027975225,
+            "positive_rate": 0.5311653116531165,
+            "profit_factor": 0.6715007910277625,
+            "total_return_pct": -2485.697348467672
+          }
+        },
+        "ranked": [
+          {
+            "candidate_count": 7,
+            "complete_only": {
+              "rates": {
+                "ambiguous_barrier_rate": 0.0,
+                "horizon_exit_rate": 0.0,
+                "stop_first_rate": 0.0,
+                "target_first_rate": 1.0
+              },
+              "returns": {
+                "compounded_return_pct": 256.8704181049188,
+                "count": 6,
+                "max_drawdown_pct": 0.0,
+                "mean": 23.70647531977284,
+                "median": 20.714768166085065,
+                "net_profit_bnb": 0.14223885191863703,
+                "p10": 20.4353307611991,
+                "p25": 20.44616481620587,
+                "p75": 27.15995972930969,
+                "p90": 27.15995972930969,
+                "positive_rate": 1.0,
+                "profit_factor": null,
+                "total_return_pct": 142.23885191863704
+              }
+            },
+            "selection": "top_1pct",
+            "summary": {
+              "rates": {
+                "ambiguous_barrier_rate": 0.0,
+                "horizon_exit_rate": 0.0,
+                "stop_first_rate": 0.14285714285714285,
+                "target_first_rate": 0.8571428571428571
+              },
+              "returns": {
+                "compounded_return_pct": -100.0,
+                "count": 7,
+                "max_drawdown_pct": 100.0,
+                "mean": 6.034121702662434,
+                "median": 20.587446791078158,
+                "net_profit_bnb": 0.04223885191863703,
+                "p10": 20.4353307611991,
+                "p25": 20.44616481620587,
+                "p75": 20.84208954109197,
+                "p90": 27.15995972930969,
+                "positive_rate": 0.8571428571428571,
+                "profit_factor": 1.4223885191863703,
+                "total_return_pct": 42.238851918637025
+              }
+            }
+          },
+          {
+            "candidate_count": 31,
+            "complete_only": {
+              "rates": {
+                "ambiguous_barrier_rate": 0.0,
+                "horizon_exit_rate": 0.0,
+                "stop_first_rate": 0.07407407407407407,
+                "target_first_rate": 0.9259259259259259
+              },
+              "returns": {
+                "compounded_return_pct": 9857.918714585989,
+                "count": 27,
+                "max_drawdown_pct": 36.70409617745529,
+                "mean": 20.124241389825976,
+                "median": 21.059354095622275,
+                "net_profit_bnb": 0.5433545175253013,
+                "p10": 20.278250369306484,
+                "p25": 20.44616481620587,
+                "p75": 27.15995972930969,
+                "p90": 32.76786027975225,
+                "positive_rate": 0.9259259259259259,
+                "profit_factor": 8.831804878588532,
+                "total_return_pct": 543.3545175253013
+              }
+            },
+            "selection": "top_5pct",
+            "summary": {
+              "rates": {
+                "ambiguous_barrier_rate": 0.0,
+                "horizon_exit_rate": 0.0,
+                "stop_first_rate": 0.1935483870967742,
+                "target_first_rate": 0.8064516129032258
+              },
+              "returns": {
+                "compounded_return_pct": -100.0,
+                "count": 31,
+                "max_drawdown_pct": 100.0,
+                "mean": 4.624339275009721,
+                "median": 20.750938171845277,
+                "net_profit_bnb": 0.14335451752530134,
+                "p10": -100.0,
+                "p25": 20.325830948732193,
+                "p75": 24.23672674204347,
+                "p90": 32.76786027975225,
+                "positive_rate": 0.8064516129032258,
+                "profit_factor": 1.305413834342726,
+                "total_return_pct": 143.35451752530133
+              }
+            }
+          },
+          {
+            "candidate_count": 61,
+            "complete_only": {
+              "rates": {
+                "ambiguous_barrier_rate": 0.0,
+                "horizon_exit_rate": 0.058823529411764705,
+                "stop_first_rate": 0.0784313725490196,
+                "target_first_rate": 0.8627450980392157
+              },
+              "returns": {
+                "compounded_return_pct": 58329.53815929504,
+                "count": 51,
+                "max_drawdown_pct": 55.50101901782811,
+                "mean": 15.904927854678743,
+                "median": 20.6251374087832,
+                "net_profit_bnb": 0.8111513205886163,
+                "p10": -24.904685674150905,
+                "p25": 20.164582468737734,
+                "p75": 24.23672674204347,
+                "p90": 31.977125042637432,
+                "positive_rate": 0.8627450980392157,
+                "profit_factor": 4.550749200776003,
+                "total_return_pct": 811.1513205886162
+              }
+            },
+            "selection": "top_10pct",
+            "summary": {
+              "rates": {
+                "ambiguous_barrier_rate": 0.0,
+                "horizon_exit_rate": 0.04918032786885246,
+                "stop_first_rate": 0.18032786885245902,
+                "target_first_rate": 0.7704918032786885
+              },
+              "returns": {
+                "compounded_return_pct": -100.0,
+                "count": 61,
+                "max_drawdown_pct": 100.0,
+                "mean": -3.095879990350559,
+                "median": 20.47491213261743,
+                "net_profit_bnb": -0.18884867941138406,
+                "p10": -100.0,
+                "p25": -24.904685674150905,
+                "p75": 21.75753767205828,
+                "p90": 30.41453597891128,
+                "positive_rate": 0.7213114754098361,
+                "profit_factor": 0.8462701535252365,
+                "total_return_pct": -188.84867941138404
+              }
+            }
+          },
+          {
+            "candidate_count": 25,
+            "complete_only": {
+              "rates": {
+                "ambiguous_barrier_rate": 0.0,
+                "horizon_exit_rate": 0.0,
+                "stop_first_rate": 0.09523809523809523,
+                "target_first_rate": 0.9047619047619048
+              },
+              "returns": {
+                "compounded_return_pct": 2434.2228055467162,
+                "count": 21,
+                "max_drawdown_pct": 36.70409617745529,
+                "mean": 18.519202646859704,
+                "median": 20.646654525993924,
+                "net_profit_bnb": 0.3889032555840537,
+                "p10": 20.139777502807867,
+                "p25": 20.4353307611991,
+                "p75": 24.23672674204347,
+                "p90": 32.76786027975225,
+                "positive_rate": 0.9047619047619048,
+                "profit_factor": 6.605574843205984,
+                "total_return_pct": 388.9032555840537
+              }
+            },
+            "selection": "top_25",
+            "summary": {
+              "rates": {
+                "ambiguous_barrier_rate": 0.0,
+                "horizon_exit_rate": 0.0,
+                "stop_first_rate": 0.24,
+                "target_first_rate": 0.76
+              },
+              "returns": {
+                "compounded_return_pct": -100.0,
+                "count": 25,
+                "max_drawdown_pct": 100.0,
+                "mean": -0.4438697766378483,
+                "median": 20.587446791078158,
+                "net_profit_bnb": -0.011096744415946231,
+                "p10": -100.0,
+                "p25": 20.139777502807867,
+                "p75": 22.478770285021188,
+                "p90": 32.76786027975225,
+                "positive_rate": 0.76,
+                "profit_factor": 0.9763586155546355,
+                "total_return_pct": -11.09674441594623
+              }
+            }
+          },
+          {
+            "candidate_count": 50,
+            "complete_only": {
+              "rates": {
+                "ambiguous_barrier_rate": 0.0,
+                "horizon_exit_rate": 0.022222222222222223,
+                "stop_first_rate": 0.06666666666666667,
+                "target_first_rate": 0.9111111111111111
+              },
+              "returns": {
+                "compounded_return_pct": 91515.30977146413,
+                "count": 45,
+                "max_drawdown_pct": 55.50101901782811,
+                "mean": 18.2979185629793,
+                "median": 20.6251374087832,
+                "net_profit_bnb": 0.8234063353340688,
+                "p10": 18.11757455905394,
+                "p25": 20.278250369306484,
+                "p75": 22.478770285021188,
+                "p90": 31.977125042637432,
+                "positive_rate": 0.9111111111111111,
+                "profit_factor": 7.276167805043953,
+                "total_return_pct": 823.4063353340688
+              }
+            },
+            "selection": "top_50",
+            "summary": {
+              "rates": {
+                "ambiguous_barrier_rate": 0.0,
+                "horizon_exit_rate": 0.02,
+                "stop_first_rate": 0.16,
+                "target_first_rate": 0.82
+              },
+              "returns": {
+                "compounded_return_pct": -100.0,
+                "count": 50,
+                "max_drawdown_pct": 100.0,
+                "mean": 6.468126706681371,
+                "median": 20.5619224137792,
+                "net_profit_bnb": 0.3234063353340686,
+                "p10": -55.50101901782811,
+                "p25": 20.139777502807867,
+                "p75": 21.976728138688916,
+                "p90": 30.41453597891128,
+                "positive_rate": 0.82,
+                "profit_factor": 1.5123709280852429,
+                "total_return_pct": 323.40633533406856
+              }
+            }
+          },
+          {
+            "candidate_count": 174,
+            "complete_only": {
+              "rates": {
+                "ambiguous_barrier_rate": 0.0,
+                "horizon_exit_rate": 0.1732283464566929,
+                "stop_first_rate": 0.16535433070866143,
+                "target_first_rate": 0.6614173228346457
+              },
+              "returns": {
+                "compounded_return_pct": -99.99999995956304,
+                "count": 127,
+                "max_drawdown_pct": 99.99999997663569,
+                "mean": 2.164252200980031,
+                "median": 20.26800916846483,
+                "net_profit_bnb": 0.2748600295244639,
+                "p10": -88.39508426627822,
+                "p25": -8.371210778151795,
+                "p75": 22.831271020732082,
+                "p90": 35.158895635083766,
+                "positive_rate": 0.6929133858267716,
+                "profit_factor": 1.1410791868364074,
+                "total_return_pct": 274.8600295244639
+              }
+            },
+            "selection": "top_1_per_hour",
+            "summary": {
+              "rates": {
+                "ambiguous_barrier_rate": 0.0,
+                "horizon_exit_rate": 0.20689655172413793,
+                "stop_first_rate": 0.21839080459770116,
+                "target_first_rate": 0.5747126436781609
+              },
+              "returns": {
+                "compounded_return_pct": -100.0,
+                "count": 174,
+                "max_drawdown_pct": 100.0,
+                "mean": -25.431838910778943,
+                "median": 4.529831184757449,
+                "net_profit_bnb": -4.425139970475536,
+                "p10": -100.0,
+                "p25": -100.0,
+                "p75": 20.980617104802278,
+                "p90": 31.977125042637432,
+                "positive_rate": 0.5057471264367817,
+                "profit_factor": 0.3343920343321635,
+                "total_return_pct": -4425.139970475536
+              }
+            }
+          },
+          {
+            "candidate_count": 391,
+            "complete_only": {
+              "rates": {
+                "ambiguous_barrier_rate": 0.0,
+                "horizon_exit_rate": 0.1693548387096774,
+                "stop_first_rate": 0.20161290322580644,
+                "target_first_rate": 0.6290322580645161
+              },
+              "returns": {
+                "compounded_return_pct": -100.0,
+                "count": 248,
+                "max_drawdown_pct": 100.0,
+                "mean": -2.1148469232099583,
+                "median": 20.19836034891288,
+                "net_profit_bnb": -0.5244820369560697,
+                "p10": -88.69447832341507,
+                "p25": -23.953578593463497,
+                "p75": 22.478770285021188,
+                "p90": 32.76786027975225,
+                "positive_rate": 0.6370967741935484,
+                "profit_factor": 0.883292363798693,
+                "total_return_pct": -524.4820369560697
+              }
+            },
+            "selection": "top_3_per_hour",
+            "summary": {
+              "rates": {
+                "ambiguous_barrier_rate": 0.0,
+                "horizon_exit_rate": 0.2531969309462916,
+                "stop_first_rate": 0.24552429667519182,
+                "target_first_rate": 0.49872122762148335
+              },
+              "returns": {
+                "compounded_return_pct": -100.0,
+                "count": 391,
+                "max_drawdown_pct": 100.0,
+                "mean": -37.91427630935056,
+                "median": -32.51520346278115,
+                "net_profit_bnb": -14.824482036956077,
+                "p10": -100.0,
+                "p25": -100.0,
+                "p75": 20.52192171688656,
+                "p90": 27.73698707466421,
+                "positive_rate": 0.4040920716112532,
+                "profit_factor": 0.21121123252673984,
+                "total_return_pct": -14824.482036956075
+              }
+            }
+          }
+        ]
+      },
+      "label_positive_count": 251,
+      "label_positive_rate": 0.4155629139072848,
+      "profit_ranker": {
+        "baseline_all": {
+          "rates": {
+            "ambiguous_barrier_rate": 0.0,
+            "horizon_exit_rate": 0.2996688741721854,
+            "stop_first_rate": 0.2764900662251656,
+            "target_first_rate": 0.4155629139072848
+          },
+          "returns": {
+            "compounded_return_pct": -100.0,
+            "count": 604,
+            "max_drawdown_pct": 100.0,
+            "mean": -43.022677729251114,
+            "median": -45.23301751266602,
+            "net_profit_bnb": -25.98569734846767,
+            "p10": -100.0,
+            "p25": -100.0,
+            "p75": 20.164582468737734,
+            "p90": 27.18268753682822,
+            "positive_rate": 0.32450331125827814,
+            "profit_factor": 0.16355488584721095,
+            "total_return_pct": -25985.69734846767
+          }
+        },
+        "baseline_complete_only": {
+          "rates": {
+            "ambiguous_barrier_rate": 0.0,
+            "horizon_exit_rate": 0.21138211382113822,
+            "stop_first_rate": 0.25203252032520324,
+            "target_first_rate": 0.5365853658536586
+          },
+          "returns": {
+            "compounded_return_pct": -100.0,
+            "count": 369,
+            "max_drawdown_pct": 100.0,
+            "mean": -6.736307177419163,
+            "median": 9.744126023147626,
+            "net_profit_bnb": -2.485697348467672,
+            "p10": -88.5245465862651,
+            "p25": -33.11635345190835,
+            "p75": 21.377601603548314,
+            "p90": 32.76786027975225,
+            "positive_rate": 0.5311653116531165,
+            "profit_factor": 0.6715007910277625,
+            "total_return_pct": -2485.697348467672
+          }
+        },
+        "ranked": [
+          {
+            "candidate_count": 7,
+            "complete_only": {
+              "rates": {
+                "ambiguous_barrier_rate": 0.0,
+                "horizon_exit_rate": 0.0,
+                "stop_first_rate": 0.16666666666666666,
+                "target_first_rate": 0.8333333333333334
+              },
+              "returns": {
+                "compounded_return_pct": 99.79303159378112,
+                "count": 6,
+                "max_drawdown_pct": 32.67384747009206,
+                "mean": 14.884886595361555,
+                "median": 20.957784765195797,
+                "net_profit_bnb": 0.08930931957216934,
+                "p10": -32.67384747009206,
+                "p25": 20.139777502807867,
+                "p75": 27.15995972930969,
+                "p90": 27.15995972930969,
+                "positive_rate": 0.8333333333333334,
+                "profit_factor": 3.7333579142743574,
+                "total_return_pct": 89.30931957216933
+              }
+            },
+            "selection": "top_1pct",
+            "summary": {
+              "rates": {
+                "ambiguous_barrier_rate": 0.0,
+                "horizon_exit_rate": 0.0,
+                "stop_first_rate": 0.2857142857142857,
+                "target_first_rate": 0.7142857142857143
+              },
+              "returns": {
+                "compounded_return_pct": -100.0,
+                "count": 7,
+                "max_drawdown_pct": 100.0,
+                "mean": -1.5272400611186663,
+                "median": 20.750938171845277,
+                "net_profit_bnb": -0.010690680427830671,
+                "p10": -32.67384747009206,
+                "p25": 20.139777502807867,
+                "p75": 21.164631358546316,
+                "p90": 27.15995972930969,
+                "positive_rate": 0.7142857142857143,
+                "profit_factor": 0.9194213431532495,
+                "total_return_pct": -10.69068042783067
+              }
+            }
+          },
+          {
+            "candidate_count": 31,
+            "complete_only": {
+              "rates": {
+                "ambiguous_barrier_rate": 0.0,
+                "horizon_exit_rate": 0.0,
+                "stop_first_rate": 0.07142857142857142,
+                "target_first_rate": 0.9285714285714286
+              },
+              "returns": {
+                "compounded_return_pct": 11924.70061362433,
+                "count": 28,
+                "max_drawdown_pct": 36.70409617745529,
+                "mean": 20.145972529872182,
+                "median": 20.6987963489196,
+                "net_profit_bnb": 0.5640872308364212,
+                "p10": 20.139777502807867,
+                "p25": 20.4353307611991,
+                "p75": 26.03326794759584,
+                "p90": 32.76786027975225,
+                "positive_rate": 0.9285714285714286,
+                "profit_factor": 9.130642120240516,
+                "total_return_pct": 564.0872308364212
+              }
+            },
+            "selection": "top_5pct",
+            "summary": {
+              "rates": {
+                "ambiguous_barrier_rate": 0.0,
+                "horizon_exit_rate": 0.0,
+                "stop_first_rate": 0.16129032258064516,
+                "target_first_rate": 0.8387096774193549
+              },
+              "returns": {
+                "compounded_return_pct": -100.0,
+                "count": 31,
+                "max_drawdown_pct": 100.0,
+                "mean": 8.518942930207134,
+                "median": 20.6251374087832,
+                "net_profit_bnb": 0.26408723083642116,
+                "p10": -36.704096177455284,
+                "p25": 20.278250369306484,
+                "p75": 24.591508378566985,
+                "p90": 32.76786027975225,
+                "positive_rate": 0.8387096774193549,
+                "profit_factor": 1.7149512724788132,
+                "total_return_pct": 264.08723083642116
+              }
+            }
+          },
+          {
+            "candidate_count": 61,
+            "complete_only": {
+              "rates": {
+                "ambiguous_barrier_rate": 0.0,
+                "horizon_exit_rate": 0.07142857142857142,
+                "stop_first_rate": 0.125,
+                "target_first_rate": 0.8035714285714286
+              },
+              "returns": {
+                "compounded_return_pct": 19531.905202075126,
+                "count": 56,
+                "max_drawdown_pct": 92.33994169254872,
+                "mean": 13.186354040649729,
+                "median": 20.47937939742649,
+                "net_profit_bnb": 0.7384358262763846,
+                "p10": -32.67384747009206,
+                "p25": 20.09750052423542,
+                "p75": 21.11734462024564,
+                "p90": 30.41453597891128,
+                "positive_rate": 0.875,
+                "profit_factor": 3.3814004694181676,
+                "total_return_pct": 738.4358262763845
+              }
+            },
+            "selection": "top_10pct",
+            "summary": {
+              "rates": {
+                "ambiguous_barrier_rate": 0.0,
+                "horizon_exit_rate": 0.08196721311475409,
+                "stop_first_rate": 0.18032786885245902,
+                "target_first_rate": 0.7377049180327869
+              },
+              "returns": {
+                "compounded_return_pct": -100.0,
+                "count": 61,
+                "max_drawdown_pct": 100.0,
+                "mean": 3.908784037317783,
+                "median": 20.44616481620587,
+                "net_profit_bnb": 0.23843582627638482,
+                "p10": -48.91263516529678,
+                "p25": 6.871794804946485,
+                "p75": 21.065315340674307,
+                "p90": 28.539402290548963,
+                "positive_rate": 0.8032786885245902,
+                "profit_factor": 1.2943344433314021,
+                "total_return_pct": 238.43582627638483
+              }
+            }
+          },
+          {
+            "candidate_count": 25,
+            "complete_only": {
+              "rates": {
+                "ambiguous_barrier_rate": 0.0,
+                "horizon_exit_rate": 0.0,
+                "stop_first_rate": 0.09090909090909091,
+                "target_first_rate": 0.9090909090909091
+              },
+              "returns": {
+                "compounded_return_pct": 3414.7475594652365,
+                "count": 22,
+                "max_drawdown_pct": 36.70409617745529,
+                "mean": 19.420121153465843,
+                "median": 20.905146133733776,
+                "net_profit_bnb": 0.42724266537624855,
+                "p10": 20.09750052423542,
+                "p25": 20.278250369306484,
+                "p75": 27.15995972930969,
+                "p90": 34.81064226656046,
+                "positive_rate": 0.9090909090909091,
+                "profit_factor": 7.158191536300348,
+                "total_return_pct": 427.2426653762485
+              }
+            },
+            "selection": "top_25",
+            "summary": {
+              "rates": {
+                "ambiguous_barrier_rate": 0.0,
+                "horizon_exit_rate": 0.0,
+                "stop_first_rate": 0.2,
+                "target_first_rate": 0.8
+              },
+              "returns": {
+                "compounded_return_pct": -100.0,
+                "count": 25,
+                "max_drawdown_pct": 100.0,
+                "mean": 5.08970661504994,
+                "median": 20.646654525993924,
+                "net_profit_bnb": 0.1272426653762485,
+                "p10": -100.0,
+                "p25": 20.139777502807867,
+                "p75": 26.03326794759584,
+                "p90": 34.81064226656046,
+                "positive_rate": 0.8,
+                "profit_factor": 1.3444782439355956,
+                "total_return_pct": 127.24266537624851
+              }
+            }
+          },
+          {
+            "candidate_count": 50,
+            "complete_only": {
+              "rates": {
+                "ambiguous_barrier_rate": 0.0,
+                "horizon_exit_rate": 0.022222222222222223,
+                "stop_first_rate": 0.15555555555555556,
+                "target_first_rate": 0.8222222222222222
+              },
+              "returns": {
+                "compounded_return_pct": 3883.7372146506277,
+                "count": 45,
+                "max_drawdown_pct": 92.33994169254872,
+                "mean": 12.539720393573077,
+                "median": 20.48384666223555,
+                "net_profit_bnb": 0.5642874177107886,
+                "p10": -45.26016392286509,
+                "p25": 20.122830887633626,
+                "p75": 21.261693986015118,
+                "p90": 31.977125042637432,
+                "positive_rate": 0.8444444444444444,
+                "profit_factor": 2.819784839258702,
+                "total_return_pct": 564.2874177107885
+              }
+            },
+            "selection": "top_50",
+            "summary": {
+              "rates": {
+                "ambiguous_barrier_rate": 0.0,
+                "horizon_exit_rate": 0.04,
+                "stop_first_rate": 0.22,
+                "target_first_rate": 0.74
+              },
+              "returns": {
+                "compounded_return_pct": -100.0,
+                "count": 50,
+                "max_drawdown_pct": 100.0,
+                "mean": 1.285748354215769,
+                "median": 20.440747788702485,
+                "net_profit_bnb": 0.06428741771078851,
+                "p10": -51.91358038665703,
+                "p25": 6.871794804946485,
+                "p75": 21.164631358546316,
+                "p90": 30.41453597891128,
+                "positive_rate": 0.76,
+                "profit_factor": 1.0793588849487104,
+                "total_return_pct": 64.2874177107885
+              }
+            }
+          },
+          {
+            "candidate_count": 174,
+            "complete_only": {
+              "rates": {
+                "ambiguous_barrier_rate": 0.0,
+                "horizon_exit_rate": 0.19696969696969696,
+                "stop_first_rate": 0.19696969696969696,
+                "target_first_rate": 0.6060606060606061
+              },
+              "returns": {
+                "compounded_return_pct": -99.99999999999997,
+                "count": 132,
+                "max_drawdown_pct": 99.99999999999999,
+                "mean": -4.182151747933148,
+                "median": 20.151203804123206,
+                "net_profit_bnb": -0.5520440307271757,
+                "p10": -88.79762856510173,
+                "p25": -14.33372686493055,
+                "p75": 21.047268524048633,
+                "p90": 28.991101642716565,
+                "positive_rate": 0.6439393939393939,
+                "profit_factor": 0.7755863217806402,
+                "total_return_pct": -552.0440307271756
+              }
+            },
+            "selection": "top_1_per_hour",
+            "summary": {
+              "rates": {
+                "ambiguous_barrier_rate": 0.0,
+                "horizon_exit_rate": 0.2413793103448276,
+                "stop_first_rate": 0.2413793103448276,
+                "target_first_rate": 0.5172413793103449
+              },
+              "returns": {
+                "compounded_return_pct": -100.0,
+                "count": 174,
+                "max_drawdown_pct": 100.0,
+                "mean": -27.31059787774239,
+                "median": -5.1200627971114905,
+                "net_profit_bnb": -4.752044030727174,
+                "p10": -100.0,
+                "p25": -89.79586506478296,
+                "p75": 20.6251374087832,
+                "p90": 25.790004347622663,
+                "positive_rate": 0.4885057471264368,
+                "profit_factor": 0.28647337411670415,
+                "total_return_pct": -4752.044030727174
+              }
+            }
+          },
+          {
+            "candidate_count": 391,
+            "complete_only": {
+              "rates": {
+                "ambiguous_barrier_rate": 0.0,
+                "horizon_exit_rate": 0.17829457364341086,
+                "stop_first_rate": 0.2441860465116279,
+                "target_first_rate": 0.5775193798449613
+              },
+              "returns": {
+                "compounded_return_pct": -100.0,
+                "count": 258,
+                "max_drawdown_pct": 100.0,
+                "mean": -7.252093365616734,
+                "median": 18.788181808985392,
+                "net_profit_bnb": -1.8710400883291165,
+                "p10": -88.77981547881939,
+                "p25": -35.149229719124286,
+                "p75": 21.095334477556804,
+                "p90": 28.991101642716565,
+                "positive_rate": 0.5813953488372093,
+                "profit_factor": 0.6565020498635757,
+                "total_return_pct": -1871.0400883291165
+              }
+            },
+            "selection": "top_3_per_hour",
+            "summary": {
+              "rates": {
+                "ambiguous_barrier_rate": 0.0,
+                "horizon_exit_rate": 0.2608695652173913,
+                "stop_first_rate": 0.2813299232736573,
+                "target_first_rate": 0.45012787723785164
+              },
+              "returns": {
+                "compounded_return_pct": -100.0,
+                "count": 391,
+                "max_drawdown_pct": 100.0,
+                "mean": -38.80061403664736,
+                "median": -36.704096177455284,
+                "net_profit_bnb": -15.17104008832912,
+                "p10": -100.0,
+                "p25": -100.0,
+                "p75": 20.316250013314253,
+                "p90": 25.790004347622663,
+                "positive_rate": 0.3836317135549872,
+                "profit_factor": 0.1907492304553464,
+                "total_return_pct": -15171.040088329119
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "time_splits": {
+    "final": {
+      "candidate_count": 605,
+      "first_sample_time": 1788649720,
+      "last_sample_time": 1789137206
+    },
+    "train": {
+      "candidate_count": 1813,
+      "first_sample_time": 1786548172,
+      "last_sample_time": 1787818213
+    },
+    "validation": {
+      "candidate_count": 604,
+      "first_sample_time": 1787818277,
+      "last_sample_time": 1788645680
+    }
+  }
+}

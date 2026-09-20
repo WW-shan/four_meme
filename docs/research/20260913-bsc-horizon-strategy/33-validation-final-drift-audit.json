@@ -1,0 +1,322 @@
+{
+  "schema_version": 1,
+  "report_type": "validation_final_drift_and_target_audit",
+  "input": {
+    "lifecycle_dir": "data/training/bsc_month_latest_20260911_run7",
+    "candidate_count": 3022,
+    "horizon_seconds": 21600,
+    "target_return_pct": 20.0,
+    "stop_loss_pct": -30.0,
+    "censor_policy": "loss",
+    "model_dir": "data/models/experimental_entry_profit_portfolio_6h_final"
+  },
+  "as_of_timestamp": 1789138111,
+  "splits": {
+    "train": {
+      "count": 1813,
+      "first_time": 1786548172,
+      "last_time": 1787818213,
+      "first_time_utc": "2026-08-12T15:22:52+00:00",
+      "last_time_utc": "2026-08-27T08:10:13+00:00",
+      "complete_count": 738,
+      "inactivity_censored_count": 1075,
+      "capture_cutoff_censored_count": 0,
+      "target_first_count": 635,
+      "target_first_rate": 0.35024820739106455,
+      "conservative_mean_return_pct": -58.390622139910604,
+      "conservative_total_return_pct": -105862.19793965793,
+      "conservative_positive_rate": 0.21345835631549917
+    },
+    "validation": {
+      "count": 604,
+      "first_time": 1787818277,
+      "last_time": 1788645680,
+      "first_time_utc": "2026-08-27T08:11:17+00:00",
+      "last_time_utc": "2026-09-05T22:01:20+00:00",
+      "complete_count": 369,
+      "inactivity_censored_count": 235,
+      "capture_cutoff_censored_count": 0,
+      "target_first_count": 251,
+      "target_first_rate": 0.4155629139072848,
+      "conservative_mean_return_pct": -43.02267772925111,
+      "conservative_total_return_pct": -25985.69734846767,
+      "conservative_positive_rate": 0.32450331125827814
+    },
+    "final": {
+      "count": 605,
+      "first_time": 1788649720,
+      "last_time": 1789137206,
+      "first_time_utc": "2026-09-05T23:08:40+00:00",
+      "last_time_utc": "2026-09-11T14:33:26+00:00",
+      "complete_count": 250,
+      "inactivity_censored_count": 342,
+      "capture_cutoff_censored_count": 13,
+      "target_first_count": 199,
+      "target_first_rate": 0.32892561983471075,
+      "conservative_mean_return_pct": -62.76140902638912,
+      "conservative_total_return_pct": -37970.652460965415,
+      "conservative_positive_rate": 0.19504132231404958
+    }
+  },
+  "feature_drift": {
+    "volume_30s": {
+      "train": {
+        "mean": 478.6902981138923,
+        "median": 2.576100561960784,
+        "p10": 0.295332799623593,
+        "p90": 114.45139188809328
+      },
+      "validation": {
+        "mean": 1887.8592303622331,
+        "median": 3.568808466745585,
+        "p10": 0.1392310133954572,
+        "p90": 7920.79207920792
+      },
+      "final": {
+        "mean": 1372.5670524014715,
+        "median": 2.3227450980392157,
+        "p10": 0.38494596211688564,
+        "p90": 8415.841584158414
+      }
+    },
+    "price_momentum": {
+      "train": {
+        "mean": 33.70964149495385,
+        "median": 19.375106558937933,
+        "p10": 4.282384955537087,
+        "p90": 82.6191002835007
+      },
+      "validation": {
+        "mean": 69.65711767920857,
+        "median": 25.923493133325586,
+        "p10": 4.653177030051191,
+        "p90": 186.3207125444816
+      },
+      "final": {
+        "mean": 64.11604664331695,
+        "median": 21.854756828768746,
+        "p10": 6.482158725712305,
+        "p90": 204.7140998271247
+      }
+    },
+    "price_volatility": {
+      "train": {
+        "mean": 0.12957344853356104,
+        "median": 0.10068010292337058,
+        "p10": 0.03610235196178834,
+        "p90": 0.26054570822672796
+      },
+      "validation": {
+        "mean": 0.20375737670309996,
+        "median": 0.11625593439503965,
+        "p10": 0.0345095327868083,
+        "p90": 0.649442770690827
+      },
+      "final": {
+        "mean": 0.1789193358789824,
+        "median": 0.10611356345681017,
+        "p10": 0.04353507214595543,
+        "p90": 0.6442401078947926
+      }
+    },
+    "buy_volume_slope_30_60": {
+      "train": {
+        "mean": 0.7565127578177481,
+        "median": 0.0,
+        "p10": 0.0,
+        "p90": 0.006457028118077927
+      },
+      "validation": {
+        "mean": 1.9961089182491518,
+        "median": 0.0,
+        "p10": 0.0,
+        "p90": 0.010412347117064668
+      },
+      "final": {
+        "mean": 0.013089210900014027,
+        "median": 0.0,
+        "p10": 0.0,
+        "p90": 0.0018738358278583
+      }
+    },
+    "sell_pressure_30s": {
+      "train": {
+        "mean": 0.09272174970904787,
+        "median": 0.0,
+        "p10": 0.0,
+        "p90": 0.345332966363089
+      },
+      "validation": {
+        "mean": 0.05571250409769749,
+        "median": 0.0,
+        "p10": 0.0,
+        "p90": 0.2370871099421799
+      },
+      "final": {
+        "mean": 0.06493946645197464,
+        "median": 0.0,
+        "p10": 0.0,
+        "p90": 0.2813533735340344
+      }
+    },
+    "holder_concentration_top5": {
+      "train": {
+        "mean": 0.9391691676549614,
+        "median": 1.0,
+        "p10": 0.8169682096227355,
+        "p90": 1.0
+      },
+      "validation": {
+        "mean": 0.8395505510256984,
+        "median": 1.0,
+        "p10": 0.16667580961782352,
+        "p90": 1.0
+      },
+      "final": {
+        "mean": 0.8700420651083817,
+        "median": 1.0,
+        "p10": 0.2584979165785301,
+        "p90": 1.0
+      }
+    },
+    "max_holder_ratio": {
+      "train": {
+        "mean": 0.5044400649090133,
+        "median": 0.4512330541952043,
+        "p10": 0.23869219271155687,
+        "p90": 0.9359125595401909
+      },
+      "validation": {
+        "mean": 0.4806538935224966,
+        "median": 0.4253779180130317,
+        "p10": 0.033335454516619845,
+        "p90": 0.9970642693919702
+      },
+      "final": {
+        "mean": 0.4300655470394584,
+        "median": 0.3836547622716115,
+        "p10": 0.05967889177209954,
+        "p90": 0.9893853016298955
+      }
+    },
+    "creator_buy_share": {
+      "train": {
+        "mean": 0.3624681832246986,
+        "median": 0.3146633102580239,
+        "p10": 0.04304954027242755,
+        "p90": 0.7445359826597377
+      },
+      "validation": {
+        "mean": 0.3582484270207959,
+        "median": 0.27378720656647193,
+        "p10": 0.0,
+        "p90": 0.9798795938721478
+      },
+      "final": {
+        "mean": 0.2615399738268264,
+        "median": 0.21220159151193635,
+        "p10": 0.0,
+        "p90": 0.6862203754092971
+      }
+    }
+  },
+  "score_drift": {
+    "train": {
+      "classifier_p10_p50_p90_p99": [
+        0.24486254472605024,
+        0.5027829387152455,
+        0.6755037270675965,
+        0.8037555266198235
+      ],
+      "ranker_p10_p50_p90_p99": [
+        -0.03407565472226622,
+        -0.011791334615554157,
+        0.05390402477063874,
+        0.10641499492341673
+      ],
+      "classifier_ge_0_7_count": 117,
+      "ranker_ge_0_0997046_count": 61
+    },
+    "validation": {
+      "classifier_p10_p50_p90_p99": [
+        0.25097143305134,
+        0.5730676658715665,
+        0.6882953254816734,
+        0.7925703506374892
+      ],
+      "ranker_p10_p50_p90_p99": [
+        -0.029985974383173214,
+        0.004313236623319153,
+        0.06715802595548269,
+        0.10641499492341673
+      ],
+      "classifier_ge_0_7_count": 56,
+      "ranker_ge_0_0997046_count": 37
+    },
+    "final": {
+      "classifier_p10_p50_p90_p99": [
+        0.28490918621758077,
+        0.5615274431468317,
+        0.6601309296112137,
+        0.6994033850353365
+      ],
+      "ranker_p10_p50_p90_p99": [
+        -0.03363648259257584,
+        -0.007079741469878706,
+        0.05390402477063874,
+        0.07529954469925974
+      ],
+      "classifier_ge_0_7_count": 6,
+      "ranker_ge_0_0997046_count": 1
+    }
+  },
+  "bootstrap": {
+    "classifier_validation": {
+      "selected_count": 56,
+      "observed_total_return_pct": 138.02626039114745,
+      "sum_ci_95_pct": [
+        -504.72405491996494,
+        147.78084139773853,
+        734.9770334904482
+      ],
+      "bootstrap_probability_sum_positive": 0.6798
+    },
+    "classifier_final": {
+      "selected_count": 6,
+      "observed_total_return_pct": -464.94282646408715,
+      "sum_ci_95_pct": [
+        -600.0,
+        -464.9428264640872,
+        -214.52375973450734
+      ],
+      "bootstrap_probability_sum_positive": 0.0004
+    },
+    "ranker_validation": {
+      "selected_count": 37,
+      "observed_total_return_pct": 398.1058377823473,
+      "sum_ci_95_pct": [
+        -65.71526377538378,
+        413.16134365014466,
+        777.8669632911871
+      ],
+      "bootstrap_probability_sum_positive": 0.95615
+    },
+    "ranker_final": {
+      "selected_count": 1,
+      "observed_total_return_pct": -100.0,
+      "sum_ci_95_pct": [
+        -100.0,
+        -100.0,
+        -100.0
+      ],
+      "bootstrap_probability_sum_positive": 0.0
+    }
+  },
+  "conclusions": {
+    "validation_final_label_rate_shift": "validation target rate 0.4156 vs final 0.3289 for the strict 6h +20/-30 label",
+    "validation_final_activity_shift": "validation has 369/604 complete paths while final has 250/605; most incomplete paths end before the capture cutoff, indicating inactivity/path-coverage drift",
+    "score_calibration_shift": "classifier >=0.7 falls from 56 validation rows to 6 final rows; ranker >=0.0997 falls from 37 to 1",
+    "overfit_assessment": "both validation selection variance and time/regime drift are present; the data cannot isolate pure parameter overfit from this one month",
+    "target_assessment": "fixed +20% upper barrier is not the long-runner objective because it clips multi-x upside; use a separate uncapped/runner multi-horizon utility label with DEX coverage"
+  }
+}

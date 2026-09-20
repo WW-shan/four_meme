@@ -1,0 +1,175 @@
+{
+  "ok": true,
+  "error_type": "",
+  "error": "",
+  "session_id": "b2cbe890e6c5",
+  "query": "post-entry exit overlay candidate-level meta-labeling actual accepted entry indices trade logs survival analysis off-policy evaluation trading",
+  "platform": "",
+  "model": "grok-4.20-fast",
+  "primary_api_mode": "xai-responses",
+  "content": "**These terms describe an advanced quantitative trading pipeline focused on signal generation, filtering, execution, post-trade analysis, and evaluation.** They integrate rule-based strategies with machine learning (especially meta-labeling), statistical survival modeling, reinforcement learning (RL) techniques, and rigorous logging for backtesting/live performance. [[1]](https://en.wikipedia.org/wiki/Meta-Labeling)\n\n### Core Concepts and Interconnections\n\n**Meta-Labeling (Candidate-Level)**: Popularized by Marcos López de Prado in *Advances in Financial Machine Learning*, this is a two-layer ML approach.\n\n- **Primary model**: Generates trade *candidates* (e.g., a simple moving average crossover or momentum rule that proposes \"buy\" or \"sell\" at certain entry points).\n- **Meta-model** (secondary ML layer): Trained on features available at candidate time to predict whether the primary signal will be *profitable* (label = 1) or not (label = 0). It filters false positives and sizes positions (e.g., bet more on high-confidence signals).\n\n**Candidate-level** refers to applying the meta-model at the individual signal level rather than aggregate portfolio. This improves precision/F1-score while preserving high recall from the primary strategy. It decouples *direction* (side) from *bet sizing*. [[2]](https://hudsonthames.org/meta-labeling-a-toy-example/)\n\n**Actual Accepted Entry Indices**: After meta-labeling filters candidates, only some are \"accepted.\" These indices (e.g., bar/timestamp positions in your OHLCV data) mark real executed entries. Track them separately from all candidates for performance attribution—e.g., \"what fraction of candidates were accepted, and how did they perform?\"\n\n**Post-Entry Exit Overlay**: \n- After entry, apply dynamic exit rules (profit targets, trailing stops, time-based, or indicator-based).\n- \"Overlay\" means layering additional logic (e.g., risk overlays like protective puts, or visualization overlays comparing actual exits to maximum favorable excursion/MFE). [[3]](https://www.tradesviz.com/blog/trade-exit-strategy/)\n- This is crucial because exits often drive P&L more than entries. Analyze exit efficiency vs. potential (e.g., did you exit too early?).\n\n**Trade Logs**: Comprehensive journaling of every candidate, accepted trade, entry/exit prices/times, reasons (meta-probability, features), position size, outcome (PnL, duration), and slippage. Essential for:\n- Reproducing backtests.\n- Feature engineering for the meta-model.\n- Calculating metrics.\n\n**Survival Analysis in Trading**: Models the *time until an event* (e.g., hitting profit target, stop-loss, or signal decay). [[4]](https://link.springer.com/article/10.1007/s10614-024-10567-8)\n- Treats a trade's holding period as \"survival time.\"\n- Cox proportional hazards model or Kaplan-Meier estimators can predict how long a position is likely to remain profitable given features at entry.\n- Complements meta-labeling by adding a time dimension (e.g., \"this signal has high meta-probability but low survival to target\").\n\n**Off-Policy Evaluation (OPE)**: From reinforcement learning, evaluates a *target policy* (your proposed trading strategy) using data from a *behavior policy* (historical trading, simulation, or another strategy) without deploying it live. [[5]](https://arxiv.org/abs/2212.06355)\n- Critical for safe strategy iteration: estimate Sharpe, drawdown, or expected return of a new meta-labeled system using old trade logs.\n- Methods include importance sampling, doubly robust estimators, or distributional OPE for risk tails.\n\n### Typical Workflow in a Trading System\n\n1. **Signal Generation**: Primary model produces candidates → record indices and features.\n2. **Meta-Labeling Filter**: Train/predict on candidates → accept/reject + size → \"actual accepted entry indices.\"\n3. **Execution & Post-Entry**: Enter accepted trades, apply exit overlay rules. Log everything.\n4. **Analysis Layer**:\n   - Survival analysis on trade durations/outcomes.\n   - Aggregate trade logs for backtesting.\n   - Use OPE to evaluate policy changes (e.g., new exit rules or meta-model version) off-policy.\n\nThis pipeline turns noisy primary signals into robust, sized, timed trades with strong post-trade diagnostics. Meta-labeling + survival + OPE addresses common quant pitfalls: overfitting, false positives, poor risk sizing, and unsafe live deployment.\n\n### Practical Tips\n- **Data Needs**: High-quality tick/bar data, labeled outcomes (triple-barrier method common for meta-labels: profit, stop, or time horizon).\n- **Implementation**: Use libraries like `mlfinlab` (López de Prado), `lifelines` (survival), or RL OPE tools (e.g., in Python). Log to databases/CSV with timestamps and metadata.\n- **Evaluation**: Focus on out-of-sample F1 for meta-model, survival curves per signal type, and OPE metrics vs. on-policy Monte Carlo.\n- **Risks**: Meta-labeling requires a primary strategy with *some* edge. Survival assumes proportional hazards. OPE has variance/bias tradeoffs.\n\nThis framework is used in professional quant funds for systematic equity, futures, or crypto trading. If you have specific code, data, or a sub-question (e.g., example Python for meta-labeling), provide more details for deeper dives.",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Meta-Labeling",
+      "title": "Meta-Labeling"
+    },
+    {
+      "url": "https://hudsonthames.org/meta-labeling-a-toy-example/",
+      "title": "Meta Labeling (A Toy Example)"
+    },
+    {
+      "url": "https://www.tradesviz.com/blog/trade-exit-strategy/",
+      "title": "Mastering the Best Exit: Why Trade Management and ..."
+    },
+    {
+      "url": "https://link.springer.com/article/10.1007/s10614-024-10567-8",
+      "title": "Trading Signal Survival Analysis: A Framework for Enhancing ..."
+    },
+    {
+      "url": "https://arxiv.org/abs/2212.06355",
+      "title": "A Review of Off-Policy Evaluation in Reinforcement Learning"
+    },
+    {
+      "url": "https://medium.com/@danieldaolin/an-exploration-of-meta-labeling-for-trade-selection-in-high-frequency-data-5160c028ed19",
+      "provider": "tavily",
+      "title": "An Exploration of Meta-Labeling for Trade Selection in High-Frequency Data",
+      "description": "### Combinatorial Purged Cross-Validation\n\nTo train an effective meta-labeler, we need out-of-sample predictions from the base model. The meta-labeler’s goal is to learn when a trading signal is likely to be correct, which means its inputs (the base model’s predictions and probabilities) must reflect realistic, unseen performance. If we instead use in-sample predictions, the base model would appear artificially accurate, and the meta-labeler would simply learn patterns driven by overfitting rather than true signal quality. [...] Importantly, these predictions are constructed entirely from models that did not see the corresponding observations during training. This produces a leakage-free dataset that accurately reflects how the base model would perform in live trading.\n\nFinally, this dataset becomes the foundation for the meta-labeling stage. Observations with a neutral signal (side label = 0) are filtered out, allowing the meta-labeler to focus only on meaningful trade opportunities and learn to distinguish between high-quality and low-quality signals.\n\n## Step 5: Construct Meta Labels\n\nOnce the base model produces signals, those signals must be evaluated. This is done using triple barrier labeling, which checks what happens after entering a trade.\n\nA signal is labeled: [...] A signal is labeled:\n\n   1 if the profit threshold is hit first\n   0 if the loss threshold is hit first, or if the trade times out\n\nThis turns into another classification problem: was the signal actually profitable or not?\n\n## Step 6: Train the Meta-Labeler\n\nThe meta-labeler is the main model in the project. It is trained using:\n\n   select engineered features (~40)\n   the base model’s predicted side\n   the base model’s prediction probability\n   Output: probability that a given signal is worth taking.\n\nA Random Forest is used because it captures nonlinear relationships and feature interactions that linear models cannot. As an ensemble method, it reduces overfitting by averaging across many trees, making it more robust to noisy financial data."
+    },
+    {
+      "url": "https://hudsonthames.org/does-meta-labeling-add-to-signal-efficacy-triple-barrier-method",
+      "provider": "tavily",
+      "title": "Does Meta Labeling Add to Signal Efficacy? - Hudson & Thames",
+      "description": "Use in Financial Machine Learning\n\nMeta labeling in finance follows the same principles as we outlined in the toy example on the MNIST dataset. First we make use of a primary model, in this case a simple trend following or mean reverting strategy, to determine the position of the trade. Then we fit a Random Forest meta-label model to the primary model to determine when to trade or not.\n\n## 4. Results [...] ## 6. Conclusion\n\nThis capstone project was conceived as a step toward a larger goal of creating a platform for ongoing quantitative research that (Lopez de Prado 2018) speaks about in the form of meta-strategies. Our goal in this phase of the larger endeavor was to create an open-source package that serves as a foundation and then leverage that to test a couple of trading strategies. We also wanted to use concepts, ideas and theories learnt from courses, projects and papers during the MSFE at WorldQuant University. [...] We tested two trading strategies – trend-following and Bollinger band mean-reverting to use our framework and test their performance. During the training and validation phases of the strategy build-out, we manually tuned a few parameters to ensure that we have sufficient data points. For instance, a function called get_t_events filters the data (using CUSUM filter) for events when there has been a structure shift. We changed the threshold parameter manually to get sufficiently large data set. Second, we found that meta-labeling often resulted in unbalanced classes – to trade (=1) or not to trade (=0) with many more instances of “not to trade”. We used up-sampling to balance these classes prior to training the machine-learning algorithm (Random Forest).\n\n#### 4.1.1 Performance Metrics"
+    }
+  ],
+  "sources_count": 7,
+  "primary_sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Meta-Labeling",
+      "title": "Meta-Labeling"
+    },
+    {
+      "url": "https://hudsonthames.org/meta-labeling-a-toy-example/",
+      "title": "Meta Labeling (A Toy Example)"
+    },
+    {
+      "url": "https://www.tradesviz.com/blog/trade-exit-strategy/",
+      "title": "Mastering the Best Exit: Why Trade Management and ..."
+    },
+    {
+      "url": "https://link.springer.com/article/10.1007/s10614-024-10567-8",
+      "title": "Trading Signal Survival Analysis: A Framework for Enhancing ..."
+    },
+    {
+      "url": "https://arxiv.org/abs/2212.06355",
+      "title": "A Review of Off-Policy Evaluation in Reinforcement Learning"
+    }
+  ],
+  "primary_sources_count": 5,
+  "extra_sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Meta-Labeling",
+      "provider": "tavily",
+      "title": "Meta-Labeling - Wikipedia",
+      "description": "the confidence and likely profitability of those signals, meta-labeling allows investors and algorithms to dynamically size positions and suppress false positives. [...] Meta-labeling, also known as corrective AI, is a machine learning (ML) technique utilized in quantitative finance to enhance the performance of investment and trading strategies, developed in 2017 by Marcos López de Prado\") at Guggenheim Partners and Cornell University. The core idea is to separate the decision of trade direction (side) from the decision of trade sizing, addressing the inefficiencies of simultaneously learning both side and size predictions. The side decision involves forecasting market movements (long, short, neutral), while the size decision focuses on risk management and profitability. It serves as a secondary decision-making layer that evaluates the signals generated by a primary predictive model. By assessing the confidence and likely profitability of those signals, [...] The model takes as input four general groupings of data:\n\nThe output of the model is a value between −1 and 1 (if using a Tanh function) which will indicate the strength of the conviction that a short or long position is profitable, or it could simply be between 0 and 1 (using a sigmoid function) if one only wanted to know if it made money or not. This output allows filtering out trades that are likely to lead to losses.\n\nOne could stop at this point or use the outputs of the secondary model as inputs to a position sizing algorithm (M3) which could further enhance strategy performance metrics by translating the output probability of the secondary model into a position size. Higher confidence scores result in larger allocations, while lower confidence leads to reduced or zero exposure."
+    },
+    {
+      "url": "https://medium.com/@danieldaolin/an-exploration-of-meta-labeling-for-trade-selection-in-high-frequency-data-5160c028ed19",
+      "provider": "tavily",
+      "title": "An Exploration of Meta-Labeling for Trade Selection in High-Frequency Data",
+      "description": "### Combinatorial Purged Cross-Validation\n\nTo train an effective meta-labeler, we need out-of-sample predictions from the base model. The meta-labeler’s goal is to learn when a trading signal is likely to be correct, which means its inputs (the base model’s predictions and probabilities) must reflect realistic, unseen performance. If we instead use in-sample predictions, the base model would appear artificially accurate, and the meta-labeler would simply learn patterns driven by overfitting rather than true signal quality. [...] Importantly, these predictions are constructed entirely from models that did not see the corresponding observations during training. This produces a leakage-free dataset that accurately reflects how the base model would perform in live trading.\n\nFinally, this dataset becomes the foundation for the meta-labeling stage. Observations with a neutral signal (side label = 0) are filtered out, allowing the meta-labeler to focus only on meaningful trade opportunities and learn to distinguish between high-quality and low-quality signals.\n\n## Step 5: Construct Meta Labels\n\nOnce the base model produces signals, those signals must be evaluated. This is done using triple barrier labeling, which checks what happens after entering a trade.\n\nA signal is labeled: [...] A signal is labeled:\n\n   1 if the profit threshold is hit first\n   0 if the loss threshold is hit first, or if the trade times out\n\nThis turns into another classification problem: was the signal actually profitable or not?\n\n## Step 6: Train the Meta-Labeler\n\nThe meta-labeler is the main model in the project. It is trained using:\n\n   select engineered features (~40)\n   the base model’s predicted side\n   the base model’s prediction probability\n   Output: probability that a given signal is worth taking.\n\nA Random Forest is used because it captures nonlinear relationships and feature interactions that linear models cannot. As an ensemble method, it reduces overfitting by averaging across many trees, making it more robust to noisy financial data."
+    },
+    {
+      "url": "https://hudsonthames.org/does-meta-labeling-add-to-signal-efficacy-triple-barrier-method",
+      "provider": "tavily",
+      "title": "Does Meta Labeling Add to Signal Efficacy? - Hudson & Thames",
+      "description": "Use in Financial Machine Learning\n\nMeta labeling in finance follows the same principles as we outlined in the toy example on the MNIST dataset. First we make use of a primary model, in this case a simple trend following or mean reverting strategy, to determine the position of the trade. Then we fit a Random Forest meta-label model to the primary model to determine when to trade or not.\n\n## 4. Results [...] ## 6. Conclusion\n\nThis capstone project was conceived as a step toward a larger goal of creating a platform for ongoing quantitative research that (Lopez de Prado 2018) speaks about in the form of meta-strategies. Our goal in this phase of the larger endeavor was to create an open-source package that serves as a foundation and then leverage that to test a couple of trading strategies. We also wanted to use concepts, ideas and theories learnt from courses, projects and papers during the MSFE at WorldQuant University. [...] We tested two trading strategies – trend-following and Bollinger band mean-reverting to use our framework and test their performance. During the training and validation phases of the strategy build-out, we manually tuned a few parameters to ensure that we have sufficient data points. For instance, a function called get_t_events filters the data (using CUSUM filter) for events when there has been a structure shift. We changed the threshold parameter manually to get sufficiently large data set. Second, we found that meta-labeling often resulted in unbalanced classes – to trade (=1) or not to trade (=0) with many more instances of “not to trade”. We used up-sampling to balance these classes prior to training the machine-learning algorithm (Random Forest).\n\n#### 4.1.1 Performance Metrics"
+    }
+  ],
+  "extra_sources_count": 3,
+  "source_warning": "extra_sources are retrieved in parallel and are not automatically used to verify generated content; use fetch on key URLs for claim-level evidence.",
+  "routing_decision": {
+    "docs_intent": false,
+    "zh_current_intent": false,
+    "web_current_intent": false,
+    "fetch_intent": false,
+    "supplemental_paths": [],
+    "validation_level": "balanced",
+    "fallback_mode": "auto",
+    "providers": "auto",
+    "main_search_chain": [
+      "xai-responses"
+    ]
+  },
+  "providers_used": [
+    "xAI Responses",
+    "tavily"
+  ],
+  "provider_attempts": [
+    {
+      "capability": "main_search",
+      "provider": "xAI Responses",
+      "status": "ok",
+      "error_type": "",
+      "error": "",
+      "elapsed_ms": 13960.79,
+      "result_count": 1
+    },
+    {
+      "capability": "web_search",
+      "provider": "tavily",
+      "status": "ok",
+      "error_type": "",
+      "error": "",
+      "elapsed_ms": 16994.94,
+      "result_count": 3
+    }
+  ],
+  "fallback_used": false,
+  "validation_level": "balanced",
+  "minimum_profile_ok": true,
+  "capability_status": {
+    "main_search": {
+      "configured": [
+        "xai-responses"
+      ],
+      "fallback_chain": [
+        "xai-responses",
+        "openai-compatible"
+      ],
+      "ok": true
+    },
+    "web_search": {
+      "configured": [
+        "tavily"
+      ],
+      "fallback_chain": [
+        "zhipu",
+        "tavily",
+        "firecrawl"
+      ],
+      "ok": true
+    },
+    "docs_search": {
+      "configured": [
+        "context7"
+      ],
+      "fallback_chain": [
+        "exa",
+        "context7"
+      ],
+      "ok": true
+    },
+    "web_fetch": {
+      "configured": [
+        "tavily"
+      ],
+      "fallback_chain": [
+        "tavily",
+        "firecrawl"
+      ],
+      "ok": true
+    }
+  },
+  "elapsed_ms": 16994.99
+}

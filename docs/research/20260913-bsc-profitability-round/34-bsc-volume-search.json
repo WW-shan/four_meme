@@ -1,0 +1,160 @@
+{
+  "ok": false,
+  "error_type": "network_error",
+  "error": "xAI Responses 返回空结果",
+  "session_id": "9a16e94360f4",
+  "query": "BSC DEX volume September 13 2026 daily trend meme coins",
+  "primary_api_mode": "xai-responses",
+  "content": "",
+  "sources": [],
+  "sources_count": 0,
+  "primary_sources": [],
+  "primary_sources_count": 0,
+  "extra_sources": [],
+  "extra_sources_count": 0,
+  "source_warning": "",
+  "elapsed_ms": 9224.82,
+  "provider_attempts": [
+    {
+      "capability": "main_search",
+      "provider": "xAI Responses",
+      "status": "empty",
+      "error_type": "",
+      "error": "",
+      "elapsed_ms": 9224.17,
+      "result_count": 0,
+      "attempt_timeout_seconds": 89.999
+    }
+  ],
+  "providers_used": [],
+  "fallback_used": false,
+  "transport_fallback_used": false,
+  "model_fallback_used": false,
+  "routing_decision": {
+    "docs_intent": false,
+    "zh_current_intent": false,
+    "web_current_intent": false,
+    "fetch_intent": false,
+    "supplemental_paths": [],
+    "intent_router_mode": "hybrid",
+    "required_capabilities": [],
+    "intent_signals": {
+      "docs_api_intent": false,
+      "current_or_locale_intent": false,
+      "known_url": false,
+      "vertical_intent": false,
+      "strict_validation": false,
+      "rule_scores": {},
+      "urls": []
+    },
+    "confidence": 0.35,
+    "router_engines_used": [
+      "rules"
+    ],
+    "degraded": true,
+    "degraded_reason": "embeddings not configured; classifier not configured",
+    "reasons": [
+      "rules found no supplemental capability need"
+    ],
+    "validation_level": "balanced",
+    "fallback_mode": "auto",
+    "providers": "auto",
+    "main_search_chain": [
+      "xai-responses"
+    ],
+    "openai_compatible_stream": false,
+    "openai_compatible_api_mode": "",
+    "openai_compatible_models": [],
+    "openai_compatible_model_fallback_enabled": false,
+    "openai_compatible_timeout_policy": "remaining_budget",
+    "search_timeout_seconds": 90.0,
+    "main_search_reserve_seconds": 60.0
+  },
+  "validation_level": "balanced",
+  "minimum_profile_ok": true,
+  "capability_status": {
+    "main_search": {
+      "configured": [
+        "xai-responses"
+      ],
+      "fallback_chain": [
+        "xai-responses",
+        "openai-compatible"
+      ],
+      "ok": true
+    },
+    "web_search": {
+      "configured": [
+        "tavily"
+      ],
+      "fallback_chain": [
+        "zhipu",
+        "zhipu-mcp",
+        "tavily",
+        "firecrawl"
+      ],
+      "ok": true
+    },
+    "docs_search": {
+      "configured": [
+        "context7"
+      ],
+      "fallback_chain": [
+        "context7",
+        "exa"
+      ],
+      "ok": true
+    },
+    "web_fetch": {
+      "configured": [
+        "tavily"
+      ],
+      "fallback_chain": [
+        "tavily",
+        "jina",
+        "zhipu-mcp-reader",
+        "firecrawl"
+      ],
+      "ok": true
+    },
+    "vertical_search": {
+      "configured": [],
+      "fallback_chain": [
+        "anysearch"
+      ],
+      "experimental": true,
+      "explicit_only": [
+        "sciverse"
+      ],
+      "route_enabled": {
+        "anysearch": true,
+        "sciverse": false
+      },
+      "ok": false
+    }
+  },
+  "timeout_seconds": 90.0,
+  "timeout_phase": "",
+  "timed_out_phases": [],
+  "phase_attempts": [
+    {
+      "phase": "router",
+      "status": "ok",
+      "budget_ms": 0.0,
+      "elapsed_ms": 0.09,
+      "remaining_ms": 89999.35,
+      "remote_components_configured": false
+    },
+    {
+      "phase": "main_search",
+      "status": "error",
+      "budget_ms": 89999.35,
+      "elapsed_ms": 9224.16,
+      "remaining_ms": 80775.19
+    }
+  ],
+  "deadline_elapsed_ms": 9224.83,
+  "deadline_remaining_ms": 80775.16,
+  "partial_success": false,
+  "timeout_warning": ""
+}
