@@ -263,6 +263,15 @@
           "enabled": false,
           "family": "evm",
           "source": "developers.uniswap.org/docs/liquidity/liquidity-launchpad/deployments（Uniswap 官方部署表）；UERC20 工厂 v2.1.0；live-verify 2026-09-21：未通过（无代码或无签名）"
+        },
+        {
+          "name": "virtuals_bonding_curve_base",
+          "address": "0x1a540088125d00dd3990f9da45ca0859af4d3b01",
+          "fact_status": "verified",
+          "enabled": false,
+          "family": "evm",
+          "platform": "virtuals_v2",
+          "source": "whitepaper.virtuals.io/info-hub/important-links-and-resources/virtuals-protocol-contract-addresses（官方页 2026-09-21 抓取：Base Chain Bonding Curve 地址，此前该行留空）；live-verify 2026-09-21：2000 区块内 3 条事件"
         }
       ]
     },
@@ -563,6 +572,69 @@
           "enabled": false,
           "family": "evm",
           "source": "clanker.gitbook.io/documentation/references/deployed-contracts（官方部署表）；Mainnet 1 v4.0.0 Clanker；live-verify 2026-09-21：read-verified（owner()=0x0fca22ca4a2edd2ba5, TOKEN_SUPPLY()=10000000000000000000）"
+        },
+        {
+          "name": "trench_manager_v2",
+          "address": "0x974b2d86d6353c62f19110127af1a5df4c6370f0",
+          "fact_status": "verified",
+          "enabled": false,
+          "family": "evm",
+          "platform": "trench",
+          "source": "trench-today.gitbook.io/trench-today/for-developers/contracts（Ethereum Mainnet 标签页：TrenchManagerV2 proxy）；live-verify 2026-09-21：2000 区块内 147 条事件"
+        },
+        {
+          "name": "trench_bonding_curve_factory_eth",
+          "address": "0x02acb27bd38ab7ae4b569ba7251ff31739bd8e36",
+          "fact_status": "unverified",
+          "enabled": false,
+          "family": "evm",
+          "platform": "trench",
+          "source": "trench-today.gitbook.io/trench-today/for-developers/contracts（Ethereum Mainnet：BondingCurveFactory）；live-verify 2026-09-21：from-genesis 查询被拒（匹配日志过多）证明历史上发射过事件；最近窗口内 0 条"
+        },
+        {
+          "name": "livo_launchpad_eth",
+          "address": "0xaa74aa89590e3b50be178ea970e490c173b61110",
+          "fact_status": "verified",
+          "enabled": false,
+          "family": "evm",
+          "platform": "livo",
+          "source": "github.com/LivoLaunchpad/livo-contracts deployments.ethereum.mainnet.md（官方导出部署表）；live-verify 2026-09-21：5000 区块内 6 条事件（LivoTokenSell=4, TokenLaunched=2）"
+        },
+        {
+          "name": "livo_factory_univ2_eth",
+          "address": "0x78af7e41ab894fc2acd1b1c918e3cc6d710054b9",
+          "fact_status": "unverified",
+          "enabled": false,
+          "family": "evm",
+          "platform": "livo",
+          "source": "github.com/LivoLaunchpad/livo-contracts deployments.ethereum.mainnet.md（LivoFactoryUniV2Unified proxy）；live-verify 2026-09-21：from-genesis 查询被拒（匹配日志过多）证明历史上发射过事件；最近窗口内 0 条"
+        },
+        {
+          "name": "stroid_launchpad_v3_eth",
+          "address": "0x75d9ef48e30bcb0b658c1d387233fb52ebf9a4fe",
+          "fact_status": "unverified",
+          "enabled": false,
+          "family": "evm",
+          "platform": "stroid",
+          "source": "stroid.fun 应用构建配置（chain 1：launchpad.v3）；live-verify 2026-09-21：from-genesis 查询被拒（匹配日志过多）证明历史上发射过事件；最近窗口内 0 条"
+        },
+        {
+          "name": "stroid_launchpad_v2_eth",
+          "address": "0xbbdf89fd1700bcbd906b743610f88a1fbebc5b21",
+          "fact_status": "unverified",
+          "enabled": false,
+          "family": "evm",
+          "platform": "stroid",
+          "source": "stroid.fun 应用构建配置（chain 1：launchpad.v2）；live-verify 2026-09-21：from-genesis 查询被拒（匹配日志过多）证明历史上发射过事件；最近窗口内 0 条"
+        },
+        {
+          "name": "stroid_launchpad_v1_eth",
+          "address": "0x86b00cc0e3da64af96dc90c52bb4f755fc243b6a",
+          "fact_status": "unverified",
+          "enabled": false,
+          "family": "evm",
+          "platform": "stroid",
+          "source": "stroid.fun 应用构建配置（chain 1：launchpad.v1）；live-verify 2026-09-21：from-genesis 查询被拒（匹配日志过多）证明历史上发射过事件；最近窗口内 0 条"
         }
       ]
     },
@@ -631,7 +703,11 @@
         "holoworld",
         "pewfun",
         "dyorfun_v3",
-        "noxafi"
+        "noxafi",
+        "hoodfun",
+        "coinbarrel",
+        "arrowpad",
+        "stroid"
       ],
       "launchpads": [
         {
@@ -1017,6 +1093,195 @@
           "enabled": false,
           "family": "evm",
           "source": "docs.bitquery.io/docs/blockchain/robinhood/（PonsV2LaunchLocker）；live-verify 2026-09-21：代码存在但 2000 区块窗口内无事件（code-only）"
+        },
+        {
+          "name": "hoodfun_launchpad",
+          "address": "0x5fcc1df0dc020cf454e742e9a8ae2554c37a452c",
+          "fact_status": "verified",
+          "enabled": false,
+          "family": "evm",
+          "platform": "hoodfun",
+          "source": "docs.mobula.io/almanac/robinhood-launchpads/hoodfun（官方整合文档：Launchpad/Platform/V3 factory/WETH 表）；live-verify 2026-09-21：20000000 区块内 85 条事件（Trade=79, CreatorFeesClaimed=5, TokenCreated=1）"
+        },
+        {
+          "name": "hoodfun_platform",
+          "address": "0xc6a2941b962fb667786d7f4b97f7f965d6f0a4f8",
+          "fact_status": "verified",
+          "enabled": false,
+          "family": "evm",
+          "platform": "hoodfun",
+          "source": "docs.mobula.io/almanac/robinhood-launchpads/hoodfun（Platform 角色地址）；live-verify 2026-09-21：57000000 区块内 59 条事件"
+        },
+        {
+          "name": "trench_manager",
+          "address": "0x77dc6f6361b7b99456fc3761ce5b7dda80d83f9d",
+          "fact_status": "verified",
+          "enabled": false,
+          "family": "evm",
+          "platform": "trench",
+          "source": "trench-today.gitbook.io/trench-today/for-developers/contracts（官方 Contract Reference）+ docs.bitquery.io trench.today API（同一 factory proxy 与四个 topic0）；live-verify 2026-09-21：500000 区块内 227 条事件"
+        },
+        {
+          "name": "trench_bonding_curve_factory",
+          "address": "0x2ecfb98bce4f3616115e4a2a7a2379af388dfbaa",
+          "fact_status": "verified",
+          "enabled": false,
+          "family": "evm",
+          "platform": "trench",
+          "source": "trench-today.gitbook.io/trench-today/for-developers/contracts（BondingCurveFactory）；live-verify 2026-09-21：20000000 区块内 405 条事件"
+        },
+        {
+          "name": "trench_fee_vault",
+          "address": "0x076e3cd13e188e3646828e7cebb766c7dd6adb8a",
+          "fact_status": "verified",
+          "enabled": false,
+          "family": "evm",
+          "platform": "trench",
+          "source": "trench-today.gitbook.io/trench-today/for-developers/contracts（FeeVault）；live-verify 2026-09-21：1000000 区块内 240 条事件"
+        },
+        {
+          "name": "trench_v4_fee_hook",
+          "address": "0x31200554eca1eff6d130dbec7975afa1234b60cc",
+          "fact_status": "verified",
+          "enabled": false,
+          "family": "evm",
+          "platform": "trench",
+          "source": "trench-today.gitbook.io/trench-today/for-developers/contracts（TrenchV4FeeHook，V4 升级后新增）；live-verify 2026-09-21：2500000 区块内 246 条事件"
+        },
+        {
+          "name": "livo_launchpad",
+          "address": "0xfd550c5dc070ea575a06a40f2e18304d85211663",
+          "fact_status": "verified",
+          "enabled": false,
+          "family": "evm",
+          "platform": "livo",
+          "source": "github.com/LivoLaunchpad/livo-contracts deployments.robinhood.mainnet.md（官方导出部署表）；live-verify 2026-09-21：500000 区块内 2 条事件（TokenLaunched=2）"
+        },
+        {
+          "name": "livo_factory_univ2",
+          "address": "0x7843203be233b3be7e5017a68a64fdbf32b45ffe",
+          "fact_status": "verified",
+          "enabled": false,
+          "family": "evm",
+          "platform": "livo",
+          "source": "github.com/LivoLaunchpad/livo-contracts deployments.robinhood.mainnet.md（LivoFactoryUniV2Unified proxy）；live-verify 2026-09-21：20000000 区块内 1006 条事件（TokenCreated=503, BondingCurveAssigned=503）"
+        },
+        {
+          "name": "coinbarrel_launcher",
+          "address": "0x4234e536aa5da8be18d41ef6f86533430e264e70",
+          "fact_status": "verified",
+          "enabled": false,
+          "family": "evm",
+          "platform": "coinbarrel",
+          "source": "docs.coinbarrel.com/developers/robinhood-contract-addresses（官方部署登记表 advancedV5.launcherProxy）；live-verify 2026-09-21：20000000 区块内 258 条事件（Upgraded=2）"
+        },
+        {
+          "name": "arrowpad_factory",
+          "address": "0x69225a43b20b824f4027b201731d9a21368bf6bc",
+          "fact_status": "verified",
+          "enabled": false,
+          "family": "evm",
+          "platform": "arrowpad",
+          "source": "arrowpad.fun/docs/contracts（官方 Contract 表：ArrowPadFactory）；live-verify 2026-09-21：45000000 区块内 122 条事件（TokenCreated=121, TreasuryUpdated=1）"
+        },
+        {
+          "name": "arrowpad_locker",
+          "address": "0xba9c247041a7715591c7b48f20dfba520a7d68e9",
+          "fact_status": "verified",
+          "enabled": false,
+          "family": "evm",
+          "platform": "arrowpad",
+          "source": "arrowpad.fun/docs/contracts（官方 Contract 表：ArrowPadLocker）；live-verify 2026-09-21：20000000 区块内 4 条事件（FeesCollected=4）"
+        },
+        {
+          "name": "stoxes_portal",
+          "address": "0xa0e82b5bf840e268718a143032cd630a3bf1850e",
+          "fact_status": "verified",
+          "enabled": false,
+          "family": "evm",
+          "platform": "stoxes",
+          "source": "stoxes.fun/robinhood/docs（官方 Terminal & Bot Integration：StoxesFunPortal）；live-verify 2026-09-21：20000000 区块内 1 条事件（Sold=1）"
+        },
+        {
+          "name": "stoxes_factory",
+          "address": "0x3a5a312b66a3f3aabb647e75e8e81ccc08b7bb58",
+          "fact_status": "verified",
+          "enabled": false,
+          "family": "evm",
+          "platform": "stoxes",
+          "source": "stoxes.fun/robinhood/docs（官方文档：StoxesFunFactory 发射入口）；live-verify 2026-09-21：40000000 区块内 1 条事件（StockRegistrySet=1）"
+        },
+        {
+          "name": "stoxes_v3_launch_factory",
+          "address": "0xf612b37d684b3eca3583121172764ab0ef8417fc",
+          "fact_status": "verified",
+          "enabled": false,
+          "family": "evm",
+          "platform": "stoxes",
+          "source": "stoxes.fun/robinhood/docs（官方文档 Part B：StoxesFunV3LaunchFactory）；live-verify 2026-09-21：20000000 区块内 1 条事件（TokenLaunched=1）"
+        },
+        {
+          "name": "pew_instant_factory_1",
+          "address": "0xc9182c283a9b739fed26a8e7f55a4d2b09f39d8c",
+          "fact_status": "verified",
+          "enabled": false,
+          "family": "evm",
+          "platform": "pewfun",
+          "source": "pew.fun 应用构建配置（官方前端 bundle 的 4663 chainId 段：instantFactories/launchZap/feeSplitter）；链上核实有代码与真实发射事件；live-verify 2026-09-21：20000000 区块内 6 条事件"
+        },
+        {
+          "name": "pew_instant_factory_2",
+          "address": "0x3364e68a4454d18132d0a2ac538c966369828291",
+          "fact_status": "verified",
+          "enabled": false,
+          "family": "evm",
+          "platform": "pewfun",
+          "source": "pew.fun 应用构建配置（4663 instantFactories）；live-verify 2026-09-21：20000000 区块内 2 条事件"
+        },
+        {
+          "name": "pew_instant_factory_3",
+          "address": "0x7da7cf925dc8e98e2c2395979efa54bbd43d576e",
+          "fact_status": "verified",
+          "enabled": false,
+          "family": "evm",
+          "platform": "pewfun",
+          "source": "pew.fun 应用构建配置（4663 instantFactories）；live-verify 2026-09-21：25000000 区块内 1 条事件"
+        },
+        {
+          "name": "pew_fee_splitter",
+          "address": "0x009aa3cc02f3b8b1c50b940760ae7022d676dcba",
+          "fact_status": "verified",
+          "enabled": false,
+          "family": "evm",
+          "platform": "pewfun",
+          "source": "pew.fun 应用构建配置（4663 feeSplitter）；live-verify 2026-09-21：47000000 区块内 6 条事件"
+        },
+        {
+          "name": "pew_launch_zap",
+          "address": "0xde12817424402685dd8419ce174fd05a5233d107",
+          "fact_status": "unverified",
+          "enabled": false,
+          "family": "evm",
+          "platform": "pewfun",
+          "source": "pew.fun 应用构建配置（4663 launchZap）；live-verify 2026-09-21：代码存在但窗口内 0 事件（code-only）"
+        },
+        {
+          "name": "stroid_launchpad_v3",
+          "address": "0x23343d0c3c17d69d57e7ac81dc7d79b591a9d2d2",
+          "fact_status": "verified",
+          "enabled": false,
+          "family": "evm",
+          "platform": "stroid",
+          "source": "stroid.fun 应用构建配置（官方前端 bundle chain 4663：launchpad.v3）；live-verify 2026-09-21：58000000 区块内 1 条事件"
+        },
+        {
+          "name": "stroid_fee_hook_v3",
+          "address": "0xd6c16a041ba47eb4aeb4fd8ccc2580446e8ec0cc",
+          "fact_status": "verified",
+          "enabled": false,
+          "family": "evm",
+          "platform": "stroid",
+          "source": "stroid.fun 应用构建配置（chain 4663：feeHook.v3）；live-verify 2026-09-21：58000000 区块内 4 条事件"
         }
       ]
     },
@@ -1166,8 +1431,29 @@
       "native": "USDT0",
       "gmgn_supported": true,
       "enabled": false,
-      "platforms": [],
-      "launchpads": []
+      "platforms": [
+        "pewfun"
+      ],
+      "launchpads": [
+        {
+          "name": "pew_instant_factory_1_stable",
+          "address": "0xee0665f2e348bed28769cbd09fd804be953d10db",
+          "fact_status": "unverified",
+          "enabled": false,
+          "family": "evm",
+          "platform": "pewfun",
+          "source": "pew.fun 应用构建配置（chain 988：instantFactories）；Stable RPC 限制 1024 区块；live-verify 2026-09-21：代码存在但窗口内 0 事件（code-only）"
+        },
+        {
+          "name": "pew_instant_factory_2_stable",
+          "address": "0x096b4622056afd784c5ceefbceab3f3ed27f9a07",
+          "fact_status": "unverified",
+          "enabled": false,
+          "family": "evm",
+          "platform": "pewfun",
+          "source": "pew.fun 应用构建配置（chain 988：instantFactories）；live-verify 2026-09-21：代码存在但窗口内 0 事件（code-only）"
+        }
+      ]
     }
   ]
 }

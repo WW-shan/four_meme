@@ -186,3 +186,88 @@ Solana：`bonkers`（没有可核实的官方程序 ID）。
 Stable：GMGN 0 token，链上只发现 `PumperTokenStandalone` 代币实现，没有发射台工厂。
 
 这些条目继续保持 blocked，不写猜测地址；一旦出现官方合约页或 GMGN API key，可以按同一套 harness 直接补测。
+
+---
+
+# 第三轮补齐（2026-09-21）：把「看不到」逐个变成有来源的地址
+
+第二轮结束时仍有 38 个 GMGN 平台“看不到”。这一轮按用户要求先网络搜索、再 GitHub、最后上链核实，把能查到官方来源的全部补上，并把查不到的写清楚为什么查不到。
+
+## 新增判定档位：`HISTORICAL`
+
+之前只有「窗口内有事件 / 窗口内没事件」两档，会把「曾经发射过很多币、只是最近窗口安静」的平台和「地址根本是错的」混为一谈。现在多一档：
+
+| 判定 | 含义 |
+|---|---|
+| `VERIFIED-LIVE` | 有代码，且窗口内有真实事件（含区块/交易哈希） |
+| `HISTORICAL` | 有代码，且 from-genesis 查询证明历史上有真实事件（返回过日志，或因匹配日志过多被 RPC 拒绝），但最近窗口内为 0 |
+| `CODE-ONLY` | 有代码，但从未观察到任何事件 |
+| `FAILED` | 无代码 / 探测失败 |
+
+报告表格新增「最近事件(区块/距今)」一列，直接回答“这个平台现在还活着吗”。
+
+## 本轮拿到的官方来源
+
+| 平台 / 链 | 来源 | 结果 |
+|---|---|---|
+| Trench（Robinhood + Ethereum） | `trench-today.gitbook.io/trench-today/for-developers/contracts`（官方 Contract Reference，含三条链的部署表） | Robinhood TrenchManager `0x77dc6f63…`（500,000 区块内 211 条事件，最近一次约 14 小时前）、FeeVault、TrenchV4FeeHook、BondingCurveFactory；ETH TrenchManagerV2 `0x974b2d86…`（2,000 区块内 1,151 条事件） |
+| Trench 事件 topic0 交叉验证 | `docs.bitquery.io/docs/blockchain/robinhood/trench-today-api`（列出同一 factory proxy 与四个 topic0） | 链上实测 topic0 与 Bitquery 列出的 `Sync`/`TokenSale`/`TokenPurchase` 完全一致 |
+| Livo（Ethereum + Robinhood） | `github.com/LivoLaunchpad/livo-contracts` 的 `deployments.ethereum.mainnet.md` / `deployments.robinhood.mainnet.md`（官方导出部署表） | ETH LivoLaunchpad `0xaa74aa89…`（2000 区块内 TokenLaunched=2）、Robinhood LivoLaunchpad `0xfd550c5d…`、LivoFactoryUniV2Unified `0x7843203b…`（500 万区块内 TokenCreated=28/BondingCurveAssigned=28） |
+| Hood.fun（Robinhood） | `docs.mobula.io/almanac/robinhood-launchpads/hoodfun`（第二轮漏抓的一页） | Launchpad `0x5fcc1df0…`（Sourcify 名为 `HoodCustomLaunchpad`，2000 万区块内 85 条事件）、Platform `0xc6a2941b…`（有代码，from-genesis 0 事件） |
+| Coinbarrel（Robinhood） | `docs.coinbarrel.com/developers/robinhood-contract-addresses`（官方 GitBook 部署登记表） | `advancedV5.launcherProxy 0x4234e536…`（2000 万区块内 258 条事件） |
+| ArrowPad（Robinhood） | `arrowpad.fun/docs/contracts`（官方 Contract 表） | ArrowPadFactory `0x69225a43…`（Sourcify 名称一致，历史 140 条事件，最近约 42 天前）、ArrowPadLocker `0xba9c2470…` |
+| Stoxes.fun（Robinhood） | `stoxes.fun/robinhood/docs`（官方 Terminal & Bot Integration 规范，含完整事件与函数签名） | StoxesFunPortal `0xa0e82b5b…`、StoxesFunFactory `0x3a5a312b…`、StoxesFunV3LaunchFactory `0xf612b37d…`；事件 topic0 与文档签名逐一吻合 |
+| Pew.fun（Robinhood + Stable） | pew.fun 官方前端构建配置（`chainId 4663` 与 `988` 段的 `instantFactories`/`launchZap`/`feeSplitter`） | Robinhood 三个 instant factory 与 fee splitter 均有代码，`0xc9182c28…`/`0x3364e68a…` 有真实发射事件（最近约 1.9 天前）；Stable 两个 instant factory 有代码但窗口内 0 事件 |
+| stroid（Ethereum + Robinhood） | stroid.fun 官方前端构建配置（`launchpad.v1/v2/v3`、`feeHook.v1/v2/v3`） | ETH 与 Robinhood 的 v1/v2/v3 工厂都有代码；ETH 侧 from-genesis 证明历史事件存在，Robinhood 侧历史 5 条事件（最近约 40 天前） |
+| Virtuals 联合曲线（Base） | `whitepaper.virtuals.io/.../virtuals-protocol-contract-addresses`（官方页本轮已补上 Base 行） | Base 联合曲线 `0x1a540088…`（2,000 区块内 3 条事件）——第二轮时该行还是空的 |
+| 全平台清单（权威对照） | `docs.dedaub.com/docs/token_safety/tokin/` 的 Launchpad Detection 表 | 逐链列出平台 slug 与链归属；本轮用它核对“GMGN 默认 allow-list 之外还有哪些平台”（Arena、ArrowPad、Coinbarrel、hyper.meme、LaunchHood、LeaveHood、Lemon.fun、Lunch.fun、Memecoin.fun、MintFast、ORO、Pmav.fun、Potato.fm、Sushi 等） |
+| GMGN 平台契约 | `github.com/GMGNAI/gmgn-skills` 的 `docs/cli-usage.md` | 逐链列出官方平台枚举，并说明 `market trenches` 省略 `--launchpad-platform` 时服务端会注入固定 allow-list（比“全部平台”窄） |
+
+## 结论口径变化
+
+- **cubepeg 不是独立发射台**：four.meme 代币页把该模式标为“模式Cubepeg发射”，`cubepeg.com` 是 Cubus × Four.meme 的 UniToken NFT 索引前端，没有独立工厂。候选地址 `0x60a2dfa7…` 只命中一个泛用 `Launchpad` 合约、0 事件，不采用；cubepeg 由 `fourmeme_token_manager` 覆盖。
+- **Virtuals Base 联合曲线已可核实**：官方页此前留空，本轮已公开并上链验证。
+- **Stable 首次有发射台地址**：pew.fun 的 Stable 部署有代码；但 Stable RPC 的 `eth_getLogs` 只允许约 1,000 区块窗口，窗口内 0 事件，保持 `CODE-ONLY`。
+- **Robinhood 从 27/69 提升到 63/69**：把低频平台的窗口按实测放宽（`span` 逐目标可配），并把“最近事件距今多久”写进报告。
+
+## 工具改动
+
+- `scripts/verify_live.py`：新增 `resolve_target_span()`，每个目标可用 `span` 覆盖链默认窗口；窗口跨度始终写进 evidence。
+- `src/radar/liveverify/evm.py`：新增 `history_probe()`（from-genesis 单次探测），并把“因匹配日志过多被拒”识别为“历史上确实发射过事件”。
+- `src/radar/liveverify/report.py`：新增 `HISTORICAL` 档位与「最近事件(区块/距今)」列。
+- `src/radar/liveverify/rpc.py`：429 退避改为指数退避（2/4/8/16 秒，上限 20 秒），默认重试 4 次。
+
+## 本轮全量结果
+
+| 链 | 目标数 | VERIFIED-LIVE | HISTORICAL | CODE-ONLY | FAILED |
+|---|---:|---:|---:|---:|---:|
+| BSC | 23 | 11 | 0 | 12 | 0 |
+| Ethereum | 15 | 8 | 7 | 0 | 0 |
+| Base | 21 | 10 | 0 | 9 | 2 |
+| Arbitrum | 4 | 1 | 1 | 2 | 0 |
+| Robinhood | 69 | 63 | 3 | 3 | 0 |
+| Arc | 2 | 1 | 1 | 0 | 0 |
+| Stable | 2 | 0 | 0 | 2 | 0 |
+| HyperEVM | 2 | 1 | 1 | 0 | 0 |
+| Solana | 14 | 13 | 0 | 0 | 1 |
+| **合计** | **152** | **108** | **13** | **28** | **3** |
+
+（第二轮为 121 个目标、52 个 VERIFIED-LIVE。）
+
+## 环境限制（实测，写进结论）
+
+- BSC 免费公共 RPC 把大于约 5,000 区块的地址过滤查询判定为 archive 请求并拒绝；因此 BSC 低频平台的 `CODE-ONLY` 是窗口限制，不是“平台不存在”。
+- Base 免费公共 RPC 不提供 archive `eth_getLogs`，窗口固定 2,000 区块（约 67 分钟）。
+- Ethereum 免费公共 RPC 上限 10,000 区块（archive 需要个人 token）。
+- Stable 的 `eth_getLogs` 区块距离上限约 1,024，实测安全值 1,000。
+- Arbitrum 允许 100,000 区块窗口，from-genesis 需要个人 token。
+- Robinhood 只有单一可用 RPC，且有 429 限流；harness 已改为指数退避。
+
+## 仍然看不到的（无公开来源，继续保持 blocked）
+
+BSC：`goplus_creator`（GoPlus 侧没有公开合约）、`four_xmode_agent`。
+Base：`basememe`、`baseapp`（GMGN 平台枚举里有，但没有官方合约页；且 Base 免费 RPC 无 archive 窗口，无法用日志反查）。
+Robinhood：`motion`、`holoworld`（HoloLaunch）、`circus`（BONK）、`dyorswap`、`arrowfinance`、`bags`、`flap` 等——Dedaub 的检测表确认它们存在，但没有公开合约地址。
+Solana：`bonkers`（无可核实的官方 program id）。
+
+这些条目继续不写猜测地址；一旦出现官方合约页或提供 GMGN API key，可以按同一套 harness 直接补测。

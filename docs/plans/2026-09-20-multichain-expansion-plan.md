@@ -55,15 +55,16 @@
 - [ ] Stable：当前探测 0 token，标记 `watch_only`，不投入开发。
 - 验收：配置与看板明确显示“观察/暂缓”，不产生交易决策。
 
-### X10.7 看板与 API 多链化
+### X10.7 看板与 API 多链化（2026-09-21 完成）
 
-- [ ] 过滤：chain / platform / 时间窗；每链来源健康与预算。
-- [ ] 三视图不变：即时发现 / 严格深审 / 影子跟踪；跨链不合并热度分。
-- 验收：桌面/移动浏览器通过；单链断流显示 stale，不显示为热度下降。
+- [x] 过滤：chain / platform / 时间窗；每链来源健康（`/api/v1/scanner/chains`，含 `live`/`stale`/`idle`）。
+- [x] 三视图不变：即时发现 / 严格深审 / 影子跟踪；跨链不合并热度分（每行都带 `chain`，热度分不跨链聚合）。
+- 验收：单链断流显示 `stale`，不显示为热度下降；链/平台/窗口过滤由 `tests/scanner/test_pipeline_layers.py::ScannerChainFilterTests` 覆盖。
+- 未做：每链预算字段（当前预算仍由 `RiskBudget` 全局配置；等每链影子数据出来再按链设限）。
 
 ### X10.8 验证与上线闸门
 
-- [ ] 每链 2–4 周影子：净期望、过滤器归因、延迟 p95、最大回撤、单一币依赖。
+- [ ] 每链 2–4 周影子：净期望、过滤器归因、延迟 p95、最大回撤、单一币依赖。**工具已就绪**（`run_scanner.py chains --db ...` 输出每链独立闸门、影子记录带 `chain`），但数据需要真实运行 2–4 周，本轮无法在会话内完成。
 - [ ] 通过后仅该链进入小资金实盘；`ENABLE_TRADING` 保持默认 false。
 - 验收：实盘与影子偏差可解释；熔断演练通过；无密钥泄漏。
 
@@ -90,5 +91,9 @@
 - 待办：BSC 其余发射台（cubepeg/likwid/goplus/lunafun 等）、Base basememe/virtuals_v2/klik、ETH trench/klik/livo/stroid/printr、Solana bags 发射程序、HyperEVM 工厂，均因缺少有来源地址而 blocked，禁止猜地址。
 - 2026-09-21：第二轮补齐——Flap 全套（AI Oracle/Stocks/VaultPortal/Trigger）、Clanker（BSC+ETH）、Klik（ETH/Base/RH）、Robinhood 全套 Mobula 文档发射台（apestore/bottom.fun/bow.fun/dyor.fun/LaunchProof/noxa.fun/Pons v1/printr/realfun/robinfun）、Zora、Uniswap Liquidity Launchpad、HyperSwap、Bags 与 Raydium/PumpSwap/Meteora/Orca 程序均已核实。
 - 全量结果：121 个目标里 52 个 VERIFIED-LIVE、69 个 code-only/失败；仍无来源的（cubepeg/basememe/baseapp/trench/livo/stroid/bonkers 等）保持 blocked。
-- 待办：X10.7 看板多链过滤；X10.8 每链 2–4 周影子。
+- 2026-09-21：第三轮补齐——Trench（Robinhood+ETH，官方 GitBook 部署表，Bitquery topic0 交叉验证）、Livo（ETH+Robinhood，官方 repo 部署表）、Hood.fun、Coinbarrel、ArrowPad、Stoxes.fun、pew.fun（Robinhood+Stable）、stroid（ETH+Robinhood）、Virtuals Base 联合曲线（官方页本轮补上）全部拿到有来源地址并上链核实；cubepeg 核实为 Four.meme 的 UniToken NFT 模式而非独立工厂。harness 新增每目标 `span` 覆盖、`history_probe`（from-genesis 历史事件证明）与 `HISTORICAL` 档位，报告新增「最近事件(区块/距今)」列。
+- 2026-09-21：全量结果 **152 个目标：108 VERIFIED-LIVE、13 HISTORICAL、28 CODE-ONLY、3 FAILED**（第二轮为 121 个目标 / 52 VERIFIED-LIVE）。
+- 2026-09-21：X10.7 完成——看板新增链/平台/时间窗过滤与每链来源健康条（`/api/v1/scanner/chains`）；单链断流显示 `stale`，不渲染成“热度下降”。跨链热度不合并。
+- 2026-09-21：X10.8 工具链完成——影子记录带 `chain` 标签，`python scripts/run_scanner.py chains --db ...` 输出每链独立闸门；2–4 周影子数据本身仍需真实运行时间，未完成。
+- 待办：X10.8 每链 2–4 周影子数据；BSC/Base/Stable 免费 RPC 的窗口限制导致低频平台只能用 `CODE-ONLY`/`HISTORICAL` 判定，需要付费 archive key 才能收紧。
 - 实盘：`ENABLE_TRADING=false`，未启用。
