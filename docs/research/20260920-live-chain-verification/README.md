@@ -68,10 +68,14 @@
 | Clanker v4 | `0xe85a59c628f7d27878aceb4bf3b35733630083a9` | 2,000 区块：`TokenCreated=15`（另有 `ExtensionTriggered=27`） |
 | Flaunch | `0x516af52d0c629b5e378da4dc64ecb0744ce10109` | 2,000 区块：21 条日志（`Transfer`/`Approval` 铸造路径） |
 | Doppler HookInitializer（Bankr 的 Base 发币通道） | `0xbdf938149ac6a781f94faa0ed45e6a0e984c6544` | 2,000 区块：`Create=11`、`Swap=953`、`ModifyLiquidity=274` |
+| Uniswap V2 工厂 | `0x8909dc15e40173ff4699343b6eb8132c65e18ec6` | Sourcify `UniswapV2Factory`；2,000 区块内 `PairCreated=33` |
 | Uniswap V3 / Aerodrome PoolFactory | `0x33128a8f…fdfd` / `0x420dd381…40da` | 有代码，窗口内 0–1 条 `PoolCreated`（低频），`allPoolsLength≈29,308` |
 | Doppler Deployer / UniswapV4Initializer | `0xb35469ee…e421` / `0x53b4c21a…e8ad` | 有代码，窗口内 0 事件 |
 
-未核实：basememe、virtuals_v2、klik、zora meme（`0x777777…` 是 Zora1155Factory，NFT 合约，不是 meme 发射台）。
+未核实：basememe、klik、zora meme（`0x777777…` 是 Zora1155Factory，NFT 合约，不是 meme 发射台）。
+Virtuals(Base)：第三方 bot 给出的 `bondingProxy 0xf66dea7b…`（Sourcify `TransparentUpgradeableProxy`，2,000 区块 0 事件）、
+`creatorVault 0xdad68629…`（**链上无代码**）、`sellExecutor 0xf8dd39c7…`（Sourcify 实为 `Multicall3`）三个地址经实测对不上，
+因此 Virtuals Base 仍按未核实处理；这正说明第三方地址必须上链复核。
 Bankr 本身不是发射台：官方文档（docs.bankr.bot）说明 Base 上通过 `provider: "doppler"` 部署，所以本轮核实的是 Doppler。
 
 ### Arbitrum（1 个 VERIFIED-LIVE）
@@ -127,7 +131,8 @@ Bankr 本身不是发射台：官方文档（docs.bankr.bot）说明 Base 上通
 1. `config/chains.json` 原来把 pancake_v3 标为 `verified` 却没有来源；本轮补上来源，并记录 Sourcify 名称不一致（`PlunderV3Factory`）这一事实。地址本身通过 `feeAmountTickSpacing`/`getPool` 与真实池子验证可用。
 2. Robinhood 之前因为浏览器 API 404 被判“无法核实”；本轮换路径（官方 Doppler 部署表 + 第三方地址簿 + 链上日志）核实了 8 个平台，其中 Pons V2 实测 `TokenLaunched=38`、`Launched=28`。
 3. Bankr 被当成 Base 发射台；官方文档显示它是 Doppler 的客户端，核实对象应是 Doppler 合约。
-4. 公共 RPC 的限制被写进工具：BSC 必须带地址过滤且单查询 ≤2 万条结果；Arc ~30 区块；Stable 1,024 区块；Robinhood ≤1 万条日志并有 429 限流（已加退避重试）。
+4. 第三方地址簿不能直接信：Robinhood 的 `rbh-trade-sdk` 地址簿经链上复核后 8 个平台有实时事件才采用；Base 的 Virtuals 第三方地址 3 个里 2 个明显错误（一个是 `Multicall3`，一个无代码），全部不写入配置。
+5. 公共 RPC 的限制被写进工具：BSC 必须带地址过滤且单查询 ≤2 万条结果；Arc ~30 区块；Stable 1,024 区块；Robinhood ≤1 万条日志并有 429 限流（已加退避重试）。
 
 ## 复现方式
 
