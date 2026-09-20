@@ -303,7 +303,7 @@ LIVE_TRADING_ENABLED=false            # 与现有 ENABLE_TRADING 分离
 - 2026-09-20：补齐运行时接线：`tools/collect_continuous.py` 增加 `SCANNER_ENABLED` 只读扫描开关（默认关闭）；`src/radar/pipeline.py` 串起雷达→快照→安全报告→决策→影子；scanner 看板三视图与 `/api/v1/scanner/{launches,graduations,safety,decisions,shadow}`；`records_from_store` + `gate --db` 直接用影子库评估闸门。
 - 验证：`PYTHON_DOTENV_DISABLED=1 python3 -m unittest discover` = 1474 tests, 1 skipped, 0 failures；`tests/scanner/` = 59 tests。
 - 2026-09-20：补齐归因与闸门工具链：`src/safety/attribution.py`（按过滤器 join 影子 PnL）、`GmgnOpenApiClient`（个人 key 下的聪明钱交易解析）、`SolanaStreamAdapter`（异步消费已解码 Solana launch 事件）、CLI `report`（闸门 + 归因）与 `live-check`（实盘闸门判定）。
-- 验证（最终）：`PYTHON_DOTENV_DISABLED=1 python3 -m unittest discover` = 1476 tests, 1 skipped, 0 failures；`tests/scanner/` = 66 tests。
+- 验证（最终）：`PYTHON_DOTENV_DISABLED=1 python3 -m unittest discover` = 1481 tests, 1 skipped, 0 failures；`tests/scanner/` = 66 tests。
 
 ## 10. Scoreboard 收口
 
