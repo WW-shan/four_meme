@@ -1,0 +1,48 @@
+{
+  "round": "20260921-code-audit",
+  "repo_head_before": "43d5a9f",
+  "baseline": {"command": "PYTHON_DOTENV_DISABLED=1 python3 -m unittest discover", "tests": 1538, "skipped": 1, "failures": 0},
+  "final": {"command": "PYTHON_DOTENV_DISABLED=1 python3 -m unittest discover", "tests": 1556, "skipped": 1, "failures": 0},
+  "static_checks": {
+    "compileall": "clean",
+    "pyflakes": "3 intentional re-exports only (KNOWN_QUOTE_ASSETS, TOPIC_CREATE, TOPIC_STOP)",
+    "mutable_default_args": 0,
+    "blocking_io_in_async": 0,
+    "requests_without_timeout_in_src_or_tools": 0,
+    "hardcoded_secrets": 0,
+    "broad_exception_swallow_sites_after_fix": 16
+  },
+  "fixes": [
+    {"id": 1, "severity": "critical", "file": "src/decision/engine.py", "issue": "learning-mode safety report could authorise a buy", "fix": "decide() rejects report.mode != safe", "test": "tests/scanner/test_decision.py::LearningModeDecisionTests"},
+    {"id": 2, "severity": "critical", "file": "src/core/trader.py", "issue": "1e9-wei alignment silently zeroed sub-step balances", "fix": "align_sell_amount + loud refusal", "test": "tests/core/test_fourmeme_trade_guards.py::SellAmountAlignmentTests"},
+    {"id": 3, "severity": "high", "file": "src/core/trader.py", "issue": "chainId 56 hard-coded in 5 build_transaction calls", "fix": "TradingConfig.CHAIN_ID from MEME_CHAIN_ID, validated", "test": "tests/core/test_fourmeme_trade_guards.py::ChainIdConfigTests"},
+    {"id": 4, "severity": "high", "file": "src/safety/fetchers.py", "issue": "chain-keyed providers silently returned BSC data", "fix": "GoPlus path chain id, DexScreener slug map, fail closed on unknown chain", "test": "tests/scanner/test_snapshot_fetchers.py::ChainRoutingTests, UnknownChainFailsClosedTests"},
+    {"id": 5, "severity": "high", "file": "src/radar/pipeline.py", "issue": "ScannerPipeline defaulted to chain_id 56 for every chain", "fix": "resolve chain id from config/chains.json; unknown chain stays None", "test": "tests/scanner/test_pipeline_layers.py::ScannerPipelineChainIdTests"},
+    {"id": 6, "severity": "high", "file": "src/trader/bot.py", "issue": "non-atomic state write and swallowed load error could forget open positions", "fix": "atomic replace + refuse to start on unparseable state", "test": "covered by existing bot contract tests plus manual read"},
+    {"id": 7, "severity": "medium", "file": "src/core/listener.py", "issue": "bare except swallowed invalid contract address", "fix": "raise ValueError naming the address", "test": "existing listener contract tests"},
+    {"id": 8, "severity": "medium", "file": "src/trader/bot.py", "issue": "3 bare except pass blocks in buy confirmation and shutdown", "fix": "count and warn on balance-poll failure, debug-log receipt and shutdown failures", "test": "existing bot contract tests"},
+    {"id": 9, "severity": "low", "file": "tools/collect_continuous.py", "issue": "bare except around a status-only call", "fix": "narrowed with debug log", "test": "collector contract tests"}
+  ],
+  "accepted_risks": [
+    {"file": "src/core/trader.py", "item": "_sell_on_pancakeswap minOut=1 emergency exit", "why": "only used when the pool will not quote; refusing to sell can trap funds in a rug"},
+    {"file": "src/walletflow/gmgn.py", "item": "provider failure and 'no smart-money trades' both return []", "why": "fails closed for trading, but the two cases are indistinguishable"},
+    {"file": "src/core/listener.py", "item": "except Exception around checksum normalisation inside event decoding", "why": "only skips normalising an argument value, the raw value is still processed"}
+  ],
+  "not_fully_reviewed": [
+    "src/pipeline/train_hybrid.py",
+    "src/data/collector.py",
+    "src/data/dataset_builder.py",
+    "src/pipeline/*_probe.py research scripts",
+    "src/rl/",
+    "src/model/"
+  ],
+  "live_state": {
+    "collector_running": true,
+    "collector_pid": 15829,
+    "collector_note": "still runs pre-audit code; fixes apply on next start",
+    "trading_bot_running": false,
+    "onchain_transaction_sent": false
+  },
+  "data_cleanup": {"deleted_paths": 64, "freed_mib": 726.2, "detail": "data-cleanup.json"},
+  "scoreboard": "updated"
+}
