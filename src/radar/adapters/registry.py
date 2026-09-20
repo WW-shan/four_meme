@@ -11,7 +11,9 @@ from typing import Iterable
 from src.radar.adapters.base import ChainAdapter
 
 EVM_ADDRESS = re.compile(r"^0x[0-9a-fA-F]{40}$")
+SOLANA_ADDRESS = re.compile(r"^[1-9A-HJ-NP-Za-km-z]{32,44}$")
 FACT_STATUSES = {"verified", "unverified", "unknown"}
+ADDRESS_PATTERNS = {"evm": EVM_ADDRESS, "solana": SOLANA_ADDRESS}
 
 
 @dataclass
@@ -20,14 +22,20 @@ class LaunchpadSpec:
     address: str | None = None
     fact_status: str = "unknown"
     enabled: bool = False
+    family: str = "evm"
+    source: str | None = None
 
     def __post_init__(self):
         if self.fact_status not in FACT_STATUSES:
             raise ValueError(f"invalid fact_status: {self.fact_status}")
-        if self.address is not None and not EVM_ADDRESS.fullmatch(self.address):
-            raise ValueError(f"invalid launchpad address: {self.address}")
+        if self.family not in ADDRESS_PATTERNS:
+            raise ValueError(f"invalid launchpad family: {self.family}")
+        if self.address is not None and not ADDRESS_PATTERNS[self.family].fullmatch(self.address):
+            raise ValueError(f"invalid {self.family} launchpad address: {self.address}")
         if self.enabled and self.fact_status != "verified":
             raise ValueError("unverified launchpad cannot be enabled")
+        if self.fact_status == "verified" and not self.source:
+            raise ValueError("verified launchpad requires a source")
 
 
 @dataclass

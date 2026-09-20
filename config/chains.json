@@ -11,7 +11,32 @@
       "gmgn_supported": true,
       "enabled": false,
       "platforms": [],
-      "launchpads": []
+      "launchpads": [
+        {
+          "name": "uniswap_v3_factory",
+          "address": "0x1f98431c8ad98523631ae4a59f267346ea31f984",
+          "fact_status": "verified",
+          "enabled": false,
+          "family": "evm",
+          "source": "Sourcify UniswapV3Factory；live-verify 2026-09-20（scripts/verify_live.py + docs/research/20260920-live-chain-verification/evidence.json）：20000 区块内 2 PoolCreated"
+        },
+        {
+          "name": "camelot_factory",
+          "address": "0x6eccab422d763ac031210895c81787e87b43a652",
+          "fact_status": "verified",
+          "enabled": false,
+          "family": "evm",
+          "source": "Sourcify CamelotFactory；live-verify 2026-09-20（scripts/verify_live.py + docs/research/20260920-live-chain-verification/evidence.json）：20000 区块内 0 事件（疑似已停用）"
+        },
+        {
+          "name": "doppler_hook_initializer",
+          "address": "0xaa7f809bb3752f715fa2e418230667c382a56544",
+          "fact_status": "verified",
+          "enabled": false,
+          "family": "evm",
+          "source": "whetstoneresearch/doppler Deployments.md；live-verify 2026-09-20（scripts/verify_live.py + docs/research/20260920-live-chain-verification/evidence.json）：代码存在，20000 区块内 0 事件"
+        }
+      ]
     },
     {
       "chain": "arc",
@@ -23,7 +48,16 @@
       "gmgn_supported": true,
       "enabled": false,
       "platforms": [],
-      "launchpads": []
+      "launchpads": [
+        {
+          "name": "uniswap_v4_pool_manager",
+          "address": "0x8366a39cc670b4001a1121b8f6a443a643e40951",
+          "fact_status": "verified",
+          "enabled": false,
+          "family": "evm",
+          "source": "链上发现（20 区块聚合）+ Sourcify PoolManager；live-verify 2026-09-20（scripts/verify_live.py + docs/research/20260920-live-chain-verification/evidence.json）：20 区块内 99 条事件（V4 Swap topic0 0x40e9cecb…）"
+        }
+      ]
     },
     {
       "chain": "base",
@@ -45,7 +79,56 @@
         "virtuals_v2",
         "klik"
       ],
-      "launchpads": []
+      "launchpads": [
+        {
+          "name": "uniswap_v3_factory",
+          "address": "0x33128a8fc17869897dce68ed026d694621f6fdfd",
+          "fact_status": "verified",
+          "enabled": false,
+          "family": "evm",
+          "source": "Sourcify UniswapV3Factory；live-verify 2026-09-20（scripts/verify_live.py + docs/research/20260920-live-chain-verification/evidence.json）：窗口内 0–1 条 PoolCreated（低频）"
+        },
+        {
+          "name": "aerodrome_pool_factory",
+          "address": "0x420dd381b31aef6683db6b902084cb0ffece40da",
+          "fact_status": "verified",
+          "enabled": false,
+          "family": "evm",
+          "source": "Sourcify PoolFactory；live-verify 2026-09-20（scripts/verify_live.py + docs/research/20260920-live-chain-verification/evidence.json）：窗口内 0–1 条 PoolCreated（低频），allPoolsLength≈29308"
+        },
+        {
+          "name": "clanker_v4",
+          "address": "0xe85a59c628f7d27878aceb4bf3b35733630083a9",
+          "fact_status": "verified",
+          "enabled": false,
+          "family": "evm",
+          "source": "clanker-devco/v4-contracts README（Base Mainnet v4.0）+ Sourcify Clanker；live-verify 2026-09-20（scripts/verify_live.py + docs/research/20260920-live-chain-verification/evidence.json）：2000 区块内 15 TokenCreated"
+        },
+        {
+          "name": "flaunch",
+          "address": "0x516af52d0c629b5e378da4dc64ecb0744ce10109",
+          "fact_status": "verified",
+          "enabled": false,
+          "family": "evm",
+          "source": "flayerlabs/flaunchgg-contracts README（Base Mainnet Flaunch）+ Sourcify Flaunch；live-verify 2026-09-20（scripts/verify_live.py + docs/research/20260920-live-chain-verification/evidence.json）：2000 区块内 18 条日志"
+        },
+        {
+          "name": "doppler_hook_initializer",
+          "address": "0xbdf938149ac6a781f94faa0ed45e6a0e984c6544",
+          "fact_status": "verified",
+          "enabled": false,
+          "family": "evm",
+          "source": "whetstoneresearch/doppler Deployments.md（Bankr 的 Base 发币走 Doppler）；live-verify 2026-09-20：2000 区块内 11 Create / 953 Swap / 274 ModifyLiquidity"
+        },
+        {
+          "name": "doppler_uniswap_v4_initializer",
+          "address": "0x53b4c21a6cb61d64f636abbfa6e8e90e6558e8ad",
+          "fact_status": "verified",
+          "enabled": false,
+          "family": "evm",
+          "source": "whetstoneresearch/doppler Deployments.md；live-verify 2026-09-20（scripts/verify_live.py + docs/research/20260920-live-chain-verification/evidence.json）：代码存在，窗口内 0 事件"
+        }
+      ]
     },
     {
       "chain": "bsc",
@@ -76,22 +159,44 @@
       ],
       "launchpads": [
         {
+          "name": "fourmeme_token_manager",
+          "address": "0x5c952063c7fc8610FFDB798152D69F0B9550762b",
+          "fact_status": "verified",
+          "enabled": false,
+          "family": "evm",
+          "source": "config/contracts.json + TokenManager2 ABI；live-verify 2026-09-20（scripts/verify_live.py + docs/research/20260920-live-chain-verification/evidence.json）：5000 区块内 615 TokenCreate / 164 TokenPurchase / 31 TokenSale"
+        },
+        {
           "name": "pancake_v2",
           "address": "0xca143ce32fe78f1f7019d7d551a6402fc5350c73",
           "fact_status": "verified",
-          "enabled": false
+          "enabled": false,
+          "family": "evm",
+          "source": "Sourcify PancakeFactory；live-verify 2026-09-20（scripts/verify_live.py + docs/research/20260920-live-chain-verification/evidence.json）：5000 区块内 560 PairCreated"
         },
         {
           "name": "pancake_v3",
           "address": "0x0bfbcf9fa4f9c56b0f40a671ad40e0805a091865",
           "fact_status": "verified",
-          "enabled": false
+          "enabled": false,
+          "family": "evm",
+          "source": "公开标签 PancakeV3Factory（Sourcify 记录名 PlunderV3Factory，名称待证）；live-verify 2026-09-20（scripts/verify_live.py + docs/research/20260920-live-chain-verification/evidence.json）：PoolCreated 2 条 + getPool 返回真实池"
         },
         {
-          "name": "flap",
-          "address": null,
-          "fact_status": "unknown",
-          "enabled": false
+          "name": "flap_portal",
+          "address": "0xe2ce6ab80874fa9fa2aae65d277dd6b8e65c9de0",
+          "fact_status": "verified",
+          "enabled": false,
+          "family": "evm",
+          "source": "docs.flap.sh Deployed Contract Addresses（Portal v5.23.1，代理实现 0xab8ec926b6e113c2212af152b086ea62d1fdced9）；live-verify 2026-09-20（scripts/verify_live.py + docs/research/20260920-live-chain-verification/evidence.json）：1250 区块内 212 TokenCreated、1956 TokenBought、1597 TokenSold"
+        },
+        {
+          "name": "openfour_registry",
+          "address": "0x912cef0c3ae9ab6eb3ec87cab69371cfb317ab94",
+          "fact_status": "verified",
+          "enabled": false,
+          "family": "evm",
+          "source": "OpenFour 官方文档 Known Registry addresses；live-verify 2026-09-20（scripts/verify_live.py + docs/research/20260920-live-chain-verification/evidence.json）：Registry.openFourCore() → 0xebe7b6c1089d9f72ad07f34e36d898e44e5e27f3 在 5000 区块内 64 TokenCreated"
         }
       ]
     },
@@ -114,7 +219,40 @@
         "pool_uniswap_v3",
         "printr"
       ],
-      "launchpads": []
+      "launchpads": [
+        {
+          "name": "uniswap_v2_factory",
+          "address": "0x5c69bee701ef814a2b6a3edd4b1652cb9cc5aa6f",
+          "fact_status": "verified",
+          "enabled": false,
+          "family": "evm",
+          "source": "Sourcify UniswapV2Factory；live-verify 2026-09-20（scripts/verify_live.py + docs/research/20260920-live-chain-verification/evidence.json）：2000 区块内 30 PairCreated"
+        },
+        {
+          "name": "uniswap_v3_factory",
+          "address": "0x1f98431c8ad98523631ae4a59f267346ea31f984",
+          "fact_status": "verified",
+          "enabled": false,
+          "family": "evm",
+          "source": "Sourcify UniswapV3Factory；live-verify 2026-09-20（scripts/verify_live.py + docs/research/20260920-live-chain-verification/evidence.json）：2000 区块内 2 PoolCreated"
+        },
+        {
+          "name": "doppler_deployer",
+          "address": "0xb35469ee64a87afd19b31615094fe3962d73e421",
+          "fact_status": "verified",
+          "enabled": false,
+          "family": "evm",
+          "source": "whetstoneresearch/doppler Deployments.md；live-verify 2026-09-20（scripts/verify_live.py + docs/research/20260920-live-chain-verification/evidence.json）：代码存在，2000 区块内 0 事件（部署器低频）"
+        },
+        {
+          "name": "doppler_hook_initializer",
+          "address": "0xbdf938149ac6a781f94faa0ed45e6a0e984c6544",
+          "fact_status": "verified",
+          "enabled": false,
+          "family": "evm",
+          "source": "whetstoneresearch/doppler Deployments.md；live-verify 2026-09-20（scripts/verify_live.py + docs/research/20260920-live-chain-verification/evidence.json）：代码存在，2000 区块内 0 事件"
+        }
+      ]
     },
     {
       "chain": "hyperevm",
@@ -166,7 +304,32 @@
         "dyorfun_v3",
         "noxafi"
       ],
-      "launchpads": []
+      "launchpads": [
+        {
+          "name": "doppler_hook_initializer",
+          "address": "0x4e3468951d49f2eea976ed0d6e75ffcb44a9a544",
+          "fact_status": "verified",
+          "enabled": false,
+          "family": "evm",
+          "source": "whetstoneresearch/doppler Deployments.md + Sourcify DopplerHookInitializer；live-verify 2026-09-20：2000 区块内 4 Create / 637 Swap / 184 ModifyLiquidity"
+        },
+        {
+          "name": "doppler_deployer",
+          "address": "0x4389ad34938b14f25cff7ed983c53f5a42a2573f",
+          "fact_status": "verified",
+          "enabled": false,
+          "family": "evm",
+          "source": "whetstoneresearch/doppler Deployments.md；live-verify 2026-09-20（scripts/verify_live.py + docs/research/20260920-live-chain-verification/evidence.json）：代码存在，200 区块内 0 事件（部署器低频）"
+        },
+        {
+          "name": "doppler_uniswap_v4_initializer",
+          "address": "0x6cce158b6d1747617fc218592b4d60b239b957ea",
+          "fact_status": "verified",
+          "enabled": false,
+          "family": "evm",
+          "source": "whetstoneresearch/doppler Deployments.md；live-verify 2026-09-20（scripts/verify_live.py + docs/research/20260920-live-chain-verification/evidence.json）：代码存在，窗口内 0 事件"
+        }
+      ]
     },
     {
       "chain": "sol",
@@ -190,7 +353,48 @@
         "pool_pump_amm",
         "pool_orca"
       ],
-      "launchpads": []
+      "launchpads": [
+        {
+          "name": "pump_fun_program",
+          "address": "6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P",
+          "fact_status": "verified",
+          "enabled": false,
+          "family": "solana",
+          "source": "pump.fun 程序 ID（chainstacklabs/pumpfun-bonkfun-bot + no-limit-nodes 解码库一致）；live-verify 2026-09-20（scripts/verify_live.py + docs/research/20260920-live-chain-verification/evidence.json）：executable=True，50 条签名/10 秒内，指令日志含 Buy/SellV2/Swap"
+        },
+        {
+          "name": "letsbonk_program",
+          "address": "LanMV9sAd7wArD4vJFi2qDdfnVhFxYSUg6eADduJ3uj",
+          "fact_status": "verified",
+          "enabled": false,
+          "family": "solana",
+          "source": "Raydium LaunchLab 程序 ID（chainstacklabs address_provider + no-limit-nodes 一致）；live-verify 2026-09-20（scripts/verify_live.py + docs/research/20260920-live-chain-verification/evidence.json）：executable=True，50 条签名/10 秒内"
+        },
+        {
+          "name": "boop_program",
+          "address": "boop8hVGQGqehUK2iVEMEnMrL5RbjywRzHKBmBE7ry4",
+          "fact_status": "verified",
+          "enabled": false,
+          "family": "solana",
+          "source": "no-limit-nodes/every-solana-program-decoded（boop_boop）；live-verify 2026-09-20（scripts/verify_live.py + docs/research/20260920-live-chain-verification/evidence.json）：executable=True，窗口内 12 条签名"
+        },
+        {
+          "name": "moonshot_program",
+          "address": "MoonCVVNZFSYkqNXP6bxHLPL6QQJiMagDL3qcqUQTrG",
+          "fact_status": "verified",
+          "enabled": false,
+          "family": "solana",
+          "source": "no-limit-nodes/every-solana-program-decoded（moonshot）；live-verify 2026-09-20（scripts/verify_live.py + docs/research/20260920-live-chain-verification/evidence.json）：executable=True，50 条签名"
+        },
+        {
+          "name": "virtuals_solana_program",
+          "address": "5U3EU2ubXtK84QcRjWVmYt9RaDyA8gKxdUrPFXmZyaki",
+          "fact_status": "verified",
+          "enabled": false,
+          "family": "solana",
+          "source": "no-limit-nodes/every-solana-program-decoded（virtuals）；live-verify 2026-09-20（scripts/verify_live.py + docs/research/20260920-live-chain-verification/evidence.json）：程序存在但窗口内 0 条签名（休眠）"
+        }
+      ]
     },
     {
       "chain": "stable",

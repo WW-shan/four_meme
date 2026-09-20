@@ -1,0 +1,5015 @@
+{
+  "generated_at": 1789918284.9859111,
+  "config_path": "/Users/ww/Project/meme/config/live_targets.json",
+  "chains": {
+    "bsc": {
+      "health": {
+        "chain": "bsc",
+        "expected_chain_id": 56,
+        "ok": true,
+        "reported_chain_id": 56,
+        "chain_id_matches": true,
+        "latest_block": 123013660,
+        "latest_block_timestamp": 1789918286,
+        "block_age_seconds": 1.0,
+        "endpoint": "https://bsc-rpc.publicnode.com",
+        "log_span": {
+          "mode": "requires_address_filter",
+          "accepted_span": null,
+          "attempts": [
+            {
+              "span": 5,
+              "ok": false,
+              "error": "eth_getLogs failed: {'code': -32701, 'message': 'Please specify an address in your request or, to remove restrictions, order a dedicated full node here: https://www.allnodes.com/bnb/host'}"
+            }
+          ]
+        },
+        "error": null
+      },
+      "targets": [
+        {
+          "chain": "bsc",
+          "address": "0x5c952063c7fc8610ffdb798152d69f0b9550762b",
+          "expected_names": [],
+          "checked_at": 1789918288.936963,
+          "code_size_bytes": 170,
+          "sourcify": {
+            "chain_id": 56,
+            "address": "0x5c952063c7fc8610ffdb798152d69f0b9550762b",
+            "verified": true,
+            "name": "ERC1967Proxy",
+            "compiler": "0.8.23+commit.f704f362",
+            "http_status": 200,
+            "error": null,
+            "abi_entries": 6
+          },
+          "decoded_event_counts": {
+            "TokenCreate": 602,
+            "TokenPurchase": 175,
+            "TokenSale": 38
+          },
+          "live_window": {
+            "span_blocks": 5000,
+            "requested_span": 5000,
+            "logs": 815,
+            "attempts": [
+              {
+                "span": 5000,
+                "ok": true,
+                "logs": 815
+              }
+            ]
+          },
+          "logs_by_topic0": {
+            "0x396d5e902b675b032348d3d2e9517ee8f0c4a926603fbc075d3d282ff00cad20": 602,
+            "0x7db52723a3b2cdd6164364b3b766e65e540d7be48ffa89582956d8eaebe62942": 175,
+            "0x0a5575b3648bae2210cee56bf33254cc1ddfbc7bf637c0af2ac18b14fb1bae19": 38
+          },
+          "expected_topic0": {
+            "TokenCreate(address,address,uint256,string,string,uint256,uint256,uint256)": "0x396d5e902b675b032348d3d2e9517ee8f0c4a926603fbc075d3d282ff00cad20",
+            "TokenPurchase(address,address,uint256,uint256,uint256,uint256,uint256,uint256)": "0x7db52723a3b2cdd6164364b3b766e65e540d7be48ffa89582956d8eaebe62942",
+            "TokenSale(address,address,uint256,uint256,uint256,uint256,uint256,uint256)": "0x0a5575b3648bae2210cee56bf33254cc1ddfbc7bf637c0af2ac18b14fb1bae19",
+            "LiquidityAdded(address,uint256,address,uint256)": "0xc18aa71171b358b706fe3dd345299685ba21a5316c66ffa9e319268b033c44b0"
+          },
+          "topic_hits": {
+            "TokenCreate(address,address,uint256,string,string,uint256,uint256,uint256)": 602,
+            "TokenPurchase(address,address,uint256,uint256,uint256,uint256,uint256,uint256)": 175,
+            "TokenSale(address,address,uint256,uint256,uint256,uint256,uint256,uint256)": 38,
+            "LiquidityAdded(address,uint256,address,uint256)": 0
+          },
+          "samples": [
+            {
+              "block": 123008660,
+              "block_timestamp": 1789916035,
+              "transaction_hash": "0xbe1ebb5aae0d110ce2dbec154a985538c07b18dead30057fae0b4272c61951fd",
+              "address": "0x5c952063c7fc8610ffdb798152d69f0b9550762b",
+              "topic0": "0x396d5e902b675b032348d3d2e9517ee8f0c4a926603fbc075d3d282ff00cad20",
+              "decoded": {
+                "event": "TokenCreate",
+                "signature": "TokenCreate(address,address,uint256,string,string,uint256,uint256,uint256)",
+                "creator": "0x00d49b8c2cef5544bce88b781a0b35ad1a5302e5",
+                "token": "0x01994a9ba9fac3b4d9d09b48af1dd38c59afffff",
+                "requestId": 102952075,
+                "name": "bFlapOS",
+                "symbol": "bFlapOS",
+                "totalSupply": 1000000000000000000000000000,
+                "launchTime": 0,
+                "launchFee": 0
+              }
+            },
+            {
+              "block": 123008683,
+              "block_timestamp": 1789916046,
+              "transaction_hash": "0x647d57c6155110a6532151be300a5599828a4cc386c1fe2e0441131e28165f4e",
+              "address": "0x5c952063c7fc8610ffdb798152d69f0b9550762b",
+              "topic0": "0x396d5e902b675b032348d3d2e9517ee8f0c4a926603fbc075d3d282ff00cad20",
+              "decoded": {
+                "event": "TokenCreate",
+                "signature": "TokenCreate(address,address,uint256,string,string,uint256,uint256,uint256)",
+                "creator": "0x007225397c38ae2d2b223eb47f387e414a358329",
+                "token": "0x85a4bfa333e341f67d3e8b8e3f0b70cf33d0ffff",
+                "requestId": 102952081,
+                "name": "Elon Coin",
+                "symbol": "ELON",
+                "totalSupply": 1000000000000000000000000000,
+                "launchTime": 0,
+                "launchFee": 0
+              }
+            },
+            {
+              "block": 123008691,
+              "block_timestamp": 1789916049,
+              "transaction_hash": "0x6d431e917da49687837cfb271141da9ac01a4445df7768985995b4b52c9ff70c",
+              "address": "0x5c952063c7fc8610ffdb798152d69f0b9550762b",
+              "topic0": "0x396d5e902b675b032348d3d2e9517ee8f0c4a926603fbc075d3d282ff00cad20",
+              "decoded": {
+                "event": "TokenCreate",
+                "signature": "TokenCreate(address,address,uint256,string,string,uint256,uint256,uint256)",
+                "creator": "0x00aa23568e8de02a03b2fa094b495f0cf97afd80",
+                "token": "0x641865707e9111da54eda974e376508e88ebffff",
+                "requestId": 102952082,
+                "name": "Touchpay",
+                "symbol": "Touchpay",
+                "totalSupply": 1000000000000000000000000000,
+                "launchTime": 0,
+                "launchFee": 0
+              }
+            }
+          ],
+          "ok": true,
+          "verification_notes": [
+            "\u4ee5\u4e0b\u4e8b\u4ef6\u5728\u7a97\u53e3\u5185\u4e3a 0\uff08\u4f4e\u9891\u6216\u672a\u53d1\u751f\uff09\uff1aLiquidityAdded(address,uint256,address,uint256)"
+          ],
+          "target_id": "fourmeme_token_manager",
+          "kind": "target",
+          "platform": "fourmeme",
+          "target_kind": "launchpad",
+          "source": "config/contracts.json + config/TokenManager2.lite.abi\uff08\u672c\u5730\u5df2\u9a8c\u8bc1\uff0cv2 \u5e03\u5c40\uff09",
+          "expected_topics": {
+            "TokenCreate(address,address,uint256,string,string,uint256,uint256,uint256)": "0x396d5e902b675b032348d3d2e9517ee8f0c4a926603fbc075d3d282ff00cad20",
+            "TokenPurchase(address,address,uint256,uint256,uint256,uint256,uint256,uint256)": "0x7db52723a3b2cdd6164364b3b766e65e540d7be48ffa89582956d8eaebe62942",
+            "TokenSale(address,address,uint256,uint256,uint256,uint256,uint256,uint256)": "0x0a5575b3648bae2210cee56bf33254cc1ddfbc7bf637c0af2ac18b14fb1bae19",
+            "LiquidityAdded(address,uint256,address,uint256)": "0xc18aa71171b358b706fe3dd345299685ba21a5316c66ffa9e319268b033c44b0"
+          },
+          "abi_source": "local:config/TokenManager2.lite.abi"
+        },
+        {
+          "chain": "bsc",
+          "address": "0xca143ce32fe78f1f7019d7d551a6402fc5350c73",
+          "expected_names": [
+            "PancakeFactory"
+          ],
+          "checked_at": 1789918294.1879418,
+          "code_size_bytes": 19084,
+          "sourcify": {
+            "chain_id": 56,
+            "address": "0xca143ce32fe78f1f7019d7d551a6402fc5350c73",
+            "verified": true,
+            "name": "PancakeFactory",
+            "compiler": "0.5.16+commit.9c3226ce",
+            "http_status": 200,
+            "error": null,
+            "abi_entries": 11
+          },
+          "name_matches": true,
+          "decoded_event_counts": {
+            "PairCreated": 571
+          },
+          "live_window": {
+            "span_blocks": 5000,
+            "requested_span": 5000,
+            "logs": 571,
+            "attempts": [
+              {
+                "span": 5000,
+                "ok": true,
+                "logs": 571
+              }
+            ]
+          },
+          "logs_by_topic0": {
+            "0x0d3648bd0f6ba80134a33ba9275ac585d9d315f0ad8355cddefde31afa28d0e9": 571
+          },
+          "expected_topic0": {
+            "PairCreated(address,address,address,uint256)": "0x0d3648bd0f6ba80134a33ba9275ac585d9d315f0ad8355cddefde31afa28d0e9"
+          },
+          "topic_hits": {
+            "PairCreated(address,address,address,uint256)": 571
+          },
+          "samples": [
+            {
+              "block": 123008663,
+              "block_timestamp": 1789916037,
+              "transaction_hash": "0xbbe03090a66c720bb3b0106a7938e6a57a8ce507e2046a5baa397898727c85d4",
+              "address": "0xca143ce32fe78f1f7019d7d551a6402fc5350c73",
+              "topic0": "0x0d3648bd0f6ba80134a33ba9275ac585d9d315f0ad8355cddefde31afa28d0e9",
+              "decoded": {
+                "event": "PairCreated",
+                "signature": "PairCreated(address,address,address,uint256)",
+                "token0": "0x02fca66c1d1afb4e2a7884261eb00f63598a7436",
+                "token1": "0xd51407a90bf8b6d3e3aeb00be8356a1b3a997777",
+                "pair": "0xc61e1be98703c62938ad7b0e9e19ab1543ee8951",
+                "arg3": 3070904
+              }
+            },
+            {
+              "block": 123008664,
+              "block_timestamp": 1789916037,
+              "transaction_hash": "0x0afbca188ef60515fb2d5becb8fec66524ba2ceb9e4f651ad22e648bd59e6a7a",
+              "address": "0xca143ce32fe78f1f7019d7d551a6402fc5350c73",
+              "topic0": "0x0d3648bd0f6ba80134a33ba9275ac585d9d315f0ad8355cddefde31afa28d0e9",
+              "decoded": {
+                "event": "PairCreated",
+                "signature": "PairCreated(address,address,address,uint256)",
+                "token0": "0x205812cdbed920aff76c6580abd681a46d11efc7",
+                "token1": "0xd0d0fa6113663231ead65a22d5d3928893ba7777",
+                "pair": "0xace6dd0350dfdc76daa8ed2e78712ad51b96e49b",
+                "arg3": 3070905
+              }
+            },
+            {
+              "block": 123008688,
+              "block_timestamp": 1789916048,
+              "transaction_hash": "0xb6f5505749bb27d75e62ab12d12aab7e7074487f09d8f773e19ed0f26e473c6f",
+              "address": "0xca143ce32fe78f1f7019d7d551a6402fc5350c73",
+              "topic0": "0x0d3648bd0f6ba80134a33ba9275ac585d9d315f0ad8355cddefde31afa28d0e9",
+              "decoded": {
+                "event": "PairCreated",
+                "signature": "PairCreated(address,address,address,uint256)",
+                "token0": "0x2da366d889a4637b74269306830edfde4cd17777",
+                "token1": "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+                "pair": "0x2bab0a25b344ba7ce5c819ff90973d1793270c7a",
+                "arg3": 3070906
+              }
+            }
+          ],
+          "ok": true,
+          "target_id": "pancake_v2_factory",
+          "kind": "target",
+          "platform": "pancake_v2",
+          "target_kind": "dex_factory",
+          "source": "Sourcify full match\uff08PancakeFactory\uff09+ Chainlist \u516c\u5f00\u8d44\u6599",
+          "expected_topics": {
+            "PairCreated(address,address,address,uint256)": "0x0d3648bd0f6ba80134a33ba9275ac585d9d315f0ad8355cddefde31afa28d0e9"
+          },
+          "abi_source": "sourcify:PancakeFactory",
+          "reads": [
+            {
+              "signature": "allPairsLength()",
+              "args": [],
+              "value": 3071474
+            }
+          ]
+        },
+        {
+          "chain": "bsc",
+          "address": "0x0bfbcf9fa4f9c56b0f40a671ad40e0805a091865",
+          "expected_names": [],
+          "checked_at": 1789918297.746232,
+          "code_size_bytes": 5151,
+          "sourcify": {
+            "chain_id": 56,
+            "address": "0x0bfbcf9fa4f9c56b0f40a671ad40e0805a091865",
+            "verified": true,
+            "name": "PlunderV3Factory",
+            "compiler": "0.7.6+commit.7338295f",
+            "http_status": 200,
+            "error": null,
+            "abi_entries": 22
+          },
+          "decoded_event_counts": {
+            "PoolCreated": 3
+          },
+          "live_window": {
+            "span_blocks": 5000,
+            "requested_span": 5000,
+            "logs": 3,
+            "attempts": [
+              {
+                "span": 5000,
+                "ok": true,
+                "logs": 3
+              }
+            ]
+          },
+          "logs_by_topic0": {
+            "0x783cca1c0412dd0d695e784568c96da2e9c22ff989357a2e8b1d9b2b4e6b7118": 3
+          },
+          "expected_topic0": {
+            "PoolCreated(address,address,uint24,int24,address)": "0x783cca1c0412dd0d695e784568c96da2e9c22ff989357a2e8b1d9b2b4e6b7118"
+          },
+          "topic_hits": {
+            "PoolCreated(address,address,uint24,int24,address)": 3
+          },
+          "samples": [
+            {
+              "block": 123009589,
+              "block_timestamp": 1789916454,
+              "transaction_hash": "0x37d08226ac32cf5760c0222859843e60b9f1ffde5f05f0a14ad753ab5c57313b",
+              "address": "0x0bfbcf9fa4f9c56b0f40a671ad40e0805a091865",
+              "topic0": "0x783cca1c0412dd0d695e784568c96da2e9c22ff989357a2e8b1d9b2b4e6b7118",
+              "decoded": {
+                "event": "PoolCreated",
+                "signature": "PoolCreated(address,address,uint24,int24,address)",
+                "token0": "0x1ba42e5193dfa8b03d15dd1b86a3113bbbef8eeb",
+                "token1": "0x9178611013507035a7d849f43a65c8172841f609",
+                "fee": 10000,
+                "tickSpacing": 200,
+                "pool": "0xd101c7abe30e072975c606fe39355d86947793eb"
+              }
+            },
+            {
+              "block": 123011528,
+              "block_timestamp": 1789917326,
+              "transaction_hash": "0xcb56e963067fc6a1ea338725183bfdfa1bbf828977e357db719533d4b0d4b817",
+              "address": "0x0bfbcf9fa4f9c56b0f40a671ad40e0805a091865",
+              "topic0": "0x783cca1c0412dd0d695e784568c96da2e9c22ff989357a2e8b1d9b2b4e6b7118",
+              "decoded": {
+                "event": "PoolCreated",
+                "signature": "PoolCreated(address,address,uint24,int24,address)",
+                "token0": "0xbc5ff7fe4d1b928423cf6c54bfa5f907130b4024",
+                "token1": "0xe313f1cafeb803113017543257ad45224b521f7c",
+                "fee": 10000,
+                "tickSpacing": 200,
+                "pool": "0xd85cda330c5153c608f3ac546cac2629c9f411a4"
+              }
+            },
+            {
+              "block": 123013627,
+              "block_timestamp": 1789918271,
+              "transaction_hash": "0xb9ef8308bdd31fac8c5d513bda3a5b60fd668edf84c329605520ce9b0f26c2aa",
+              "address": "0x0bfbcf9fa4f9c56b0f40a671ad40e0805a091865",
+              "topic0": "0x783cca1c0412dd0d695e784568c96da2e9c22ff989357a2e8b1d9b2b4e6b7118",
+              "decoded": {
+                "event": "PoolCreated",
+                "signature": "PoolCreated(address,address,uint24,int24,address)",
+                "token0": "0x55d398326f99059ff775485246999027b3197955",
+                "token1": "0xc693e260cc1b47e7edc0c01d4a349289fc665991",
+                "fee": 500,
+                "tickSpacing": 10,
+                "pool": "0x0b16a758382c8715583062e4ea82cecb244a156e"
+              }
+            }
+          ],
+          "ok": true,
+          "target_id": "pancake_v3_factory",
+          "kind": "target",
+          "platform": "pancake_v3",
+          "target_kind": "dex_factory",
+          "source": "\u516c\u5f00\u6807\u7b7e PancakeSwap: PancakeV3Factory\uff1bSourcify \u8bb0\u5f55\u540d\u4e3a PlunderV3Factory\uff08\u540d\u79f0\u5f85\u8bc1\uff0c\u5730\u5740\u884c\u4e3a\u4f18\u5148\uff09",
+          "expected_topics": {
+            "PoolCreated(address,address,uint24,int24,address)": "0x783cca1c0412dd0d695e784568c96da2e9c22ff989357a2e8b1d9b2b4e6b7118"
+          },
+          "abi_source": "sourcify:PlunderV3Factory",
+          "reads": [
+            {
+              "signature": "feeAmountTickSpacing(uint24)",
+              "args": [
+                100
+              ],
+              "value": 1
+            },
+            {
+              "signature": "getPool(address,address,uint24)",
+              "args": [
+                "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+                "0x55d398326f99059fF775485246999027B3197955",
+                100
+              ],
+              "value": "0x172fcd41e0913e95784454622d1c3724f546f849"
+            }
+          ],
+          "linked_contracts": [
+            {
+              "chain": "bsc",
+              "address": "0x172fcd41e0913e95784454622d1c3724f546f849",
+              "expected_names": [],
+              "checked_at": 1789918300.365632,
+              "code_size_bytes": 22962,
+              "sourcify": {
+                "chain_id": 56,
+                "address": "0x172fcd41e0913e95784454622d1c3724f546f849",
+                "verified": true,
+                "name": "PancakeV3Pool",
+                "compiler": "0.7.6+commit.7338295f",
+                "http_status": 200,
+                "error": null,
+                "abi_entries": 39
+              },
+              "live_window": {
+                "span_blocks": 5000,
+                "requested_span": 5000,
+                "logs": 0,
+                "attempts": [
+                  {
+                    "span": 5000,
+                    "ok": true,
+                    "logs": 0
+                  }
+                ]
+              },
+              "logs_by_topic0": {},
+              "expected_topic0": {
+                "Swap(address,address,int256,int256,uint160,uint128,int24)": "0xc42079f94a6350d7e6235f29174924f928cc2ac818eb64fed8004e115fbcca67"
+              },
+              "topic_hits": {
+                "Swap(address,address,int256,int256,uint160,uint128,int24)": 0
+              },
+              "samples": [],
+              "ok": false,
+              "verification_notes": [
+                "\u7a97\u53e3\u5185\u6ca1\u6709\u4efb\u4f55\u4e8b\u4ef6\uff1b\u5730\u5740\u53ef\u80fd\u662f\u4f11\u7720\u5408\u7ea6\u3001\u9519\u8bef\u5730\u5740\uff0c\u6216\u7a97\u53e3\u8fc7\u5c0f"
+              ],
+              "id": "wbnb_usdt_001_pool",
+              "derived_from": "getPool(address,address,uint24)",
+              "derived_address": "0x172fcd41e0913e95784454622d1c3724f546f849",
+              "kind": "linked"
+            }
+          ]
+        },
+        {
+          "chain": "bsc",
+          "address": "0xe2ce6ab80874fa9fa2aae65d277dd6b8e65c9de0",
+          "expected_names": [],
+          "checked_at": 1789918305.934981,
+          "code_size_bytes": 2882,
+          "sourcify": {
+            "chain_id": 56,
+            "address": "0xe2ce6ab80874fa9fa2aae65d277dd6b8e65c9de0",
+            "verified": true,
+            "name": "TransparentUpgradeableProxy",
+            "compiler": "0.8.24+commit.e11b9ed9",
+            "http_status": 200,
+            "error": null,
+            "abi_entries": 6
+          },
+          "decoded_event_counts": {
+            "FlapTokenCirculatingSupplyChanged": 2600,
+            "FlapTokenProgressChanged": 2599,
+            "TaxV2OnBondingCurvePaid": 2478,
+            "TokenBought": 1584,
+            "TokenSold": 1015,
+            "TokenCreated": 97,
+            "TokenCurveSetV2": 97,
+            "TokenDexSupplyThreshSet": 97,
+            "TokenVersionSet": 97,
+            "TokenQuoteSet": 97,
+            "FlapTokenQuoteRiskLevelSet": 97,
+            "TokenMigratorSet": 97,
+            "TokenDexPreferenceSet": 97,
+            "FlapTokenTaxSet": 96,
+            "FlapTokenAsymmetricTaxSet": 96,
+            "TaxOnBondingCurvePaid": 5,
+            "VanityTokenCreated": 1,
+            "LaunchedToDEX": 1
+          },
+          "live_window": {
+            "span_blocks": 1250,
+            "requested_span": 5000,
+            "logs": 11251,
+            "attempts": [
+              {
+                "span": 5000,
+                "ok": false,
+                "error": "eth_getLogs failed: {'code': -32602, 'message': 'query exceeds max results 20000, retry with the range 123008660-123010122'}"
+              },
+              {
+                "span": 2500,
+                "ok": false,
+                "error": "eth_getLogs failed: {'code': -32602, 'message': 'query exceeds max results 20000, retry with the range 123011160-123013666'}"
+              },
+              {
+                "span": 1250,
+                "ok": true,
+                "logs": 11251
+              }
+            ]
+          },
+          "logs_by_topic0": {
+            "0x115c78ad17c4763fb97bca94f3e59dc8cb2e59c9d3862f24a694ec401200f562": 2600,
+            "0xb4aa5d6b2390b2b8892ff84cb0ef9a64e969e1af22d049fa61cc2cf66c6ab7bd": 2478,
+            "0xa800a2038683844fac66747f771bfdfae862eb28b16bcfa387afa9fbacce8ff7": 1584,
+            "0x4c35e20d1e9bce377c7d9ec1572d934e46d62961f4da8af5beb8002d5906742d": 2599,
+            "0x03a4693e592f5e75dc7c136acb39b146d2b4966c0e509c34f362dee02b3b861a": 1015,
+            "0x504e7f360b2e5fe33cbaaae4c593bc55305328341bf79009e43e0e3b7f699603": 97,
+            "0x71a10912a55f73d3cced0d1515c2b33c396c80342522bad0e295ccbede556f37": 97,
+            "0x6f10bbe11587431707df676556a0551025a4f66551acdddc5793389e20f0d46e": 97,
+            "0x37502bf23c59a12e1036e7580a8dc056803623dbcd0885abb882adfa069ac89e": 97,
+            "0x3ceb902d3c555c21c3415b6aa839104b18e4825b2f8324011ff979089a507a8c": 97,
+            "0x445abee5118663000252294590bf99c9bfff216ed1e0cbf2192f552a5ba94860": 97,
+            "0xcf2372b9357f0d392563d2cedb11e2b3bf0c14d2b8b75eb8bad073bbea9b0ff9": 97,
+            "0x6b3125ac92c93333dab20ade84015b8cde845176b110057b49a81768c0cda374": 97,
+            "0x1546924f4680b1b2e093fd251c437c8781d81a21ed8ad1895e1f2c9b78db0cd0": 96,
+            "0x46cc246a238d1ca0951a15200994903e2d56cbb0389e63f09d66412a787aa3c0": 96,
+            "0x62c3d276a0a60596ef9bc2d78900e00d8df2eb8101c1b1923e41425251e1d54f": 5,
+            "0x16f7f7185702757d3ae091c2aaad3cee3a5e0bb82ac2a51fbc9af44651b5080c": 1,
+            "0x6e4f47630b8745b8cacbd44f42a8a33e7eea7cc08ef22fc7630f4f385784ff7d": 1
+          },
+          "expected_topic0": {},
+          "topic_hits": {},
+          "samples": [
+            {
+              "block": 123012410,
+              "block_timestamp": 1789917723,
+              "transaction_hash": "0x7041f3dc3632fbbda9a29da9bd037f7190289c8ccadcc3595ae4d7ebceb94f05",
+              "address": "0xe2ce6ab80874fa9fa2aae65d277dd6b8e65c9de0",
+              "topic0": "0x115c78ad17c4763fb97bca94f3e59dc8cb2e59c9d3862f24a694ec401200f562",
+              "decoded": {
+                "event": "FlapTokenCirculatingSupplyChanged",
+                "signature": "FlapTokenCirculatingSupplyChanged(address,uint256)",
+                "token": "0xd83e689e1637a4b2175a312dcef1cd2063457777",
+                "newSupply": 517101949395286334512784643
+              }
+            },
+            {
+              "block": 123012410,
+              "block_timestamp": 1789917723,
+              "transaction_hash": "0x7041f3dc3632fbbda9a29da9bd037f7190289c8ccadcc3595ae4d7ebceb94f05",
+              "address": "0xe2ce6ab80874fa9fa2aae65d277dd6b8e65c9de0",
+              "topic0": "0xb4aa5d6b2390b2b8892ff84cb0ef9a64e969e1af22d049fa61cc2cf66c6ab7bd",
+              "decoded": {
+                "event": "TaxV2OnBondingCurvePaid",
+                "signature": "TaxV2OnBondingCurvePaid(address,uint256)",
+                "token": "0xd83e689e1637a4b2175a312dcef1cd2063457777",
+                "amount": 14850000000000000
+              }
+            },
+            {
+              "block": 123012410,
+              "block_timestamp": 1789917723,
+              "transaction_hash": "0x7041f3dc3632fbbda9a29da9bd037f7190289c8ccadcc3595ae4d7ebceb94f05",
+              "address": "0xe2ce6ab80874fa9fa2aae65d277dd6b8e65c9de0",
+              "topic0": "0xa800a2038683844fac66747f771bfdfae862eb28b16bcfa387afa9fbacce8ff7",
+              "decoded": {
+                "event": "TokenBought",
+                "signature": "TokenBought(uint256,address,address,uint256,uint256,uint256,uint256)",
+                "ts": 1789917723,
+                "token": "0xd83e689e1637a4b2175a312dcef1cd2063457777",
+                "buyer": "0x1de460f363af910f51726def188f9004276bf4bc",
+                "amount": 25377305060514431831886655,
+                "eth": 495000000000000000,
+                "fee": 4950000000000000,
+                "postPrice": 19530905325
+              }
+            }
+          ],
+          "ok": true,
+          "target_id": "flap_portal",
+          "kind": "target",
+          "platform": "flap",
+          "target_kind": "launchpad",
+          "source": "docs.flap.sh Deployed Contract Addresses\uff08Portal v5.23.1\uff09+ waifufun Flap SDK constants",
+          "expected_topics": {},
+          "abi_source": "sourcify:TransparentUpgradeableProxy"
+        },
+        {
+          "chain": "bsc",
+          "address": "0x912cef0c3ae9ab6eb3ec87cab69371cfb317ab94",
+          "expected_names": [],
+          "checked_at": 1789918317.21061,
+          "code_size_bytes": 209,
+          "sourcify": {
+            "chain_id": 56,
+            "address": "0x912cef0c3ae9ab6eb3ec87cab69371cfb317ab94",
+            "verified": false,
+            "name": null,
+            "compiler": null,
+            "http_status": 404,
+            "error": "http_status=404",
+            "abi_entries": 0
+          },
+          "live_window": {
+            "span_blocks": 5000,
+            "requested_span": 5000,
+            "logs": 0,
+            "attempts": [
+              {
+                "span": 5000,
+                "ok": true,
+                "logs": 0
+              }
+            ]
+          },
+          "logs_by_topic0": {},
+          "expected_topic0": {},
+          "topic_hits": {},
+          "samples": [],
+          "ok": true,
+          "verification_notes": [
+            "\u7a97\u53e3\u5185\u6ca1\u6709\u4efb\u4f55\u4e8b\u4ef6",
+            "\u6ce8\u518c\u8868\u81ea\u8eab\u4f4e\u9891\uff1b\u901a\u8fc7\u8bfb\u53d6\u5230\u7684\u4e0b\u6e38\u5408\u7ea6\u5b9e\u65f6\u4e8b\u4ef6\u5b8c\u6210\u6838\u5b9e\uff1aopenfour_core@0xebe7b6c1089d9f72ad07f34e36d898e44e5e27f3"
+          ],
+          "target_id": "openfour_registry",
+          "kind": "target",
+          "platform": "openfour",
+          "target_kind": "registry",
+          "source": "OpenFour \u5b98\u65b9\u6587\u6863 Known Registry addresses\uff08BNB Smart Chain mainnet\uff09",
+          "expected_topics": {},
+          "abi_source": "github:https://api.github.com/repos/four-meme-community/openfour-docs/contents/scripts/abi/IOpenFourRegistry.json",
+          "reads": [
+            {
+              "signature": "openFourCore()",
+              "args": [],
+              "value": "0xebe7b6c1089d9f72ad07f34e36d898e44e5e27f3"
+            }
+          ],
+          "linked_contracts": [
+            {
+              "chain": "bsc",
+              "address": "0xebe7b6c1089d9f72ad07f34e36d898e44e5e27f3",
+              "expected_names": [],
+              "checked_at": 1789918318.688473,
+              "code_size_bytes": 209,
+              "sourcify": {
+                "chain_id": 56,
+                "address": "0xebe7b6c1089d9f72ad07f34e36d898e44e5e27f3",
+                "verified": false,
+                "name": null,
+                "compiler": null,
+                "http_status": 404,
+                "error": "http_status=404",
+                "abi_entries": 0
+              },
+              "live_window": {
+                "span_blocks": 5000,
+                "requested_span": 5000,
+                "logs": 53,
+                "attempts": [
+                  {
+                    "span": 5000,
+                    "ok": true,
+                    "logs": 53
+                  }
+                ]
+              },
+              "logs_by_topic0": {
+                "0x7dae4dcd1b20eb0445e7cc1d02b3e2e7f32fa63081a0e764732c269f2b8f228f": 53
+              },
+              "expected_topic0": {
+                "TokenCreated(uint256,uint256,address,address,string,string,uint256,uint256,uint256,uint256,address,address,address,address,address,address,address,string,uint256,bytes)": "0x7dae4dcd1b20eb0445e7cc1d02b3e2e7f32fa63081a0e764732c269f2b8f228f"
+              },
+              "topic_hits": {
+                "TokenCreated(uint256,uint256,address,address,string,string,uint256,uint256,uint256,uint256,address,address,address,address,address,address,address,string,uint256,bytes)": 53
+              },
+              "samples": [
+                {
+                  "block": 123008666,
+                  "block_timestamp": 1789916038,
+                  "transaction_hash": "0xa759961b0db4050a2118ad70ebd3f9425d892f4b4137968fa8c97b6b320e7858",
+                  "address": "0xebe7b6c1089d9f72ad07f34e36d898e44e5e27f3",
+                  "topic0": "0x7dae4dcd1b20eb0445e7cc1d02b3e2e7f32fa63081a0e764732c269f2b8f228f",
+                  "decoded": null
+                },
+                {
+                  "block": 123008694,
+                  "block_timestamp": 1789916051,
+                  "transaction_hash": "0xab00b33cd0b1c152313051083ed0a10af19a82303ad28401945b47715214590f",
+                  "address": "0xebe7b6c1089d9f72ad07f34e36d898e44e5e27f3",
+                  "topic0": "0x7dae4dcd1b20eb0445e7cc1d02b3e2e7f32fa63081a0e764732c269f2b8f228f",
+                  "decoded": null
+                },
+                {
+                  "block": 123008726,
+                  "block_timestamp": 1789916065,
+                  "transaction_hash": "0x8f82abab50d9b8ed9d6fc377243a225f7559432074bfaaea87c34108f1bd1134",
+                  "address": "0xebe7b6c1089d9f72ad07f34e36d898e44e5e27f3",
+                  "topic0": "0x7dae4dcd1b20eb0445e7cc1d02b3e2e7f32fa63081a0e764732c269f2b8f228f",
+                  "decoded": null
+                }
+              ],
+              "ok": true,
+              "id": "openfour_core",
+              "derived_from": "openFourCore()",
+              "derived_address": "0xebe7b6c1089d9f72ad07f34e36d898e44e5e27f3",
+              "kind": "linked"
+            }
+          ]
+        }
+      ],
+      "attempts": [
+        {
+          "url": "https://bsc-rpc.publicnode.com",
+          "method": "eth_chainId",
+          "ok": true,
+          "seconds": 1.49
+        },
+        {
+          "url": "https://bsc-rpc.publicnode.com",
+          "method": "eth_blockNumber",
+          "ok": true,
+          "seconds": 0.25
+        },
+        {
+          "url": "https://bsc-rpc.publicnode.com",
+          "method": "eth_getBlockByNumber",
+          "ok": true,
+          "seconds": 0.26
+        }
+      ]
+    },
+    "eth": {
+      "health": {
+        "chain": "eth",
+        "expected_chain_id": 1,
+        "ok": true,
+        "reported_chain_id": 1,
+        "chain_id_matches": true,
+        "latest_block": 26019641,
+        "latest_block_timestamp": 1789918307,
+        "block_age_seconds": 19.9,
+        "endpoint": "https://1rpc.io/eth",
+        "log_span": {
+          "mode": "unfiltered",
+          "accepted_span": 20,
+          "attempts": [
+            {
+              "span": 5,
+              "ok": true,
+              "logs": 4844
+            },
+            {
+              "span": 20,
+              "ok": true,
+              "logs": 0
+            }
+          ]
+        },
+        "error": null
+      },
+      "targets": [
+        {
+          "chain": "eth",
+          "address": "0x5c69bee701ef814a2b6a3edd4b1652cb9cc5aa6f",
+          "expected_names": [
+            "UniswapV2Factory"
+          ],
+          "checked_at": 1789918384.047155,
+          "code_size_bytes": 13859,
+          "sourcify": {
+            "chain_id": 1,
+            "address": "0x5c69bee701ef814a2b6a3edd4b1652cb9cc5aa6f",
+            "verified": true,
+            "name": "UniswapV2Factory",
+            "compiler": "0.5.16+commit.9c3226ce",
+            "http_status": 200,
+            "error": null,
+            "abi_entries": 10
+          },
+          "name_matches": true,
+          "decoded_event_counts": {
+            "PairCreated": 29
+          },
+          "live_window": {
+            "span_blocks": 2000,
+            "requested_span": 2000,
+            "logs": 29,
+            "attempts": [
+              {
+                "span": 2000,
+                "ok": true,
+                "logs": 29
+              }
+            ]
+          },
+          "logs_by_topic0": {
+            "0x0d3648bd0f6ba80134a33ba9275ac585d9d315f0ad8355cddefde31afa28d0e9": 29
+          },
+          "expected_topic0": {
+            "PairCreated(address,address,address,uint256)": "0x0d3648bd0f6ba80134a33ba9275ac585d9d315f0ad8355cddefde31afa28d0e9"
+          },
+          "topic_hits": {
+            "PairCreated(address,address,address,uint256)": 29
+          },
+          "samples": [
+            {
+              "block": 26017655,
+              "block_timestamp": 1789894439,
+              "transaction_hash": "0x68a662e217c1d9075e5bcf83ff4af61ddc276fbd3b76e9da829bd3017100e59f",
+              "address": "0x5c69bee701ef814a2b6a3edd4b1652cb9cc5aa6f",
+              "topic0": "0x0d3648bd0f6ba80134a33ba9275ac585d9d315f0ad8355cddefde31afa28d0e9",
+              "decoded": {
+                "event": "PairCreated",
+                "signature": "PairCreated(address,address,address,uint256)",
+                "token0": "0x86ee8f6a4fe389e860030fc15dae98718e71edd7",
+                "token1": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+                "pair": "0x4fb55e745d3bda306d5954b434877f414e477f5b",
+                "arg3": 522536
+              }
+            },
+            {
+              "block": 26017780,
+              "block_timestamp": 1789895939,
+              "transaction_hash": "0xfe3cb50f4a6f6dfeddbed61229547169db1414b816d3e598a23b0e7592d9014d",
+              "address": "0x5c69bee701ef814a2b6a3edd4b1652cb9cc5aa6f",
+              "topic0": "0x0d3648bd0f6ba80134a33ba9275ac585d9d315f0ad8355cddefde31afa28d0e9",
+              "decoded": {
+                "event": "PairCreated",
+                "signature": "PairCreated(address,address,address,uint256)",
+                "token0": "0x33b5fdb94f006017da1056b82a6a2680086d72f4",
+                "token1": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+                "pair": "0x120262c902018baafcfcd0beef60bdb7d43d1f9a",
+                "arg3": 522537
+              }
+            },
+            {
+              "block": 26017889,
+              "block_timestamp": 1789897259,
+              "transaction_hash": "0x1c89f8f448ddbc459ea25ec1fadfda402494b7ab806f0976115cd09999c969e0",
+              "address": "0x5c69bee701ef814a2b6a3edd4b1652cb9cc5aa6f",
+              "topic0": "0x0d3648bd0f6ba80134a33ba9275ac585d9d315f0ad8355cddefde31afa28d0e9",
+              "decoded": {
+                "event": "PairCreated",
+                "signature": "PairCreated(address,address,address,uint256)",
+                "token0": "0x03678d35a9e2a68dfa9703fb89a05ec478152c10",
+                "token1": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+                "pair": "0x8917312a03edba49355c3aedbb2d7dd6e8114ee1",
+                "arg3": 522538
+              }
+            }
+          ],
+          "ok": true,
+          "target_id": "uniswap_v2_factory",
+          "kind": "target",
+          "platform": "uniswap_v2",
+          "target_kind": "dex_factory",
+          "source": "Sourcify full match\uff08UniswapV2Factory\uff09",
+          "expected_topics": {
+            "PairCreated(address,address,address,uint256)": "0x0d3648bd0f6ba80134a33ba9275ac585d9d315f0ad8355cddefde31afa28d0e9"
+          },
+          "abi_source": "sourcify:UniswapV2Factory",
+          "reads": [
+            {
+              "signature": "allPairsLength()",
+              "args": [],
+              "value": 522564
+            }
+          ]
+        },
+        {
+          "chain": "eth",
+          "address": "0x1f98431c8ad98523631ae4a59f267346ea31f984",
+          "expected_names": [
+            "UniswapV3Factory"
+          ],
+          "checked_at": 1789918392.7678132,
+          "code_size_bytes": 24535,
+          "sourcify": {
+            "chain_id": 1,
+            "address": "0x1f98431c8ad98523631ae4a59f267346ea31f984",
+            "verified": true,
+            "name": "UniswapV3Factory",
+            "compiler": "0.7.6+commit.7338295f",
+            "http_status": 200,
+            "error": null,
+            "abi_entries": 11
+          },
+          "name_matches": true,
+          "decoded_event_counts": {
+            "PoolCreated": 1
+          },
+          "live_window": {
+            "span_blocks": 2000,
+            "requested_span": 2000,
+            "logs": 1,
+            "attempts": [
+              {
+                "span": 2000,
+                "ok": true,
+                "logs": 1
+              }
+            ]
+          },
+          "logs_by_topic0": {
+            "0x783cca1c0412dd0d695e784568c96da2e9c22ff989357a2e8b1d9b2b4e6b7118": 1
+          },
+          "expected_topic0": {
+            "PoolCreated(address,address,uint24,int24,address)": "0x783cca1c0412dd0d695e784568c96da2e9c22ff989357a2e8b1d9b2b4e6b7118"
+          },
+          "topic_hits": {
+            "PoolCreated(address,address,uint24,int24,address)": 1
+          },
+          "samples": [
+            {
+              "block": 26019242,
+              "block_timestamp": 1789913519,
+              "transaction_hash": "0x9470f6c213853b01316729afbc2b68d1eb470e8ee56fa2c2033905330e29ee7d",
+              "address": "0x1f98431c8ad98523631ae4a59f267346ea31f984",
+              "topic0": "0x783cca1c0412dd0d695e784568c96da2e9c22ff989357a2e8b1d9b2b4e6b7118",
+              "decoded": {
+                "event": "PoolCreated",
+                "signature": "PoolCreated(address,address,uint24,int24,address)",
+                "token0": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+                "token1": "0xe238bf1951a8d183b1a6fddbc1ff1d815c7213c6",
+                "fee": 10000,
+                "tickSpacing": 200,
+                "pool": "0xd62f11dafac99c1198d213fcb071da250030b338"
+              }
+            }
+          ],
+          "ok": true,
+          "target_id": "uniswap_v3_factory",
+          "kind": "target",
+          "platform": "uniswap_v3",
+          "target_kind": "dex_factory",
+          "source": "Sourcify full match\uff08UniswapV3Factory\uff09",
+          "expected_topics": {
+            "PoolCreated(address,address,uint24,int24,address)": "0x783cca1c0412dd0d695e784568c96da2e9c22ff989357a2e8b1d9b2b4e6b7118"
+          },
+          "abi_source": "sourcify:UniswapV3Factory"
+        },
+        {
+          "chain": "eth",
+          "address": "0xb35469ee64a87afd19b31615094fe3962d73e421",
+          "expected_names": [],
+          "checked_at": 1789918397.866982,
+          "code_size_bytes": 24087,
+          "sourcify": {
+            "chain_id": 1,
+            "address": "0xb35469ee64a87afd19b31615094fe3962d73e421",
+            "verified": false,
+            "name": null,
+            "compiler": null,
+            "http_status": 404,
+            "error": "http_status=404",
+            "abi_entries": 0
+          },
+          "live_window": {
+            "span_blocks": 2000,
+            "requested_span": 2000,
+            "logs": 0,
+            "attempts": [
+              {
+                "span": 2000,
+                "ok": true,
+                "logs": 0
+              }
+            ]
+          },
+          "logs_by_topic0": {},
+          "expected_topic0": {},
+          "topic_hits": {},
+          "samples": [],
+          "ok": false,
+          "verification_notes": [
+            "\u7a97\u53e3\u5185\u6ca1\u6709\u4efb\u4f55\u4e8b\u4ef6"
+          ],
+          "target_id": "doppler_deployer",
+          "kind": "target",
+          "platform": "doppler",
+          "target_kind": "launchpad",
+          "source": "whetstoneresearch/doppler Deployments.md\uff08\u5b98\u65b9\u90e8\u7f72\u8868\uff09",
+          "expected_topics": {},
+          "abi_source": "sourcify:None"
+        },
+        {
+          "chain": "eth",
+          "address": "0xbdf938149ac6a781f94faa0ed45e6a0e984c6544",
+          "expected_names": [],
+          "checked_at": 1789918403.163282,
+          "code_size_bytes": 24384,
+          "sourcify": {
+            "chain_id": 1,
+            "address": "0xbdf938149ac6a781f94faa0ed45e6a0e984c6544",
+            "verified": false,
+            "name": null,
+            "compiler": null,
+            "http_status": 404,
+            "error": "http_status=404",
+            "abi_entries": 0
+          },
+          "live_window": {
+            "span_blocks": 2000,
+            "requested_span": 2000,
+            "logs": 0,
+            "attempts": [
+              {
+                "span": 2000,
+                "ok": true,
+                "logs": 0
+              }
+            ]
+          },
+          "logs_by_topic0": {},
+          "expected_topic0": {},
+          "topic_hits": {},
+          "samples": [],
+          "ok": false,
+          "verification_notes": [
+            "\u7a97\u53e3\u5185\u6ca1\u6709\u4efb\u4f55\u4e8b\u4ef6"
+          ],
+          "target_id": "doppler_hook_initializer",
+          "kind": "target",
+          "platform": "doppler",
+          "target_kind": "launchpad",
+          "source": "whetstoneresearch/doppler Deployments.md\uff08\u5b98\u65b9\u90e8\u7f72\u8868\uff09",
+          "expected_topics": {},
+          "abi_source": "sourcify:None"
+        }
+      ],
+      "attempts": [
+        {
+          "url": "https://1rpc.io/eth",
+          "method": "eth_chainId",
+          "ok": true,
+          "seconds": 2.012
+        },
+        {
+          "url": "https://1rpc.io/eth",
+          "method": "eth_blockNumber",
+          "ok": true,
+          "seconds": 1.148
+        },
+        {
+          "url": "https://1rpc.io/eth",
+          "method": "eth_getBlockByNumber",
+          "ok": true,
+          "seconds": 2.35
+        }
+      ],
+      "discovery": {
+        "chain_id": 1,
+        "span_blocks": 5,
+        "from_block": 26019636,
+        "to_block": 26019641,
+        "total_logs": 9592,
+        "distinct_contracts": 909,
+        "candidates": [
+          {
+            "address": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+            "logs": 1374,
+            "topics": {
+              "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef": 1284,
+              "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925": 90
+            },
+            "code_size_bytes": 11075,
+            "sourcify": {
+              "chain_id": 1,
+              "address": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+              "verified": true,
+              "name": "TetherToken",
+              "compiler": "0.4.18+commit.9cf6e910",
+              "http_status": 200,
+              "error": null,
+              "abi_entries": 44
+            }
+          },
+          {
+            "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+            "logs": 1173,
+            "topics": {
+              "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef": 1024,
+              "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925": 130,
+              "0xcc16f5dbb4873280815c1ee09dbd06736cffcc184412cf7a71a0fdb75d397ca5": 7,
+              "0x98de503528ee59b575ef0c0a2576a82497bfc029a5685b209e9ec333479b10a5": 6,
+              "0xab8530f87dc9b59234c4623bf917212bb2536d647574c8e7e5da92c2ede0c9f8": 6
+            },
+            "code_size_bytes": 2186,
+            "sourcify": {
+              "chain_id": 1,
+              "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+              "verified": true,
+              "name": "FiatTokenProxy",
+              "compiler": "0.4.24+commit.e67f0147",
+              "http_status": 200,
+              "error": null,
+              "abi_entries": 9
+            }
+          },
+          {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "logs": 815,
+            "topics": {
+              "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef": 555,
+              "0xe1fffcc4923d04b559f4d29a8bfc6cda04eb5b0d3c460751c2402c5c5cc9109c": 124,
+              "0x7fcf532c15f0a6db0bd6d0e038bea71d30d808c7d98cb3bf7268a95bf5081b65": 108,
+              "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925": 28
+            },
+            "code_size_bytes": 3124,
+            "sourcify": {
+              "chain_id": 1,
+              "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+              "verified": true,
+              "name": "WETH9",
+              "compiler": "0.4.19+commit.c4cbbb05",
+              "http_status": 200,
+              "error": null,
+              "abi_entries": 16
+            }
+          },
+          {
+            "address": "0x08dfd4651f1985d44aebc5a616c757c2373c8172",
+            "logs": 315,
+            "topics": {
+              "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef": 315
+            },
+            "code_size_bytes": 1517,
+            "sourcify": {
+              "chain_id": 1,
+              "address": "0x08dfd4651f1985d44aebc5a616c757c2373c8172",
+              "verified": false,
+              "name": null,
+              "compiler": null,
+              "http_status": 404,
+              "error": "http_status=404",
+              "abi_entries": 0
+            }
+          },
+          {
+            "address": "0x000000000004444c5dc75cb358380d2e3de08a90",
+            "logs": 197,
+            "topics": {
+              "0x40e9cecb9f5f1f1c5b9c97dec2917b7ee92e57ba5563708daca94dd84ad7112f": 173,
+              "0xf208f4912782fd25c7f114ca3723a2d5dd6f3bcc3ac8db5af63baa85f711d5ec": 19,
+              "0x1b3d7edb2e9c0b0e7c525b20aaaef0f5940d2ed71663c7d39266ecafac728859": 5
+            },
+            "code_size_bytes": 24009,
+            "sourcify": {
+              "chain_id": 1,
+              "address": "0x000000000004444c5dc75cb358380d2e3de08a90",
+              "verified": true,
+              "name": "PoolManager",
+              "compiler": "0.8.26+commit.8a97fa7a",
+              "http_status": 200,
+              "error": null,
+              "abi_entries": 59
+            }
+          },
+          {
+            "address": "0x5f6e2716c12bc5ecec6f3ac623ef0e5889a78c71",
+            "logs": 182,
+            "topics": {
+              "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef": 182
+            },
+            "code_size_bytes": 1517,
+            "sourcify": {
+              "chain_id": 1,
+              "address": "0x5f6e2716c12bc5ecec6f3ac623ef0e5889a78c71",
+              "verified": false,
+              "name": null,
+              "compiler": null,
+              "http_status": 404,
+              "error": "http_status=404",
+              "abi_entries": 0
+            }
+          },
+          {
+            "address": "0xb92fe925dc43a0ecde6c8b1a2709c170ec4fff4f",
+            "logs": 162,
+            "topics": {
+              "0x93485dcd31a905e3ffd7b012abe3438fa8fa77f98ddc9f50e879d3fa7ccdc324": 105,
+              "0xafbab204e8271965231d37baed9b1abca8725b7409c70314455f68bc89142b91": 35,
+              "0xd35467972d1fda5b63c735f59d3974fa51785a41a92aa3ed1b70832836f8dba6": 22
+            },
+            "code_size_bytes": 4720,
+            "sourcify": {
+              "chain_id": 1,
+              "address": "0xb92fe925dc43a0ecde6c8b1a2709c170ec4fff4f",
+              "verified": true,
+              "name": "RelayRouterV3",
+              "compiler": "0.8.28+commit.7893614a",
+              "http_status": 200,
+              "error": null,
+              "abi_entries": 19
+            }
+          },
+          {
+            "address": "0xe8abf036ee53e8d3cd667aa3048854f113114494",
+            "logs": 162,
+            "topics": {
+              "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef": 162
+            },
+            "code_size_bytes": 23,
+            "sourcify": {
+              "chain_id": 1,
+              "address": "0xe8abf036ee53e8d3cd667aa3048854f113114494",
+              "verified": false,
+              "name": null,
+              "compiler": null,
+              "http_status": 404,
+              "error": "http_status=404",
+              "abi_entries": 0
+            }
+          },
+          {
+            "address": "0xcdd806ffd7f82bd1d8ec9d0999b5d8f7ddce5d55",
+            "logs": 130,
+            "topics": {
+              "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef": 130
+            },
+            "code_size_bytes": 1160,
+            "sourcify": {
+              "chain_id": 1,
+              "address": "0xcdd806ffd7f82bd1d8ec9d0999b5d8f7ddce5d55",
+              "verified": false,
+              "name": null,
+              "compiler": null,
+              "http_status": 404,
+              "error": "http_status=404",
+              "abi_entries": 0
+            }
+          },
+          {
+            "address": "0x6b6431fd9a4786a6e33e44ede4c1cf96f28a6940",
+            "logs": 129,
+            "topics": {
+              "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef": 129
+            },
+            "code_size_bytes": 994,
+            "sourcify": {
+              "chain_id": 1,
+              "address": "0x6b6431fd9a4786a6e33e44ede4c1cf96f28a6940",
+              "verified": false,
+              "name": null,
+              "compiler": null,
+              "http_status": 404,
+              "error": "http_status=404",
+              "abi_entries": 0
+            }
+          },
+          {
+            "address": "0x8c9b2efb7c64c394119270bfece7f54763b958ad",
+            "logs": 124,
+            "topics": {
+              "0xdd84a3fa9ef9409f550d54d6affec7e9c480c878c6ab27b78912a03e1b371c6e": 124
+            },
+            "code_size_bytes": 6733,
+            "sourcify": {
+              "chain_id": 1,
+              "address": "0x8c9b2efb7c64c394119270bfece7f54763b958ad",
+              "verified": true,
+              "name": "PriceRegistry",
+              "compiler": "0.8.19+commit.7dd6d404",
+              "http_status": 200,
+              "error": null,
+              "abi_entries": 31
+            }
+          },
+          {
+            "address": "0xbdfdf6a42fdc835f2abb2106666f3edd2d93641b",
+            "logs": 87,
+            "topics": {
+              "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef": 87
+            },
+            "code_size_bytes": 1037,
+            "sourcify": {
+              "chain_id": 1,
+              "address": "0xbdfdf6a42fdc835f2abb2106666f3edd2d93641b",
+              "verified": false,
+              "name": null,
+              "compiler": null,
+              "http_status": 404,
+              "error": "http_status=404",
+              "abi_entries": 0
+            }
+          },
+          {
+            "address": "0x1149ca974b426118fc6544ae44701b50ae42628f",
+            "logs": 85,
+            "topics": {
+              "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef": 85
+            },
+            "code_size_bytes": 994,
+            "sourcify": {
+              "chain_id": 1,
+              "address": "0x1149ca974b426118fc6544ae44701b50ae42628f",
+              "verified": false,
+              "name": null,
+              "compiler": null,
+              "http_status": 404,
+              "error": "http_status=404",
+              "abi_entries": 0
+            }
+          },
+          {
+            "address": "0x004395edb43efca9885cedad51ec9faf93bd34ac",
+            "logs": 85,
+            "topics": {
+              "0x593cc9e8b5c7ffeda8064388c1503e9d80ca1c3e39c9943b87ea17702962c18a": 52,
+              "0x089eaf6122e2e81603e99f1664c6f997c5696063a26c2eabf93b4663a22001b1": 11,
+              "0xcb3360a5c92f7310d655266c30a450dae6323bc9773aad5959198ed60a03111b": 11,
+              "0x8022192bcf69f9acab6286405c558cbcf8900605e5b2e6ebf3db5a28c57f0d56": 10,
+              "0xc2be4e0100330100d6f985214474331aa8f1a686d719540c9951cf4463640e6a": 1
+            },
+            "code_size_bytes": 22904,
+            "sourcify": {
+              "chain_id": 1,
+              "address": "0x004395edb43efca9885cedad51ec9faf93bd34ac",
+              "verified": true,
+              "name": "VotingV2",
+              "compiler": "0.8.16+commit.07a7930e",
+              "http_status": 200,
+              "error": null,
+              "abi_entries": 101
+            }
+          },
+          {
+            "address": "0x4cd00e387622c35bddb9b4c962c136462338bc31",
+            "logs": 80,
+            "topics": {
+              "0x8032066556caf3967d8fec4ad22a2d9e1e9576556b2903a0fcd5b1fd201e3477": 55,
+              "0x49fed1d0b752ce30eee63c7a81133f3363b532fec5d4d7dd1ccfd005de4555e1": 19,
+              "0x4be109453ef7e895dc7215c929fff9b76b51483d56a4d04548b4866e9aa7c5ea": 6
+            },
+            "code_size_bytes": 8628,
+            "sourcify": {
+              "chain_id": 1,
+              "address": "0x4cd00e387622c35bddb9b4c962c136462338bc31",
+              "verified": true,
+              "name": "RelayDepository",
+              "compiler": "0.8.28+commit.7893614a",
+              "http_status": 200,
+              "error": null,
+              "abi_entries": 33
+            }
+          },
+          {
+            "address": "0x101933c13a50de1a5f50eaaa08f37613527d0b2f",
+            "logs": 73,
+            "topics": {
+              "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef": 73
+            },
+            "code_size_bytes": 998,
+            "sourcify": {
+              "chain_id": 1,
+              "address": "0x101933c13a50de1a5f50eaaa08f37613527d0b2f",
+              "verified": false,
+              "name": null,
+              "compiler": null,
+              "http_status": 404,
+              "error": "http_status=404",
+              "abi_entries": 0
+            }
+          },
+          {
+            "address": "0x0000000071727de22e5e9d8baf0edac6f37da032",
+            "logs": 72,
+            "topics": {
+              "0x49628fd1471006c1482da88028e9ce4dbb080b815c9b0344d39e5a8e6ec1419f": 36,
+              "0xbb47ee3e183a558b1a2ff0874b079f3fc5478b7454eacf2bfc5af2ff5878f972": 33,
+              "0x2da466a7b24304f47e87fa2e1e5a81b9831ce54fec19055ce277ca2f39ba42c4": 2,
+              "0xd51a9c61267aa6196961883ecf5ff2da6619c37dac0fa92122513fb32c032d2d": 1
+            },
+            "code_size_bytes": 16035,
+            "sourcify": {
+              "chain_id": 1,
+              "address": "0x0000000071727de22e5e9d8baf0edac6f37da032",
+              "verified": true,
+              "name": "EntryPoint",
+              "compiler": "0.8.23+commit.f704f362",
+              "http_status": 200,
+              "error": null,
+              "abi_entries": 38
+            }
+          },
+          {
+            "address": "0x6b175474e89094c44da98b954eedeac495271d0f",
+            "logs": 62,
+            "topics": {
+              "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef": 53,
+              "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925": 9
+            },
+            "code_size_bytes": 7904,
+            "sourcify": {
+              "chain_id": 1,
+              "address": "0x6b175474e89094c44da98b954eedeac495271d0f",
+              "verified": true,
+              "name": "Dai",
+              "compiler": "0.5.12+commit.7709ece9",
+              "http_status": 200,
+              "error": null,
+              "abi_entries": 26
+            }
+          },
+          {
+            "address": "0x3ff7eaca466433e51cf231f05b1348186c93b6bf",
+            "logs": 60,
+            "topics": {
+              "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef": 60
+            },
+            "code_size_bytes": 1154,
+            "sourcify": {
+              "chain_id": 1,
+              "address": "0x3ff7eaca466433e51cf231f05b1348186c93b6bf",
+              "verified": false,
+              "name": null,
+              "compiler": null,
+              "http_status": 404,
+              "error": "http_status=404",
+              "abi_entries": 0
+            }
+          },
+          {
+            "address": "0x8f10b468b06c6fd214b65f87778827f7d113f996",
+            "logs": 59,
+            "topics": {
+              "0xa6fee24309b1d83d9ec7b9e4dbb73c6f882746efbfb26db7b7d9e9f2fb6dc95a": 40,
+              "0xc035da294269ae5afe93a15344a19d8e2fbba752ad3af2502c2e486edb9a6ff8": 13,
+              "0x215fac0809a94b500700d578967a524b596a30168b73c899d9f6456c4feec809": 6
+            },
+            "code_size_bytes": 13529,
+            "sourcify": {
+              "chain_id": 1,
+              "address": "0x8f10b468b06c6fd214b65f87778827f7d113f996",
+              "verified": false,
+              "name": null,
+              "compiler": null,
+              "http_status": 404,
+              "error": "http_status=404",
+              "abi_entries": 0
+            }
+          },
+          {
+            "address": "0x9008d19f58aabd9ed0d60971565aa8510560ab41",
+            "logs": 58,
+            "topics": {
+              "0xed99827efb37016f2275f98c4bcf71c7551c75d59e9b450f79fa32e60be672c2": 32,
+              "0xa07a543ab8a018198e99ca0184c93fe9050a79400a0a723441f84de1d972cc17": 13,
+              "0x40338ce1a7c49204f0099533b1e9a7ee0a3d261f84974ab7af36105b8c4e9db4": 13
+            },
+            "code_size_bytes": 23,
+            "sourcify": {
+              "chain_id": 1,
+              "address": "0x9008d19f58aabd9ed0d60971565aa8510560ab41",
+              "verified": true,
+              "name": "GPv2Settlement",
+              "compiler": "0.7.6+commit.7338295f",
+              "http_status": 200,
+              "error": null,
+              "abi_entries": 22
+            }
+          },
+          {
+            "address": "0x6131b5fae19ea4f9d964eac0408e4408b66337b5",
+            "logs": 57,
+            "topics": {
+              "0xd6d4f5681c246c9f42c203e287975af1601f8df8035a9251f79aab5c8f09e2f8": 19,
+              "0xddac40937f35385a34f721af292e5a83fc5b840f722bff57c2fc71adba708c48": 19,
+              "0x095e66fa4dd6a6f7b43fb8444a7bd0edb870508c7abf639bc216efb0bcff9779": 19
+            },
+            "code_size_bytes": 18652,
+            "sourcify": {
+              "chain_id": 1,
+              "address": "0x6131b5fae19ea4f9d964eac0408e4408b66337b5",
+              "verified": true,
+              "name": "MetaAggregationRouterV2",
+              "compiler": "0.8.9+commit.e5eed63a",
+              "http_status": 200,
+              "error": null,
+              "abi_entries": 18
+            }
+          },
+          {
+            "address": "0xe0554a476a092703abdb3ef35c80e0d76d32939f",
+            "logs": 56,
+            "topics": {
+              "0xc42079f94a6350d7e6235f29174924f928cc2ac818eb64fed8004e115fbcca67": 56
+            },
+            "code_size_bytes": 22142,
+            "sourcify": {
+              "chain_id": 1,
+              "address": "0xe0554a476a092703abdb3ef35c80e0d76d32939f",
+              "verified": true,
+              "name": "UniswapV3Pool",
+              "compiler": "0.7.6+commit.7338295f",
+              "http_status": 200,
+              "error": null,
+              "abi_entries": 36
+            }
+          },
+          {
+            "address": "0x56208f118a87a41e6f78edf6dc9d70f385e150f7",
+            "logs": 56,
+            "topics": {
+              "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef": 56
+            },
+            "code_size_bytes": 2393,
+            "sourcify": {
+              "chain_id": 1,
+              "address": "0x56208f118a87a41e6f78edf6dc9d70f385e150f7",
+              "verified": false,
+              "name": null,
+              "compiler": null,
+              "http_status": 404,
+              "error": "http_status=404",
+              "abi_entries": 0
+            }
+          },
+          {
+            "address": "0x0127ecc1dfc6cfe0805c5ca43c1883a0aa74f045",
+            "logs": 52,
+            "topics": {
+              "0x6c919732eedf413ac17993ba2d920a44e4e7978f8c48fee673d3055108445bdb": 52
+            },
+            "code_size_bytes": 15068,
+            "sourcify": {
+              "chain_id": 1,
+              "address": "0x0127ecc1dfc6cfe0805c5ca43c1883a0aa74f045",
+              "verified": false,
+              "name": null,
+              "compiler": null,
+              "http_status": 404,
+              "error": "http_status=404",
+              "abi_entries": 0
+            }
+          }
+        ]
+      }
+    },
+    "base": {
+      "health": {
+        "chain": "base",
+        "expected_chain_id": 8453,
+        "ok": true,
+        "reported_chain_id": 8453,
+        "chain_id_matches": true,
+        "latest_block": 51564566,
+        "latest_block_timestamp": 1789918479,
+        "block_age_seconds": 1.7,
+        "endpoint": "https://mainnet.base.org",
+        "log_span": {
+          "mode": "unfiltered",
+          "accepted_span": 20,
+          "attempts": [
+            {
+              "span": 5,
+              "ok": true,
+              "logs": 3847
+            },
+            {
+              "span": 20,
+              "ok": true,
+              "logs": 14503
+            }
+          ]
+        },
+        "error": null
+      },
+      "targets": [
+        {
+          "chain": "base",
+          "address": "0x33128a8fc17869897dce68ed026d694621f6fdfd",
+          "expected_names": [
+            "UniswapV3Factory"
+          ],
+          "checked_at": 1789918484.675713,
+          "code_size_bytes": 24535,
+          "sourcify": {
+            "chain_id": 8453,
+            "address": "0x33128a8fc17869897dce68ed026d694621f6fdfd",
+            "verified": true,
+            "name": "UniswapV3Factory",
+            "compiler": "0.7.6+commit.7338295f",
+            "http_status": 200,
+            "error": null,
+            "abi_entries": 11
+          },
+          "name_matches": true,
+          "live_window": {
+            "span_blocks": 2000,
+            "requested_span": 2000,
+            "logs": 0,
+            "attempts": [
+              {
+                "span": 2000,
+                "ok": true,
+                "logs": 0
+              }
+            ]
+          },
+          "logs_by_topic0": {},
+          "expected_topic0": {
+            "PoolCreated(address,address,uint24,int24,address)": "0x783cca1c0412dd0d695e784568c96da2e9c22ff989357a2e8b1d9b2b4e6b7118"
+          },
+          "topic_hits": {
+            "PoolCreated(address,address,uint24,int24,address)": 0
+          },
+          "samples": [],
+          "ok": false,
+          "verification_notes": [
+            "\u7a97\u53e3\u5185\u6ca1\u6709\u4efb\u4f55\u4e8b\u4ef6\uff1b\u5730\u5740\u53ef\u80fd\u662f\u4f11\u7720\u5408\u7ea6\u3001\u9519\u8bef\u5730\u5740\uff0c\u6216\u7a97\u53e3\u8fc7\u5c0f"
+          ],
+          "target_id": "uniswap_v3_factory",
+          "kind": "target",
+          "platform": "uniswap_v3",
+          "target_kind": "dex_factory",
+          "source": "Sourcify full match\uff08UniswapV3Factory\uff09",
+          "expected_topics": {
+            "PoolCreated(address,address,uint24,int24,address)": "0x783cca1c0412dd0d695e784568c96da2e9c22ff989357a2e8b1d9b2b4e6b7118"
+          },
+          "abi_source": "sourcify:UniswapV3Factory"
+        },
+        {
+          "chain": "base",
+          "address": "0x420dd381b31aef6683db6b902084cb0ffece40da",
+          "expected_names": [
+            "PoolFactory"
+          ],
+          "checked_at": 1789918486.9624681,
+          "code_size_bytes": 3516,
+          "sourcify": {
+            "chain_id": 8453,
+            "address": "0x420dd381b31aef6683db6b902084cb0ffece40da",
+            "verified": true,
+            "name": "PoolFactory",
+            "compiler": "0.8.19+commit.7dd6d404",
+            "http_status": 200,
+            "error": null,
+            "abi_entries": 41
+          },
+          "name_matches": true,
+          "live_window": {
+            "span_blocks": 2000,
+            "requested_span": 2000,
+            "logs": 0,
+            "attempts": [
+              {
+                "span": 2000,
+                "ok": true,
+                "logs": 0
+              }
+            ]
+          },
+          "logs_by_topic0": {},
+          "expected_topic0": {
+            "PoolCreated(address,address,bool,address,uint256)": "0x2128d88d14c80cb081c1252a5acff7a264671bf199ce226b53788fb26065005e"
+          },
+          "topic_hits": {
+            "PoolCreated(address,address,bool,address,uint256)": 0
+          },
+          "samples": [],
+          "ok": false,
+          "verification_notes": [
+            "\u7a97\u53e3\u5185\u6ca1\u6709\u4efb\u4f55\u4e8b\u4ef6\uff1b\u5730\u5740\u53ef\u80fd\u662f\u4f11\u7720\u5408\u7ea6\u3001\u9519\u8bef\u5730\u5740\uff0c\u6216\u7a97\u53e3\u8fc7\u5c0f"
+          ],
+          "target_id": "aerodrome_pool_factory",
+          "kind": "target",
+          "platform": "aerodrome",
+          "target_kind": "dex_factory",
+          "source": "Sourcify full match\uff08PoolFactory\uff09",
+          "expected_topics": {
+            "PoolCreated(address,address,bool,address,uint256)": "0x2128d88d14c80cb081c1252a5acff7a264671bf199ce226b53788fb26065005e"
+          },
+          "abi_source": "sourcify:PoolFactory",
+          "reads": [
+            {
+              "signature": "allPoolsLength()",
+              "args": [],
+              "value": 29308
+            }
+          ]
+        },
+        {
+          "chain": "base",
+          "address": "0xe85a59c628f7d27878aceb4bf3b35733630083a9",
+          "expected_names": [],
+          "checked_at": 1789918488.5435362,
+          "code_size_bytes": 12375,
+          "sourcify": {
+            "chain_id": 8453,
+            "address": "0xe85a59c628f7d27878aceb4bf3b35733630083a9",
+            "verified": true,
+            "name": "Clanker",
+            "compiler": "0.8.28+commit.7893614a",
+            "http_status": 200,
+            "error": null,
+            "abi_entries": 56
+          },
+          "decoded_event_counts": {
+            "ExtensionTriggered": 28,
+            "TokenCreated": 17,
+            "ClaimTeamFees": 2
+          },
+          "live_window": {
+            "span_blocks": 2000,
+            "requested_span": 2000,
+            "logs": 47,
+            "attempts": [
+              {
+                "span": 2000,
+                "ok": true,
+                "logs": 47
+              }
+            ]
+          },
+          "logs_by_topic0": {
+            "0xe80ed94c33183ba307727bf230f18d40178975f51b301a8415b90f4c9f549b7f": 28,
+            "0x9299d1d1a88d8e1abdc591ae7a167a6bc63a8f17d695804e9091ee33aa89fb67": 17,
+            "0xe5b9f4d1f6cf7c3238f0c0b48597a9ccd3ff3d2309f3ccd30bd46aad5e06a638": 2
+          },
+          "expected_topic0": {},
+          "topic_hits": {},
+          "samples": [
+            {
+              "block": 51562636,
+              "block_timestamp": 1789914619,
+              "transaction_hash": "0x6b02155bc1b2bbff5f21a4ed854720c6b1648c2922005f29185f53936c3a7d62",
+              "address": "0xe85a59c628f7d27878aceb4bf3b35733630083a9",
+              "topic0": "0xe80ed94c33183ba307727bf230f18d40178975f51b301a8415b90f4c9f549b7f",
+              "decoded": {
+                "event": "ExtensionTriggered",
+                "signature": "ExtensionTriggered(address,uint256,uint256)",
+                "extension": "0xf652b3610d75d81871bf96db50825d9af28391e0",
+                "extensionSupply": 83000000000000000000000000000,
+                "msgValue": 0
+              }
+            },
+            {
+              "block": 51562636,
+              "block_timestamp": 1789914619,
+              "transaction_hash": "0x6b02155bc1b2bbff5f21a4ed854720c6b1648c2922005f29185f53936c3a7d62",
+              "address": "0xe85a59c628f7d27878aceb4bf3b35733630083a9",
+              "topic0": "0xe80ed94c33183ba307727bf230f18d40178975f51b301a8415b90f4c9f549b7f",
+              "decoded": {
+                "event": "ExtensionTriggered",
+                "signature": "ExtensionTriggered(address,uint256,uint256)",
+                "extension": "0x1331f0788f9c08c8f38d52c7a1152250a9de00be",
+                "extensionSupply": 0,
+                "msgValue": 3000000000000
+              }
+            },
+            {
+              "block": 51562636,
+              "block_timestamp": 1789914619,
+              "transaction_hash": "0x6b02155bc1b2bbff5f21a4ed854720c6b1648c2922005f29185f53936c3a7d62",
+              "address": "0xe85a59c628f7d27878aceb4bf3b35733630083a9",
+              "topic0": "0x9299d1d1a88d8e1abdc591ae7a167a6bc63a8f17d695804e9091ee33aa89fb67",
+              "decoded": {
+                "event": "TokenCreated",
+                "signature": "TokenCreated(address,address,address,string,string,string,string,string,int24,address,bytes32,address,address,address,uint256,address[])",
+                "msgSender": "0x1afab1f6b0d565544effb26fca7d6b5e9cb46c81",
+                "tokenAddress": "0xbad2589c4cb4e6e1fbcb4f3a0370a668b9d7daba",
+                "tokenAdmin": "0x1afab1f6b0d565544effb26fca7d6b5e9cb46c81",
+                "tokenImage": "ipfs://QmZ5AFTscYVbZEJLQck2AhT7Ge6Afpj1erdDj9LUsxgVRA",
+                "tokenName": "Sterling",
+                "tokenSymbol": "STRLN",
+                "tokenMetadata": "{\"description\":\"Introducing Sterling (STRLN) \u2014 an original Base-native token conceived around the \\\"fomoegg\\\" narrative. With on-chain liquidity, a standard trading fee structure, and no hidden allocations beyond its published tokenomics, STRLN is designed for transparent, level-playing-field participation. It is an independent project, unaffiliated with any similarly named token.\"}",
+                "tokenContext": "{\"interface\":\"SDK\"}",
+                "startingTick": -230400,
+                "poolHook": "0xb429d62f8f3bffb98cdb9569533ea23bf0ba28cc",
+                "poolId": "b'\\xe2\\x1d\\xea\\x0eM\\x82\\xf1OY;\\xe0DN\\x12\\xfbV\\xe7#[\\xafaw:D\\x03Y3\\x85h\\x00\\xe7\\xd6'",
+                "pairedToken": "0x4200000000000000000000000000000000000006",
+                "locker": "0xffa37784d619f228d8b379d287a4d7282e500762",
+                "mevModule": "0xebb25bb797d82cb78e1bc70406b13233c0854413",
+                "extensionsSupply": 83000000000000000000000000000,
+                "extensions": [
+                  "0xf652b3610d75d81871bf96db50825d9af28391e0",
+                  "0x1331f0788f9c08c8f38d52c7a1152250a9de00be"
+                ]
+              }
+            }
+          ],
+          "ok": true,
+          "target_id": "clanker_v4",
+          "kind": "target",
+          "platform": "clanker",
+          "target_kind": "launchpad",
+          "source": "clanker-devco/v4-contracts README\uff08Base Mainnet v4.0 Clanker\uff09+ Sourcify ABI \u81ea\u52a8\u89e3\u7801",
+          "expected_topics": {},
+          "abi_source": "sourcify:Clanker"
+        },
+        {
+          "chain": "base",
+          "address": "0x516af52d0c629b5e378da4dc64ecb0744ce10109",
+          "expected_names": [],
+          "checked_at": 1789918490.313684,
+          "code_size_bytes": 9760,
+          "sourcify": {
+            "chain_id": 8453,
+            "address": "0x516af52d0c629b5e378da4dc64ecb0744ce10109",
+            "verified": true,
+            "name": "Flaunch",
+            "compiler": "0.8.28+commit.7893614a",
+            "http_status": 200,
+            "error": null,
+            "abi_entries": 82
+          },
+          "decoded_event_counts": {
+            "Transfer": 16,
+            "Approval": 8
+          },
+          "live_window": {
+            "span_blocks": 2000,
+            "requested_span": 2000,
+            "logs": 24,
+            "attempts": [
+              {
+                "span": 2000,
+                "ok": true,
+                "logs": 24
+              }
+            ]
+          },
+          "logs_by_topic0": {
+            "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef": 16,
+            "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925": 8
+          },
+          "expected_topic0": {},
+          "topic_hits": {},
+          "samples": [
+            {
+              "block": 51562678,
+              "block_timestamp": 1789914703,
+              "transaction_hash": "0x0f7b76362c180d7c7b51bec1abe4a21e552ba84e51885a9e5d93d84d935baa0b",
+              "address": "0x516af52d0c629b5e378da4dc64ecb0744ce10109",
+              "topic0": "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+              "decoded": {
+                "event": "Transfer",
+                "signature": "Transfer(address,address,uint256)",
+                "from": "0x0000000000000000000000000000000000000000",
+                "to": "0x39112541720078c70164ea4deb61f0a4811910f9",
+                "id": 118031
+              }
+            },
+            {
+              "block": 51562678,
+              "block_timestamp": 1789914703,
+              "transaction_hash": "0x0f7b76362c180d7c7b51bec1abe4a21e552ba84e51885a9e5d93d84d935baa0b",
+              "address": "0x516af52d0c629b5e378da4dc64ecb0744ce10109",
+              "topic0": "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925",
+              "decoded": {
+                "event": "Approval",
+                "signature": "Approval(address,address,uint256)",
+                "owner": "0x39112541720078c70164ea4deb61f0a4811910f9",
+                "account": "0xe990abbdf02cd603114ab77c8ef3efca13965d38",
+                "id": 118031
+              }
+            },
+            {
+              "block": 51562678,
+              "block_timestamp": 1789914703,
+              "transaction_hash": "0x0f7b76362c180d7c7b51bec1abe4a21e552ba84e51885a9e5d93d84d935baa0b",
+              "address": "0x516af52d0c629b5e378da4dc64ecb0744ce10109",
+              "topic0": "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+              "decoded": {
+                "event": "Transfer",
+                "signature": "Transfer(address,address,uint256)",
+                "from": "0x39112541720078c70164ea4deb61f0a4811910f9",
+                "to": "0xe990abbdf02cd603114ab77c8ef3efca13965d38",
+                "id": 118031
+              }
+            }
+          ],
+          "ok": true,
+          "target_id": "flaunch",
+          "kind": "target",
+          "platform": "flaunch",
+          "target_kind": "launchpad",
+          "source": "flayerlabs/flaunchgg-contracts README\uff08Base Mainnet Flaunch\uff09",
+          "expected_topics": {},
+          "abi_source": "sourcify:Flaunch"
+        },
+        {
+          "chain": "base",
+          "address": "0xb35469ee64a87afd19b31615094fe3962d73e421",
+          "expected_names": [],
+          "checked_at": 1789918491.944617,
+          "code_size_bytes": 24087,
+          "sourcify": {
+            "chain_id": 8453,
+            "address": "0xb35469ee64a87afd19b31615094fe3962d73e421",
+            "verified": true,
+            "name": "DopplerDeployer",
+            "compiler": "0.8.26+commit.8a97fa7a",
+            "http_status": 200,
+            "error": null,
+            "abi_entries": 3
+          },
+          "live_window": {
+            "span_blocks": 2000,
+            "requested_span": 2000,
+            "logs": 0,
+            "attempts": [
+              {
+                "span": 2000,
+                "ok": true,
+                "logs": 0
+              }
+            ]
+          },
+          "logs_by_topic0": {},
+          "expected_topic0": {},
+          "topic_hits": {},
+          "samples": [],
+          "ok": false,
+          "verification_notes": [
+            "\u7a97\u53e3\u5185\u6ca1\u6709\u4efb\u4f55\u4e8b\u4ef6"
+          ],
+          "target_id": "doppler_deployer",
+          "kind": "target",
+          "platform": "doppler",
+          "target_kind": "launchpad",
+          "source": "whetstoneresearch/doppler Deployments.md\uff08\u5b98\u65b9\u90e8\u7f72\u8868\uff09",
+          "expected_topics": {},
+          "abi_source": "sourcify:DopplerDeployer"
+        },
+        {
+          "chain": "base",
+          "address": "0xbdf938149ac6a781f94faa0ed45e6a0e984c6544",
+          "expected_names": [],
+          "checked_at": 1789918493.489995,
+          "code_size_bytes": 24384,
+          "sourcify": {
+            "chain_id": 8453,
+            "address": "0xbdf938149ac6a781f94faa0ed45e6a0e984c6544",
+            "verified": true,
+            "name": "DopplerHookInitializer",
+            "compiler": "0.8.26+commit.8a97fa7a",
+            "http_status": 200,
+            "error": null,
+            "abi_entries": 72
+          },
+          "decoded_event_counts": {
+            "Swap": 1022,
+            "ModifyLiquidity": 299,
+            "Create": 10,
+            "Lock": 10,
+            "Release": 7,
+            "Collect": 7
+          },
+          "live_window": {
+            "span_blocks": 2000,
+            "requested_span": 2000,
+            "logs": 1355,
+            "attempts": [
+              {
+                "span": 2000,
+                "ok": true,
+                "logs": 1355
+              }
+            ]
+          },
+          "logs_by_topic0": {
+            "0x1d9f7b5e406d8c887155e1a78e070d2d41c5d0444dab8b21612f846835c27183": 1022,
+            "0xdb675a606e5aa8f039e93c54673258dc875053bdaa5dbb96de1670bfdece53b3": 299,
+            "0x951cb665214ddfa483febb22b592b0c67f38eac40f7be33f6fcbbe63289276d1": 7,
+            "0xad34f511970a4cac65bf0c3c9cc235ce712b801c0c90c20599ca002c233dcd21": 7,
+            "0xb224da6575b2c2ffd42454faedb236f7dbe5f92a0c96bb99c0273dbe98464c7e": 10,
+            "0x5be4f748347693e0500df872d81f7d96bce1b98e6f5adff0cfddfe3e9e415f20": 10
+          },
+          "expected_topic0": {},
+          "topic_hits": {},
+          "samples": [
+            {
+              "block": 51562566,
+              "block_timestamp": 1789914479,
+              "transaction_hash": "0x749213cf3f91aad0b7cab1cf0554aed95edcb17b27105f060139b4a35eca14b2",
+              "address": "0xbdf938149ac6a781f94faa0ed45e6a0e984c6544",
+              "topic0": "0x1d9f7b5e406d8c887155e1a78e070d2d41c5d0444dab8b21612f846835c27183",
+              "decoded": {
+                "event": "Swap",
+                "signature": "Swap(address,(address,address,uint24,int24,address),bytes32,(bool,int256,uint160),int128,int128,bytes)",
+                "sender": "0x9982538f41f2ae29ddb9d3d9307010052984fdbb",
+                "poolKey": "0x38c3b764e187816cea866f72f116d2623104bcf4eaff2fcf95334377ea4bc481",
+                "poolId": "0x38c3b764e187816cea866f72f116d2623104bcf4eaff2fcf95334377ea4bc481",
+                "params": [
+                  true,
+                  -27832633828407,
+                  4295128740
+                ],
+                "amount0": -27832633828407,
+                "amount1": 157972968286271998939119,
+                "hookData": "b''"
+              }
+            },
+            {
+              "block": 51562566,
+              "block_timestamp": 1789914479,
+              "transaction_hash": "0x749213cf3f91aad0b7cab1cf0554aed95edcb17b27105f060139b4a35eca14b2",
+              "address": "0xbdf938149ac6a781f94faa0ed45e6a0e984c6544",
+              "topic0": "0xdb675a606e5aa8f039e93c54673258dc875053bdaa5dbb96de1670bfdece53b3",
+              "decoded": {
+                "event": "ModifyLiquidity",
+                "signature": "ModifyLiquidity((address,address,uint24,int24,address),(int24,int24,int256,bytes32))",
+                "key": [
+                  "0x4200000000000000000000000000000000000006",
+                  "0xc66b29249edffe9c436fdb0ca4e8bfbbe9affba3",
+                  8388608,
+                  200,
+                  "0xbdf938149ac6a781f94faa0ed45e6a0e984c6544"
+                ],
+                "params": [
+                  -887200,
+                  887200,
+                  2089506838818264862,
+                  "b'\\xb1t\\xb4\\xf1k{ \\x87`\\xef\\xb5]!C\\x9c\\xddYnN<&;\\xf9\\xb5\\x80\\xcf\\x0f\\x15Lz\\x12,'"
+                ]
+              }
+            },
+            {
+              "block": 51562566,
+              "block_timestamp": 1789914479,
+              "transaction_hash": "0x749213cf3f91aad0b7cab1cf0554aed95edcb17b27105f060139b4a35eca14b2",
+              "address": "0xbdf938149ac6a781f94faa0ed45e6a0e984c6544",
+              "topic0": "0x1d9f7b5e406d8c887155e1a78e070d2d41c5d0444dab8b21612f846835c27183",
+              "decoded": {
+                "event": "Swap",
+                "signature": "Swap(address,(address,address,uint24,int24,address),bytes32,(bool,int256,uint160),int128,int128,bytes)",
+                "sender": "0x5cdc0f0fa28e0bb05893a4558c988e2bdce438e1",
+                "poolKey": "0x38c3b764e187816cea866f72f116d2623104bcf4eaff2fcf95334377ea4bc481",
+                "poolId": "0x38c3b764e187816cea866f72f116d2623104bcf4eaff2fcf95334377ea4bc481",
+                "params": [
+                  false,
+                  -111808645520167902316009538,
+                  1461446703485210103287273052203988822378723970341
+                ],
+                "amount0": 19463957677252084,
+                "amount1": -111808645520167902316009538,
+                "hookData": "b''"
+              }
+            }
+          ],
+          "ok": true,
+          "target_id": "doppler_hook_initializer",
+          "kind": "target",
+          "platform": "doppler",
+          "target_kind": "launchpad",
+          "source": "whetstoneresearch/doppler Deployments.md\uff08\u5b98\u65b9\u90e8\u7f72\u8868\uff09",
+          "expected_topics": {},
+          "abi_source": "sourcify:DopplerHookInitializer"
+        },
+        {
+          "chain": "base",
+          "address": "0x53b4c21a6cb61d64f636abbfa6e8e90e6558e8ad",
+          "expected_names": [],
+          "checked_at": 1789918496.216683,
+          "code_size_bytes": 2698,
+          "sourcify": {
+            "chain_id": 8453,
+            "address": "0x53b4c21a6cb61d64f636abbfa6e8e90e6558e8ad",
+            "verified": true,
+            "name": "UniswapV4Initializer",
+            "compiler": "0.8.26+commit.8a97fa7a",
+            "http_status": 200,
+            "error": null,
+            "abi_entries": 9
+          },
+          "live_window": {
+            "span_blocks": 2000,
+            "requested_span": 2000,
+            "logs": 0,
+            "attempts": [
+              {
+                "span": 2000,
+                "ok": true,
+                "logs": 0
+              }
+            ]
+          },
+          "logs_by_topic0": {},
+          "expected_topic0": {},
+          "topic_hits": {},
+          "samples": [],
+          "ok": false,
+          "verification_notes": [
+            "\u7a97\u53e3\u5185\u6ca1\u6709\u4efb\u4f55\u4e8b\u4ef6"
+          ],
+          "target_id": "doppler_uniswap_v4_initializer",
+          "kind": "target",
+          "platform": "doppler",
+          "target_kind": "launchpad",
+          "source": "whetstoneresearch/doppler Deployments.md\uff08\u5b98\u65b9\u90e8\u7f72\u8868\uff09",
+          "expected_topics": {},
+          "abi_source": "sourcify:UniswapV4Initializer"
+        }
+      ],
+      "attempts": [
+        {
+          "url": "https://mainnet.base.org",
+          "method": "eth_chainId",
+          "ok": true,
+          "seconds": 1.568
+        },
+        {
+          "url": "https://mainnet.base.org",
+          "method": "eth_blockNumber",
+          "ok": true,
+          "seconds": 0.244
+        },
+        {
+          "url": "https://mainnet.base.org",
+          "method": "eth_getBlockByNumber",
+          "ok": true,
+          "seconds": 0.279
+        }
+      ],
+      "discovery": {
+        "chain_id": 8453,
+        "span_blocks": 10,
+        "from_block": 51564556,
+        "to_block": 51564566,
+        "total_logs": 13928,
+        "distinct_contracts": 881,
+        "candidates": [
+          {
+            "address": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
+            "logs": 1650,
+            "topics": {
+              "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef": 1398,
+              "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925": 190,
+              "0x98de503528ee59b575ef0c0a2576a82497bfc029a5685b209e9ec333479b10a5": 61,
+              "0xcc16f5dbb4873280815c1ee09dbd06736cffcc184412cf7a71a0fdb75d397ca5": 1
+            },
+            "code_size_bytes": 1852,
+            "sourcify": {
+              "chain_id": 8453,
+              "address": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
+              "verified": true,
+              "name": "FiatTokenProxy",
+              "compiler": "0.6.12+commit.27d51765",
+              "http_status": 200,
+              "error": null,
+              "abi_entries": 9
+            }
+          },
+          {
+            "address": "0x827922686190790b37229fd06084350e74485b72",
+            "logs": 1463,
+            "topics": {
+              "0xf8e1a15aba9398e019f0b49df1a4fde98ee17ae345cb5f6b5e2c27f5033e8ce7": 488,
+              "0x40d0efd1a53d60ecbf40971b9daf7dc90178c3aadc7aab1765632738fa8b8f01": 297,
+              "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925": 260,
+              "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef": 216,
+              "0x3067048beee31b25b2f1681f88dac838c8bba36af25bfb2b7cf7473a5847e35f": 109
+            },
+            "code_size_bytes": 24542,
+            "sourcify": {
+              "chain_id": 8453,
+              "address": "0x827922686190790b37229fd06084350e74485b72",
+              "verified": true,
+              "name": "NonfungiblePositionManager",
+              "compiler": "0.7.6+commit.7338295f",
+              "http_status": 200,
+              "error": null,
+              "abi_entries": 53
+            }
+          },
+          {
+            "address": "0xe1f8cd9ac4e4a65f54f38a5cdafca44f6dd68b53",
+            "logs": 999,
+            "topics": {
+              "0xf8e1a15aba9398e019f0b49df1a4fde98ee17ae345cb5f6b5e2c27f5033e8ce7": 311,
+              "0x40d0efd1a53d60ecbf40971b9daf7dc90178c3aadc7aab1765632738fa8b8f01": 199,
+              "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef": 177,
+              "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925": 175,
+              "0x3067048beee31b25b2f1681f88dac838c8bba36af25bfb2b7cf7473a5847e35f": 73
+            },
+            "code_size_bytes": 24542,
+            "sourcify": {
+              "chain_id": 8453,
+              "address": "0xe1f8cd9ac4e4a65f54f38a5cdafca44f6dd68b53",
+              "verified": true,
+              "name": "NonfungiblePositionManager",
+              "compiler": "0.7.6+commit.7338295f",
+              "http_status": 200,
+              "error": null,
+              "abi_entries": 53
+            }
+          },
+          {
+            "address": "0x4200000000000000000000000000000000000006",
+            "logs": 948,
+            "topics": {
+              "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef": 717,
+              "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925": 110,
+              "0xe1fffcc4923d04b559f4d29a8bfc6cda04eb5b0d3c460751c2402c5c5cc9109c": 61,
+              "0x7fcf532c15f0a6db0bd6d0e038bea71d30d808c7d98cb3bf7268a95bf5081b65": 60
+            },
+            "code_size_bytes": 2041,
+            "sourcify": {
+              "chain_id": 8453,
+              "address": "0x4200000000000000000000000000000000000006",
+              "verified": true,
+              "name": "WETH9",
+              "compiler": "0.5.17+commit.d19bba13",
+              "http_status": 200,
+              "error": null,
+              "abi_entries": 16
+            }
+          },
+          {
+            "address": "0xca60d801b9b2330edadcb28793578705ecd77262",
+            "logs": 918,
+            "topics": {
+              "0x35bbc68a50ea7884d7e8a247b2332bf401a882f544bde6f3245f51d37edb2603": 662,
+              "0x4f4a72029de9e7b6f81a54572533879295ba9631fe58258287a9d38accea5f9c": 234,
+              "0x32dc6d08b5192d45da3fd1dd1519757d77e1ce30a5f759f83257e854ad1920c1": 18,
+              "0x5c8eaa7b1f49a8babe9274cd0ae732a87eab24fcb40c55452984a2f155f5a767": 4
+            },
+            "code_size_bytes": 170,
+            "sourcify": {
+              "chain_id": 8453,
+              "address": "0xca60d801b9b2330edadcb28793578705ecd77262",
+              "verified": true,
+              "name": "ERC1967Proxy",
+              "compiler": "0.8.29+commit.ab55807c",
+              "http_status": 200,
+              "error": null,
+              "abi_entries": 7
+            }
+          },
+          {
+            "address": "0x498581ff718922c3f8e6a244956af099b2652b2b",
+            "logs": 554,
+            "topics": {
+              "0xf208f4912782fd25c7f114ca3723a2d5dd6f3bcc3ac8db5af63baa85f711d5ec": 315,
+              "0x40e9cecb9f5f1f1c5b9c97dec2917b7ee92e57ba5563708daca94dd84ad7112f": 238,
+              "0x1b3d7edb2e9c0b0e7c525b20aaaef0f5940d2ed71663c7d39266ecafac728859": 1
+            },
+            "code_size_bytes": 24009,
+            "sourcify": {
+              "chain_id": 8453,
+              "address": "0x498581ff718922c3f8e6a244956af099b2652b2b",
+              "verified": true,
+              "name": "PoolManager",
+              "compiler": "0.8.26+commit.8a97fa7a",
+              "http_status": 200,
+              "error": null,
+              "abi_entries": 59
+            }
+          },
+          {
+            "address": "0xb2cc224c1c9fee385f8ad6a55b4d94e92359dc59",
+            "logs": 416,
+            "topics": {
+              "0x0c396cd989a39f4459b5fa1aed6a9a8dcdbc45908acfd67e028cd568da98982c": 176,
+              "0x70935338e69775456a85ddef226c395fb668b63fa0115f5f20610b388e6ca9c0": 176,
+              "0x7a53080ba414158be7ec69b987b5fb7d07dee101fe85488f0853ae16239d0bde": 60,
+              "0xc42079f94a6350d7e6235f29174924f928cc2ac818eb64fed8004e115fbcca67": 4
+            },
+            "code_size_bytes": 45,
+            "sourcify": {
+              "chain_id": 8453,
+              "address": "0xb2cc224c1c9fee385f8ad6a55b4d94e92359dc59",
+              "verified": false,
+              "name": null,
+              "compiler": null,
+              "http_status": 404,
+              "error": "http_status=404",
+              "abi_entries": 0
+            }
+          },
+          {
+            "address": "0x940181a94a35a4569e4529a3cdfb74e38fd98631",
+            "logs": 219,
+            "topics": {
+              "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef": 194,
+              "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925": 25
+            },
+            "code_size_bytes": 4736,
+            "sourcify": {
+              "chain_id": 8453,
+              "address": "0x940181a94a35a4569e4529a3cdfb74e38fd98631",
+              "verified": true,
+              "name": "Aero",
+              "compiler": "0.8.19+commit.7dd6d404",
+              "http_status": 200,
+              "error": null,
+              "abi_entries": 25
+            }
+          },
+          {
+            "address": "0x6c9458b7e1c1742c68d2662ea6a41ac5de43d28c",
+            "logs": 200,
+            "topics": {
+              "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef": 200
+            },
+            "code_size_bytes": 1680,
+            "sourcify": {
+              "chain_id": 8453,
+              "address": "0x6c9458b7e1c1742c68d2662ea6a41ac5de43d28c",
+              "verified": false,
+              "name": null,
+              "compiler": null,
+              "http_status": 404,
+              "error": "http_status=404",
+              "abi_entries": 0
+            }
+          },
+          {
+            "address": "0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf",
+            "logs": 176,
+            "topics": {
+              "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef": 167,
+              "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925": 9
+            },
+            "code_size_bytes": 1550,
+            "sourcify": {
+              "chain_id": 8453,
+              "address": "0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf",
+              "verified": true,
+              "name": "FiatTokenProxy",
+              "compiler": "0.6.12+commit.27d51765",
+              "http_status": 200,
+              "error": null,
+              "abi_entries": 9
+            }
+          },
+          {
+            "address": "0x590a91fd0c417a5011e10c920b37805fa871b9a4",
+            "logs": 176,
+            "topics": {
+              "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef": 176
+            },
+            "code_size_bytes": 1332,
+            "sourcify": {
+              "chain_id": 8453,
+              "address": "0x590a91fd0c417a5011e10c920b37805fa871b9a4",
+              "verified": false,
+              "name": null,
+              "compiler": null,
+              "http_status": 404,
+              "error": "http_status=404",
+              "abi_entries": 0
+            }
+          },
+          {
+            "address": "0xf33a96b5932d9e9b9a0eda447abd8c9d48d2e0c8",
+            "logs": 175,
+            "topics": {
+              "0x1c8ab8c7f45390d58f58f1d655213a82cca5d12179761a87c16f098813b8f211": 60,
+              "0x8903a5b5d08a841e7f68438387f1da20c84dea756379ed37e633ff3854b99b84": 58,
+              "0x1f89f96333d3133000ee447473151fa9606543368f02271c9d95ae14f13bcc67": 57
+            },
+            "code_size_bytes": 45,
+            "sourcify": {
+              "chain_id": 8453,
+              "address": "0xf33a96b5932d9e9b9a0eda447abd8c9d48d2e0c8",
+              "verified": false,
+              "name": null,
+              "compiler": null,
+              "http_status": 404,
+              "error": "http_status=404",
+              "abi_entries": 0
+            }
+          },
+          {
+            "address": "0x0000000071727de22e5e9d8baf0edac6f37da032",
+            "logs": 153,
+            "topics": {
+              "0x49628fd1471006c1482da88028e9ce4dbb080b815c9b0344d39e5a8e6ec1419f": 78,
+              "0xbb47ee3e183a558b1a2ff0874b079f3fc5478b7454eacf2bfc5af2ff5878f972": 69,
+              "0xd51a9c61267aa6196961883ecf5ff2da6619c37dac0fa92122513fb32c032d2d": 6
+            },
+            "code_size_bytes": 16035,
+            "sourcify": {
+              "chain_id": 8453,
+              "address": "0x0000000071727de22e5e9d8baf0edac6f37da032",
+              "verified": true,
+              "name": "EntryPoint",
+              "compiler": "0.8.23+commit.f704f362",
+              "http_status": 200,
+              "error": null,
+              "abi_entries": 38
+            }
+          },
+          {
+            "address": "0xe844701934d9c6085b292e428f41b911cc0b3872",
+            "logs": 138,
+            "topics": {
+              "0x29e088dffd7bf6815d088137a59f364d6747163baa7ff4bc47f316a1ad1b9586": 138
+            },
+            "code_size_bytes": 8662,
+            "sourcify": {
+              "chain_id": 8453,
+              "address": "0xe844701934d9c6085b292e428f41b911cc0b3872",
+              "verified": false,
+              "name": null,
+              "compiler": null,
+              "http_status": 404,
+              "error": "http_status=404",
+              "abi_entries": 0
+            }
+          },
+          {
+            "address": "0xb4bb2032a73a53c0aa7dc9ee2d9658a978fa7bc2",
+            "logs": 130,
+            "topics": {
+              "0xe0909c1e0920730c8581f147b8c626a0f7872c24ec1241f0dbb6e3ebecc409af": 80,
+              "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef": 44,
+              "0x73a19dd210f1a7f902193214c0ee91dd35ee5b4d920cba8d519eca65a7b488ca": 5,
+              "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925": 1
+            },
+            "code_size_bytes": 799,
+            "sourcify": {
+              "chain_id": 8453,
+              "address": "0xb4bb2032a73a53c0aa7dc9ee2d9658a978fa7bc2",
+              "verified": true,
+              "name": "TransparentUpgradeableProxy",
+              "compiler": "0.8.23+commit.f704f362",
+              "http_status": 200,
+              "error": null,
+              "abi_entries": 10
+            }
+          },
+          {
+            "address": "0x9eefb63ff5274358319f15798a13a68caef9eb79",
+            "logs": 130,
+            "topics": {
+              "0x50f0e2d3ba7f1a665f448a1aa7c8f7b6309e51ce668429f5877e7907e6e78063": 37,
+              "0x3e259cfe413e863779862ccdd251678eaadd05cbdf647a676c52d0efcef21bc4": 19,
+              "0xbb53a85c01611e528d140466fc00cc8a2d4de7cb6ddfe313cb67b95618eb3369": 19,
+              "0x1fbb702f826fb831beef7dd874c3b6a8bdd32d75e235b5bd9e91b55c82b41251": 19,
+              "0xfa085d9e93cb57f9cef9cd51f3b0764afdc0574259fb97c201e378433918489f": 18
+            },
+            "code_size_bytes": 1383,
+            "sourcify": {
+              "chain_id": 8453,
+              "address": "0x9eefb63ff5274358319f15798a13a68caef9eb79",
+              "verified": false,
+              "name": null,
+              "compiler": null,
+              "http_status": 404,
+              "error": "http_status=404",
+              "abi_entries": 0
+            }
+          },
+          {
+            "address": "0x4e962bb3889bf030368f56810a9c96b83cb3e778",
+            "logs": 129,
+            "topics": {
+              "0x0c396cd989a39f4459b5fa1aed6a9a8dcdbc45908acfd67e028cd568da98982c": 55,
+              "0x70935338e69775456a85ddef226c395fb668b63fa0115f5f20610b388e6ca9c0": 55,
+              "0x7a53080ba414158be7ec69b987b5fb7d07dee101fe85488f0853ae16239d0bde": 19
+            },
+            "code_size_bytes": 45,
+            "sourcify": {
+              "chain_id": 8453,
+              "address": "0x4e962bb3889bf030368f56810a9c96b83cb3e778",
+              "verified": false,
+              "name": null,
+              "compiler": null,
+              "http_status": 404,
+              "error": "http_status=404",
+              "abi_entries": 0
+            }
+          },
+          {
+            "address": "0x5ff137d4b0fdcd49dca30c7cf57e578a026d2789",
+            "logs": 116,
+            "topics": {
+              "0x49628fd1471006c1482da88028e9ce4dbb080b815c9b0344d39e5a8e6ec1419f": 55,
+              "0xbb47ee3e183a558b1a2ff0874b079f3fc5478b7454eacf2bfc5af2ff5878f972": 52,
+              "0x2da466a7b24304f47e87fa2e1e5a81b9831ce54fec19055ce277ca2f39ba42c4": 7,
+              "0xd51a9c61267aa6196961883ecf5ff2da6619c37dac0fa92122513fb32c032d2d": 2
+            },
+            "code_size_bytes": 23689,
+            "sourcify": {
+              "chain_id": 8453,
+              "address": "0x5ff137d4b0fdcd49dca30c7cf57e578a026d2789",
+              "verified": true,
+              "name": "EntryPoint",
+              "compiler": "0.8.17+commit.8df45f5f",
+              "http_status": 200,
+              "error": null,
+              "abi_entries": 37
+            }
+          },
+          {
+            "address": "0x9d0e8f5b25384c7310cb8c6ae32c8fbeb645d083",
+            "logs": 88,
+            "topics": {
+              "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef": 86,
+              "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925": 2
+            },
+            "code_size_bytes": 1167,
+            "sourcify": {
+              "chain_id": 8453,
+              "address": "0x9d0e8f5b25384c7310cb8c6ae32c8fbeb645d083",
+              "verified": true,
+              "name": "TransparentUpgradeableProxy",
+              "compiler": "0.8.27+commit.40a35a09",
+              "http_status": 200,
+              "error": null,
+              "abi_entries": 10
+            }
+          },
+          {
+            "address": "0x3fe04a59ebd38cf06080a6f60a98d124eb59392a",
+            "logs": 76,
+            "topics": {
+              "0x0c396cd989a39f4459b5fa1aed6a9a8dcdbc45908acfd67e028cd568da98982c": 32,
+              "0x70935338e69775456a85ddef226c395fb668b63fa0115f5f20610b388e6ca9c0": 32,
+              "0x7a53080ba414158be7ec69b987b5fb7d07dee101fe85488f0853ae16239d0bde": 12
+            },
+            "code_size_bytes": 45,
+            "sourcify": {
+              "chain_id": 8453,
+              "address": "0x3fe04a59ebd38cf06080a6f60a98d124eb59392a",
+              "verified": false,
+              "name": null,
+              "compiler": null,
+              "http_status": 404,
+              "error": "http_status=404",
+              "abi_entries": 0
+            }
+          },
+          {
+            "address": "0xf39fdf817edc78e4709635ece93d097f71422797",
+            "logs": 71,
+            "topics": {
+              "0xf57b0de383850a0698b76f6f85ebcc94687f139a1944025cd7c54954304c20d9": 70,
+              "0xe9cc9bbe7de1cbb097a6357ca3182909488efe8d793e25665befc064a02d10a7": 1
+            },
+            "code_size_bytes": 13454,
+            "sourcify": {
+              "chain_id": 8453,
+              "address": "0xf39fdf817edc78e4709635ece93d097f71422797",
+              "verified": false,
+              "name": null,
+              "compiler": null,
+              "http_status": 404,
+              "error": "http_status=404",
+              "abi_entries": 0
+            }
+          },
+          {
+            "address": "0x0b2558bdbc7ffec0f327fb3579c23dabd1699706",
+            "logs": 62,
+            "topics": {
+              "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef": 62
+            },
+            "code_size_bytes": 2304,
+            "sourcify": {
+              "chain_id": 8453,
+              "address": "0x0b2558bdbc7ffec0f327fb3579c23dabd1699706",
+              "verified": true,
+              "name": "OptimizedTransparentUpgradeableProxy",
+              "compiler": "0.8.10+commit.fc410830",
+              "http_status": 200,
+              "error": null,
+              "abi_entries": 10
+            }
+          },
+          {
+            "address": "0x30a88bf894d1b806125a23ebf23d715496fd7102",
+            "logs": 58,
+            "topics": {
+              "0x29e088dffd7bf6815d088137a59f364d6747163baa7ff4bc47f316a1ad1b9586": 50,
+              "0x49435801cf735ac077f83ed90d053b54c89f865de1791ad128ff92af1ac09507": 8
+            },
+            "code_size_bytes": 9829,
+            "sourcify": {
+              "chain_id": 8453,
+              "address": "0x30a88bf894d1b806125a23ebf23d715496fd7102",
+              "verified": false,
+              "name": null,
+              "compiler": null,
+              "http_status": 404,
+              "error": "http_status=404",
+              "abi_entries": 0
+            }
+          },
+          {
+            "address": "0xb92fe925dc43a0ecde6c8b1a2709c170ec4fff4f",
+            "logs": 57,
+            "topics": {
+              "0x93485dcd31a905e3ffd7b012abe3438fa8fa77f98ddc9f50e879d3fa7ccdc324": 41,
+              "0xafbab204e8271965231d37baed9b1abca8725b7409c70314455f68bc89142b91": 14,
+              "0xd35467972d1fda5b63c735f59d3974fa51785a41a92aa3ed1b70832836f8dba6": 2
+            },
+            "code_size_bytes": 4720,
+            "sourcify": {
+              "chain_id": 8453,
+              "address": "0xb92fe925dc43a0ecde6c8b1a2709c170ec4fff4f",
+              "verified": true,
+              "name": "RelayRouterV3",
+              "compiler": "0.8.28+commit.7893614a",
+              "http_status": 200,
+              "error": null,
+              "abi_entries": 19
+            }
+          },
+          {
+            "address": "0x6399ed6725cc163d019aa64ff55b22149d7179a8",
+            "logs": 55,
+            "topics": {
+              "0x1c8ab8c7f45390d58f58f1d655213a82cca5d12179761a87c16f098813b8f211": 19,
+              "0x1f89f96333d3133000ee447473151fa9606543368f02271c9d95ae14f13bcc67": 18,
+              "0x8903a5b5d08a841e7f68438387f1da20c84dea756379ed37e633ff3854b99b84": 18
+            },
+            "code_size_bytes": 45,
+            "sourcify": {
+              "chain_id": 8453,
+              "address": "0x6399ed6725cc163d019aa64ff55b22149d7179a8",
+              "verified": false,
+              "name": null,
+              "compiler": null,
+              "http_status": 404,
+              "error": "http_status=404",
+              "abi_entries": 0
+            }
+          }
+        ]
+      }
+    },
+    "arbitrum": {
+      "health": {
+        "chain": "arbitrum",
+        "expected_chain_id": 42161,
+        "ok": true,
+        "reported_chain_id": 42161,
+        "chain_id_matches": true,
+        "latest_block": 507150503,
+        "latest_block_timestamp": 1789918517,
+        "block_age_seconds": 1.7,
+        "endpoint": "https://arb1.arbitrum.io/rpc",
+        "log_span": {
+          "mode": "unfiltered",
+          "accepted_span": 20,
+          "attempts": [
+            {
+              "span": 5,
+              "ok": true,
+              "logs": 90
+            },
+            {
+              "span": 20,
+              "ok": true,
+              "logs": 514
+            }
+          ]
+        },
+        "error": null
+      },
+      "targets": [
+        {
+          "chain": "arbitrum",
+          "address": "0x1f98431c8ad98523631ae4a59f267346ea31f984",
+          "expected_names": [
+            "UniswapV3Factory"
+          ],
+          "checked_at": 1789918520.314035,
+          "code_size_bytes": 24535,
+          "sourcify": {
+            "chain_id": 42161,
+            "address": "0x1f98431c8ad98523631ae4a59f267346ea31f984",
+            "verified": true,
+            "name": "UniswapV3Factory",
+            "compiler": "0.7.6+commit.7338295f",
+            "http_status": 200,
+            "error": null,
+            "abi_entries": 11
+          },
+          "name_matches": true,
+          "decoded_event_counts": {
+            "PoolCreated": 2
+          },
+          "live_window": {
+            "span_blocks": 20000,
+            "requested_span": 20000,
+            "logs": 2,
+            "attempts": [
+              {
+                "span": 20000,
+                "ok": true,
+                "logs": 2
+              }
+            ]
+          },
+          "logs_by_topic0": {
+            "0x783cca1c0412dd0d695e784568c96da2e9c22ff989357a2e8b1d9b2b4e6b7118": 2
+          },
+          "expected_topic0": {
+            "PoolCreated(address,address,uint24,int24,address)": "0x783cca1c0412dd0d695e784568c96da2e9c22ff989357a2e8b1d9b2b4e6b7118"
+          },
+          "topic_hits": {
+            "PoolCreated(address,address,uint24,int24,address)": 2
+          },
+          "samples": [
+            {
+              "block": 507131405,
+              "block_timestamp": 1789913704,
+              "transaction_hash": "0xe488b206c45d13117f317eed00749410841fc83001e46183ff7669ec6960673d",
+              "address": "0x1f98431c8ad98523631ae4a59f267346ea31f984",
+              "topic0": "0x783cca1c0412dd0d695e784568c96da2e9c22ff989357a2e8b1d9b2b4e6b7118",
+              "decoded": {
+                "event": "PoolCreated",
+                "signature": "PoolCreated(address,address,uint24,int24,address)",
+                "token0": "0x1e4c2a56f73e25638e052477820d65850198d995",
+                "token1": "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+                "fee": 10000,
+                "tickSpacing": 200,
+                "pool": "0x65a5ad1c959cbab397dea23d4205b9eba4aa4815"
+              }
+            },
+            {
+              "block": 507131840,
+              "block_timestamp": 1789913815,
+              "transaction_hash": "0x69b3740d5c4778c1ed9f8fa9290be64a88b205a7f036793b0abc821cfac1094a",
+              "address": "0x1f98431c8ad98523631ae4a59f267346ea31f984",
+              "topic0": "0x783cca1c0412dd0d695e784568c96da2e9c22ff989357a2e8b1d9b2b4e6b7118",
+              "decoded": {
+                "event": "PoolCreated",
+                "signature": "PoolCreated(address,address,uint24,int24,address)",
+                "token0": "0x732819b114337e35e0baa5a7e5a4184604248ad9",
+                "token1": "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+                "fee": 10000,
+                "tickSpacing": 200,
+                "pool": "0x9189ded6dee27898dbd8de5867a1de48b9f77abd"
+              }
+            }
+          ],
+          "ok": true,
+          "target_id": "uniswap_v3_factory",
+          "kind": "target",
+          "platform": "uniswap_v3",
+          "target_kind": "dex_factory",
+          "source": "Sourcify full match\uff08UniswapV3Factory\uff09",
+          "expected_topics": {
+            "PoolCreated(address,address,uint24,int24,address)": "0x783cca1c0412dd0d695e784568c96da2e9c22ff989357a2e8b1d9b2b4e6b7118"
+          },
+          "abi_source": "sourcify:UniswapV3Factory"
+        },
+        {
+          "chain": "arbitrum",
+          "address": "0x6eccab422d763ac031210895c81787e87b43a652",
+          "expected_names": [
+            "CamelotFactory"
+          ],
+          "checked_at": 1789918522.3992362,
+          "code_size_bytes": 23646,
+          "sourcify": {
+            "chain_id": 42161,
+            "address": "0x6eccab422d763ac031210895c81787e87b43a652",
+            "verified": true,
+            "name": "CamelotFactory",
+            "compiler": "0.5.16+commit.9c3226ce",
+            "http_status": 200,
+            "error": null,
+            "abi_entries": 27
+          },
+          "name_matches": true,
+          "live_window": {
+            "span_blocks": 20000,
+            "requested_span": 20000,
+            "logs": 0,
+            "attempts": [
+              {
+                "span": 20000,
+                "ok": true,
+                "logs": 0
+              }
+            ]
+          },
+          "logs_by_topic0": {},
+          "expected_topic0": {},
+          "topic_hits": {},
+          "samples": [],
+          "ok": false,
+          "verification_notes": [
+            "\u7a97\u53e3\u5185\u6ca1\u6709\u4efb\u4f55\u4e8b\u4ef6"
+          ],
+          "target_id": "camelot_factory",
+          "kind": "target",
+          "platform": "camelot",
+          "target_kind": "dex_factory",
+          "source": "Sourcify full match\uff08CamelotFactory\uff09",
+          "expected_topics": {},
+          "abi_source": "sourcify:CamelotFactory"
+        },
+        {
+          "chain": "arbitrum",
+          "address": "0x4389ad34938b14f25cff7ed983c53f5a42a2573f",
+          "expected_names": [],
+          "checked_at": 1789918523.265444,
+          "code_size_bytes": 24063,
+          "sourcify": {
+            "chain_id": 42161,
+            "address": "0x4389ad34938b14f25cff7ed983c53f5a42a2573f",
+            "verified": false,
+            "name": null,
+            "compiler": null,
+            "http_status": 404,
+            "error": "http_status=404",
+            "abi_entries": 0
+          },
+          "live_window": {
+            "span_blocks": 20000,
+            "requested_span": 20000,
+            "logs": 0,
+            "attempts": [
+              {
+                "span": 20000,
+                "ok": true,
+                "logs": 0
+              }
+            ]
+          },
+          "logs_by_topic0": {},
+          "expected_topic0": {},
+          "topic_hits": {},
+          "samples": [],
+          "ok": false,
+          "verification_notes": [
+            "\u7a97\u53e3\u5185\u6ca1\u6709\u4efb\u4f55\u4e8b\u4ef6"
+          ],
+          "target_id": "doppler_deployer",
+          "kind": "target",
+          "platform": "doppler",
+          "target_kind": "launchpad",
+          "source": "whetstoneresearch/doppler Deployments.md\uff08\u5b98\u65b9\u90e8\u7f72\u8868\uff09",
+          "expected_topics": {},
+          "abi_source": "sourcify:None"
+        },
+        {
+          "chain": "arbitrum",
+          "address": "0xaa7f809bb3752f715fa2e418230667c382a56544",
+          "expected_names": [],
+          "checked_at": 1789918524.713901,
+          "code_size_bytes": 24039,
+          "sourcify": {
+            "chain_id": 42161,
+            "address": "0xaa7f809bb3752f715fa2e418230667c382a56544",
+            "verified": true,
+            "name": "DopplerHookInitializer",
+            "compiler": "0.8.26+commit.8a97fa7a",
+            "http_status": 200,
+            "error": null,
+            "abi_entries": 73
+          },
+          "live_window": {
+            "span_blocks": 20000,
+            "requested_span": 20000,
+            "logs": 0,
+            "attempts": [
+              {
+                "span": 20000,
+                "ok": true,
+                "logs": 0
+              }
+            ]
+          },
+          "logs_by_topic0": {},
+          "expected_topic0": {},
+          "topic_hits": {},
+          "samples": [],
+          "ok": false,
+          "verification_notes": [
+            "\u7a97\u53e3\u5185\u6ca1\u6709\u4efb\u4f55\u4e8b\u4ef6"
+          ],
+          "target_id": "doppler_hook_initializer",
+          "kind": "target",
+          "platform": "doppler",
+          "target_kind": "launchpad",
+          "source": "whetstoneresearch/doppler Deployments.md\uff08\u5b98\u65b9\u90e8\u7f72\u8868\uff09",
+          "expected_topics": {},
+          "abi_source": "sourcify:DopplerHookInitializer"
+        }
+      ],
+      "attempts": [
+        {
+          "url": "https://arb1.arbitrum.io/rpc",
+          "method": "eth_chainId",
+          "ok": true,
+          "seconds": 0.785
+        },
+        {
+          "url": "https://arb1.arbitrum.io/rpc",
+          "method": "eth_blockNumber",
+          "ok": true,
+          "seconds": 0.258
+        },
+        {
+          "url": "https://arb1.arbitrum.io/rpc",
+          "method": "eth_getBlockByNumber",
+          "ok": true,
+          "seconds": 0.246
+        }
+      ]
+    },
+    "robinhood": {
+      "health": {
+        "chain": "robinhood",
+        "expected_chain_id": 4663,
+        "ok": true,
+        "reported_chain_id": 4663,
+        "chain_id_matches": true,
+        "latest_block": 68050099,
+        "latest_block_timestamp": 1789918525,
+        "block_age_seconds": 1.9,
+        "endpoint": "https://rpc.mainnet.chain.robinhood.com",
+        "log_span": {
+          "mode": "unfiltered",
+          "accepted_span": 20,
+          "attempts": [
+            {
+              "span": 5,
+              "ok": true,
+              "logs": 514
+            },
+            {
+              "span": 20,
+              "ok": true,
+              "logs": 1117
+            }
+          ]
+        },
+        "error": null
+      },
+      "targets": [
+        {
+          "chain": "robinhood",
+          "address": "0x4389ad34938b14f25cff7ed983c53f5a42a2573f",
+          "expected_names": [],
+          "checked_at": 1789918529.176237,
+          "code_size_bytes": 24063,
+          "sourcify": {
+            "chain_id": 4663,
+            "address": "0x4389ad34938b14f25cff7ed983c53f5a42a2573f",
+            "verified": false,
+            "name": null,
+            "compiler": null,
+            "http_status": 404,
+            "error": "http_status=404",
+            "abi_entries": 0
+          },
+          "live_window": {
+            "span_blocks": 2000,
+            "requested_span": 2000,
+            "logs": 0,
+            "attempts": [
+              {
+                "span": 2000,
+                "ok": true,
+                "logs": 0
+              }
+            ]
+          },
+          "logs_by_topic0": {},
+          "expected_topic0": {},
+          "topic_hits": {},
+          "samples": [],
+          "ok": false,
+          "verification_notes": [
+            "\u7a97\u53e3\u5185\u6ca1\u6709\u4efb\u4f55\u4e8b\u4ef6"
+          ],
+          "target_id": "doppler_deployer",
+          "kind": "target",
+          "platform": "doppler",
+          "target_kind": "launchpad",
+          "source": "whetstoneresearch/doppler Deployments.md\uff08\u5b98\u65b9\u90e8\u7f72\u8868\uff09",
+          "expected_topics": {},
+          "abi_source": "sourcify:None"
+        },
+        {
+          "chain": "robinhood",
+          "address": "0x4e3468951d49f2eea976ed0d6e75ffcb44a9a544",
+          "expected_names": [],
+          "checked_at": 1789918530.480428,
+          "code_size_bytes": 25533,
+          "sourcify": {
+            "chain_id": 4663,
+            "address": "0x4e3468951d49f2eea976ed0d6e75ffcb44a9a544",
+            "verified": true,
+            "name": "DopplerHookInitializer",
+            "compiler": "0.8.26+commit.8a97fa7a",
+            "http_status": 200,
+            "error": null,
+            "abi_entries": 72
+          },
+          "decoded_event_counts": {
+            "Swap": 566,
+            "ModifyLiquidity": 141,
+            "Create": 2,
+            "Lock": 2,
+            "Release": 1,
+            "Collect": 1
+          },
+          "live_window": {
+            "span_blocks": 2000,
+            "requested_span": 2000,
+            "logs": 713,
+            "attempts": [
+              {
+                "span": 2000,
+                "ok": true,
+                "logs": 713
+              }
+            ]
+          },
+          "logs_by_topic0": {
+            "0x1d9f7b5e406d8c887155e1a78e070d2d41c5d0444dab8b21612f846835c27183": 566,
+            "0xdb675a606e5aa8f039e93c54673258dc875053bdaa5dbb96de1670bfdece53b3": 141,
+            "0x951cb665214ddfa483febb22b592b0c67f38eac40f7be33f6fcbbe63289276d1": 1,
+            "0xad34f511970a4cac65bf0c3c9cc235ce712b801c0c90c20599ca002c233dcd21": 1,
+            "0xb224da6575b2c2ffd42454faedb236f7dbe5f92a0c96bb99c0273dbe98464c7e": 2,
+            "0x5be4f748347693e0500df872d81f7d96bce1b98e6f5adff0cfddfe3e9e415f20": 2
+          },
+          "expected_topic0": {},
+          "topic_hits": {},
+          "samples": [
+            {
+              "block": 68048107,
+              "block_timestamp": 1789918324,
+              "transaction_hash": "0x55ded6ad4dc3d2919ded01fea35f35929b687782edf871ef6fabd8e1d12db76d",
+              "address": "0x4e3468951d49f2eea976ed0d6e75ffcb44a9a544",
+              "topic0": "0x1d9f7b5e406d8c887155e1a78e070d2d41c5d0444dab8b21612f846835c27183",
+              "decoded": {
+                "event": "Swap",
+                "signature": "Swap(address,(address,address,uint24,int24,address),bytes32,(bool,int256,uint160),int128,int128,bytes)",
+                "sender": "0x6f02324d20cc679d0e585290caa6b16bacbc0f77",
+                "poolKey": "0xaf8aa959b7e460fbbc61d25b9896a6e3f92cbf3a2bde01fa2b5ac811f2d6a986",
+                "poolId": "0xaf8aa959b7e460fbbc61d25b9896a6e3f92cbf3a2bde01fa2b5ac811f2d6a986",
+                "params": [
+                  true,
+                  -2438679726038374825,
+                  4295128740
+                ],
+                "amount0": -2438679726038374825,
+                "amount1": 31099894793489,
+                "hookData": "b''"
+              }
+            },
+            {
+              "block": 68048107,
+              "block_timestamp": 1789918324,
+              "transaction_hash": "0x55ded6ad4dc3d2919ded01fea35f35929b687782edf871ef6fabd8e1d12db76d",
+              "address": "0x4e3468951d49f2eea976ed0d6e75ffcb44a9a544",
+              "topic0": "0x1d9f7b5e406d8c887155e1a78e070d2d41c5d0444dab8b21612f846835c27183",
+              "decoded": {
+                "event": "Swap",
+                "signature": "Swap(address,(address,address,uint24,int24,address),bytes32,(bool,int256,uint160),int128,int128,bytes)",
+                "sender": "0x6f02324d20cc679d0e585290caa6b16bacbc0f77",
+                "poolKey": "0xaf8aa959b7e460fbbc61d25b9896a6e3f92cbf3a2bde01fa2b5ac811f2d6a986",
+                "poolId": "0xaf8aa959b7e460fbbc61d25b9896a6e3f92cbf3a2bde01fa2b5ac811f2d6a986",
+                "params": [
+                  true,
+                  -488003866564295389,
+                  4295128740
+                ],
+                "amount0": -488003866564295389,
+                "amount1": 6223395558855,
+                "hookData": "b''"
+              }
+            },
+            {
+              "block": 68048107,
+              "block_timestamp": 1789918324,
+              "transaction_hash": "0x55ded6ad4dc3d2919ded01fea35f35929b687782edf871ef6fabd8e1d12db76d",
+              "address": "0x4e3468951d49f2eea976ed0d6e75ffcb44a9a544",
+              "topic0": "0xdb675a606e5aa8f039e93c54673258dc875053bdaa5dbb96de1670bfdece53b3",
+              "decoded": {
+                "event": "ModifyLiquidity",
+                "signature": "ModifyLiquidity((address,address,uint24,int24,address),(int24,int24,int256,bytes32))",
+                "key": [
+                  "0x8eaa17be69ae9616cede4671e6d837bb89491e18",
+                  "0xc72b96e0e48ecd4dc75e1e45396e26300bc39681",
+                  8388608,
+                  8,
+                  "0x4e3468951d49f2eea976ed0d6e75ffcb44a9a544"
+                ],
+                "params": [
+                  -887272,
+                  887272,
+                  1741668347529815,
+                  "b'd\\xc54\\xe8\\xe46X\\x1c\\xc1\\xe4\\x8bv\\xc7\\t\\x085T\\xc5#\\x16\\xb0\\x05%*\\x18\\x1b\\xe9c\\x95\\x97XJ'"
+                ]
+              }
+            }
+          ],
+          "ok": true,
+          "target_id": "doppler_hook_initializer",
+          "kind": "target",
+          "platform": "doppler",
+          "target_kind": "launchpad",
+          "source": "whetstoneresearch/doppler Deployments.md\uff08\u5b98\u65b9\u90e8\u7f72\u8868\uff09",
+          "expected_topics": {},
+          "abi_source": "sourcify:DopplerHookInitializer"
+        },
+        {
+          "chain": "robinhood",
+          "address": "0x6cce158b6d1747617fc218592b4d60b239b957ea",
+          "expected_names": [],
+          "checked_at": 1789918532.5755908,
+          "code_size_bytes": 2685,
+          "sourcify": {
+            "chain_id": 4663,
+            "address": "0x6cce158b6d1747617fc218592b4d60b239b957ea",
+            "verified": false,
+            "name": null,
+            "compiler": null,
+            "http_status": 404,
+            "error": "http_status=404",
+            "abi_entries": 0
+          },
+          "live_window": {
+            "span_blocks": 2000,
+            "requested_span": 2000,
+            "logs": 0,
+            "attempts": [
+              {
+                "span": 2000,
+                "ok": true,
+                "logs": 0
+              }
+            ]
+          },
+          "logs_by_topic0": {},
+          "expected_topic0": {},
+          "topic_hits": {},
+          "samples": [],
+          "ok": false,
+          "verification_notes": [
+            "\u7a97\u53e3\u5185\u6ca1\u6709\u4efb\u4f55\u4e8b\u4ef6"
+          ],
+          "target_id": "doppler_uniswap_v4_initializer",
+          "kind": "target",
+          "platform": "doppler",
+          "target_kind": "launchpad",
+          "source": "whetstoneresearch/doppler Deployments.md\uff08\u5b98\u65b9\u90e8\u7f72\u8868\uff09",
+          "expected_topics": {},
+          "abi_source": "sourcify:None"
+        }
+      ],
+      "attempts": [
+        {
+          "url": "https://rpc.mainnet.chain.robinhood.com",
+          "method": "eth_chainId",
+          "ok": true,
+          "seconds": 0.873
+        },
+        {
+          "url": "https://rpc.mainnet.chain.robinhood.com",
+          "method": "eth_blockNumber",
+          "ok": true,
+          "seconds": 0.241
+        },
+        {
+          "url": "https://rpc.mainnet.chain.robinhood.com",
+          "method": "eth_getBlockByNumber",
+          "ok": true,
+          "seconds": 0.251
+        }
+      ],
+      "discovery": {
+        "chain_id": 4663,
+        "span_blocks": 20,
+        "from_block": 68050079,
+        "to_block": 68050099,
+        "total_logs": 4223,
+        "distinct_contracts": 352,
+        "candidates": [
+          {
+            "address": "0xd0601ce157db5bdc3162bbac2a2c8af5320d9eec",
+            "logs": 767,
+            "topics": {
+              "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef": 381,
+              "0x37e7f0db430edc9dd31bc66f25f8449353aa0818f503b906747dd8f286cd3802": 381,
+              "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925": 5
+            },
+            "code_size_bytes": 283,
+            "sourcify": {
+              "chain_id": 4663,
+              "address": "0xd0601ce157db5bdc3162bbac2a2c8af5320d9eec",
+              "verified": true,
+              "name": "BeaconProxy",
+              "compiler": "0.8.33+commit.64118f21",
+              "http_status": 200,
+              "error": null,
+              "abi_entries": 8
+            }
+          },
+          {
+            "address": "0x5fc5360d0400a0fd4f2af552add042d716f1d168",
+            "logs": 329,
+            "topics": {
+              "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef": 269,
+              "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925": 60
+            },
+            "code_size_bytes": 170,
+            "sourcify": {
+              "chain_id": 4663,
+              "address": "0x5fc5360d0400a0fd4f2af552add042d716f1d168",
+              "verified": true,
+              "name": "ERC1967Proxy",
+              "compiler": "0.8.29+commit.ab55807c",
+              "http_status": 200,
+              "error": null,
+              "abi_entries": 7
+            }
+          },
+          {
+            "address": "0x0bd7d308f8e1639fab988df18a8011f41eacad73",
+            "logs": 265,
+            "topics": {
+              "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef": 260,
+              "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925": 5
+            },
+            "code_size_bytes": 2202,
+            "sourcify": {
+              "chain_id": 4663,
+              "address": "0x0bd7d308f8e1639fab988df18a8011f41eacad73",
+              "verified": true,
+              "name": "TransparentUpgradeableProxy",
+              "compiler": "0.8.16+commit.07a7930e",
+              "http_status": 200,
+              "error": null,
+              "abi_entries": 6
+            }
+          },
+          {
+            "address": "0x34be503a3352d3bd314bc2e673d1338e04b3d4db",
+            "logs": 261,
+            "topics": {
+              "0xd9cb1e2714d65a111c0f20f060176ad657496bd47a3de04ec7c3d4ca232112ac": 261
+            },
+            "code_size_bytes": 291,
+            "sourcify": {
+              "chain_id": 4663,
+              "address": "0x34be503a3352d3bd314bc2e673d1338e04b3d4db",
+              "verified": false,
+              "name": null,
+              "compiler": null,
+              "http_status": 404,
+              "error": "http_status=404",
+              "abi_entries": 0
+            }
+          },
+          {
+            "address": "0x8366a39cc670b4001a1121b8f6a443a643e40951",
+            "logs": 251,
+            "topics": {
+              "0x40e9cecb9f5f1f1c5b9c97dec2917b7ee92e57ba5563708daca94dd84ad7112f": 203,
+              "0xf208f4912782fd25c7f114ca3723a2d5dd6f3bcc3ac8db5af63baa85f711d5ec": 43,
+              "0x1b3d7edb2e9c0b0e7c525b20aaaef0f5940d2ed71663c7d39266ecafac728859": 4,
+              "0xdd466e674ea557f56295e2d0218a125ea4b4f0f6f3307b95f85e6110838d6438": 1
+            },
+            "code_size_bytes": 24009,
+            "sourcify": {
+              "chain_id": 4663,
+              "address": "0x8366a39cc670b4001a1121b8f6a443a643e40951",
+              "verified": true,
+              "name": "PoolManager",
+              "compiler": "0.8.26+commit.8a97fa7a",
+              "http_status": 200,
+              "error": null,
+              "abi_entries": 59
+            }
+          },
+          {
+            "address": "0xb92fe925dc43a0ecde6c8b1a2709c170ec4fff4f",
+            "logs": 122,
+            "topics": {
+              "0x93485dcd31a905e3ffd7b012abe3438fa8fa77f98ddc9f50e879d3fa7ccdc324": 94,
+              "0xafbab204e8271965231d37baed9b1abca8725b7409c70314455f68bc89142b91": 25,
+              "0xd35467972d1fda5b63c735f59d3974fa51785a41a92aa3ed1b70832836f8dba6": 3
+            },
+            "code_size_bytes": 4720,
+            "sourcify": {
+              "chain_id": 4663,
+              "address": "0xb92fe925dc43a0ecde6c8b1a2709c170ec4fff4f",
+              "verified": true,
+              "name": "RelayRouterV3",
+              "compiler": "0.8.28+commit.7893614a",
+              "http_status": 200,
+              "error": null,
+              "abi_entries": 19
+            }
+          },
+          {
+            "address": "0xb3e6da92f0ea4d4c6444658a25a09c67531f6822",
+            "logs": 115,
+            "topics": {
+              "0x8113d738abdcb6b38357e9d53a54a7157861a09031b453651f0fe7fe151f59df": 110,
+              "0xec36bf571f136799e8dc0b0b8bea4b04d8bd3d43de838aab0d5fc21d4cbfc455": 4,
+              "0x9f4cd7c4ed99d08a797804560c9c5d71d2cf7e101f2e3b5e7d1ca8a24c370e4f": 1
+            },
+            "code_size_bytes": 10229,
+            "sourcify": {
+              "chain_id": 4663,
+              "address": "0xb3e6da92f0ea4d4c6444658a25a09c67531f6822",
+              "verified": false,
+              "name": null,
+              "compiler": null,
+              "http_status": 404,
+              "error": "http_status=404",
+              "abi_entries": 0
+            }
+          },
+          {
+            "address": "0x249e0cf7d5c9209a547fa577f947263834aec49f",
+            "logs": 115,
+            "topics": {
+              "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef": 115
+            },
+            "code_size_bytes": 3248,
+            "sourcify": {
+              "chain_id": 4663,
+              "address": "0x249e0cf7d5c9209a547fa577f947263834aec49f",
+              "verified": false,
+              "name": null,
+              "compiler": null,
+              "http_status": 404,
+              "error": "http_status=404",
+              "abi_entries": 0
+            }
+          },
+          {
+            "address": "0x9add573e6d7adb4b7101191d4b850e88f418f9f4",
+            "logs": 101,
+            "topics": {
+              "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef": 101
+            },
+            "code_size_bytes": 5707,
+            "sourcify": {
+              "chain_id": 4663,
+              "address": "0x9add573e6d7adb4b7101191d4b850e88f418f9f4",
+              "verified": true,
+              "name": "ERC20Token",
+              "compiler": "0.8.34+commit.80d5c536",
+              "http_status": 200,
+              "error": null,
+              "abi_entries": 22
+            }
+          },
+          {
+            "address": "0x66253cb68beab6d786b36ad426ed42f7a91ee862",
+            "logs": 101,
+            "topics": {
+              "0xe23a42f22aeabba9567aa6f561985af3efc66988a86b1d5ae4b4e7be31155755": 100,
+              "0x710b1e46c28a94f91d38e9d719e3caf40d6706ce0012075c9d1ccf18ea842a2d": 1
+            },
+            "code_size_bytes": 2837,
+            "sourcify": {
+              "chain_id": 4663,
+              "address": "0x66253cb68beab6d786b36ad426ed42f7a91ee862",
+              "verified": false,
+              "name": null,
+              "compiler": null,
+              "http_status": 404,
+              "error": "http_status=404",
+              "abi_entries": 0
+            }
+          },
+          {
+            "address": "0xe25e9bc31d24bb652fb6e2e466d7c9c89701173e",
+            "logs": 100,
+            "topics": {
+              "0xd9cb1e2714d65a111c0f20f060176ad657496bd47a3de04ec7c3d4ca232112ac": 100
+            },
+            "code_size_bytes": 291,
+            "sourcify": {
+              "chain_id": 4663,
+              "address": "0xe25e9bc31d24bb652fb6e2e466d7c9c89701173e",
+              "verified": false,
+              "name": null,
+              "compiler": null,
+              "http_status": 404,
+              "error": "http_status=404",
+              "abi_entries": 0
+            }
+          },
+          {
+            "address": "0x91a2dae9699f0b82540b5886b0d8759c22820ba3",
+            "logs": 66,
+            "topics": {
+              "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef": 56,
+              "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925": 10
+            },
+            "code_size_bytes": 44,
+            "sourcify": {
+              "chain_id": 4663,
+              "address": "0x91a2dae9699f0b82540b5886b0d8759c22820ba3",
+              "verified": false,
+              "name": null,
+              "compiler": null,
+              "http_status": 404,
+              "error": "http_status=404",
+              "abi_entries": 0
+            }
+          },
+          {
+            "address": "0xd3afeb2a57f70ef218aa82451c51b2fb0416ac9e",
+            "logs": 60,
+            "topics": {
+              "0x4e45da441832cf53bdaa69235704fc0575e68210f459ee1562911024b12967d5": 43,
+              "0x5d104c62f50449fadfe6f4013c8f36588d32737f94b5ac9b83ddad33b3e1ffdf": 14,
+              "0xd8138f8a3f377c5259ca548e70e4c2de94f129f5a11036a15b69513cba2b426a": 3
+            },
+            "code_size_bytes": 1932,
+            "sourcify": {
+              "chain_id": 4663,
+              "address": "0xd3afeb2a57f70ef218aa82451c51b2fb0416ac9e",
+              "verified": true,
+              "name": "PonsV2FeeEscrow",
+              "compiler": "0.8.35+commit.47b9dedd",
+              "http_status": 200,
+              "error": null,
+              "abi_entries": 18
+            }
+          },
+          {
+            "address": "0x65050a9b7e5075a2ba5ced7b1b64ee66262c40dc",
+            "logs": 54,
+            "topics": {
+              "0x205442d60b70af1203d43cab62352c3b69b94f091be32fe683198057282b5c92": 27,
+              "0x8619026a40d38bedb4002fe511cea4bc4a9b336710efe8f21a61869a7ee0f02a": 27
+            },
+            "code_size_bytes": 752,
+            "sourcify": {
+              "chain_id": 4663,
+              "address": "0x65050a9b7e5075a2ba5ced7b1b64ee66262c40dc",
+              "verified": false,
+              "name": null,
+              "compiler": null,
+              "http_status": 404,
+              "error": "http_status=404",
+              "abi_entries": 0
+            }
+          },
+          {
+            "address": "0xc0d6457c16cc70d6790dd43521c899c87ce02f35",
+            "logs": 49,
+            "topics": {
+              "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef": 24,
+              "0x37e7f0db430edc9dd31bc66f25f8449353aa0818f503b906747dd8f286cd3802": 24,
+              "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925": 1
+            },
+            "code_size_bytes": 283,
+            "sourcify": {
+              "chain_id": 4663,
+              "address": "0xc0d6457c16cc70d6790dd43521c899c87ce02f35",
+              "verified": true,
+              "name": "BeaconProxy",
+              "compiler": "0.8.33+commit.64118f21",
+              "http_status": 200,
+              "error": null,
+              "abi_entries": 8
+            }
+          },
+          {
+            "address": "0xe5e702641ea86f4ae6cc3cdaed2b886f976be044",
+            "logs": 45,
+            "topics": {
+              "0xc532c43b3423e14ef72748f1c8291238829ca0af8ba9b67975ad1483485a4b4d": 34,
+              "0x2f3c43579b9064b6f28edcf41608f3815792d274a56afe024359703cb4ea9b30": 11
+            },
+            "code_size_bytes": 15167,
+            "sourcify": {
+              "chain_id": 4663,
+              "address": "0xe5e702641ea86f4ae6cc3cdaed2b886f976be044",
+              "verified": true,
+              "name": "PonsV2MemeHook",
+              "compiler": "0.8.35+commit.47b9dedd",
+              "http_status": 200,
+              "error": null,
+              "abi_entries": 87
+            }
+          },
+          {
+            "address": "0x4e3468951d49f2eea976ed0d6e75ffcb44a9a544",
+            "logs": 44,
+            "topics": {
+              "0x1d9f7b5e406d8c887155e1a78e070d2d41c5d0444dab8b21612f846835c27183": 34,
+              "0xdb675a606e5aa8f039e93c54673258dc875053bdaa5dbb96de1670bfdece53b3": 8,
+              "0xb224da6575b2c2ffd42454faedb236f7dbe5f92a0c96bb99c0273dbe98464c7e": 1,
+              "0x5be4f748347693e0500df872d81f7d96bce1b98e6f5adff0cfddfe3e9e415f20": 1
+            },
+            "code_size_bytes": 25533,
+            "sourcify": {
+              "chain_id": 4663,
+              "address": "0x4e3468951d49f2eea976ed0d6e75ffcb44a9a544",
+              "verified": true,
+              "name": "DopplerHookInitializer",
+              "compiler": "0.8.26+commit.8a97fa7a",
+              "http_status": 200,
+              "error": null,
+              "abi_entries": 72
+            }
+          },
+          {
+            "address": "0x6131b5fae19ea4f9d964eac0408e4408b66337b5",
+            "logs": 42,
+            "topics": {
+              "0xd6d4f5681c246c9f42c203e287975af1601f8df8035a9251f79aab5c8f09e2f8": 14,
+              "0xddac40937f35385a34f721af292e5a83fc5b840f722bff57c2fc71adba708c48": 14,
+              "0x095e66fa4dd6a6f7b43fb8444a7bd0edb870508c7abf639bc216efb0bcff9779": 14
+            },
+            "code_size_bytes": 13724,
+            "sourcify": {
+              "chain_id": 4663,
+              "address": "0x6131b5fae19ea4f9d964eac0408e4408b66337b5",
+              "verified": true,
+              "name": "MetaAggregationRouterV2",
+              "compiler": "0.8.17+commit.8df45f5f",
+              "http_status": 200,
+              "error": null,
+              "abi_entries": 15
+            }
+          },
+          {
+            "address": "0xf0c4bf4c582cb3836e98394b1d4e7b7281101be8",
+            "logs": 40,
+            "topics": {
+              "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef": 20,
+              "0x37e7f0db430edc9dd31bc66f25f8449353aa0818f503b906747dd8f286cd3802": 20
+            },
+            "code_size_bytes": 283,
+            "sourcify": {
+              "chain_id": 4663,
+              "address": "0xf0c4bf4c582cb3836e98394b1d4e7b7281101be8",
+              "verified": false,
+              "name": null,
+              "compiler": null,
+              "http_status": 404,
+              "error": "http_status=404",
+              "abi_entries": 0
+            }
+          },
+          {
+            "address": "0x039ec98a76f111092d4751365ff09dd2aec301e8",
+            "logs": 36,
+            "topics": {
+              "0x12d17f84e6133abf305523c41f394084a62469cdaf0d5a850d24c514347464b9": 27,
+              "0x0a248b656b425f53cde64f977a2c7945ff9339194db057533063e207f5022226": 9
+            },
+            "code_size_bytes": 4721,
+            "sourcify": {
+              "chain_id": 4663,
+              "address": "0x039ec98a76f111092d4751365ff09dd2aec301e8",
+              "verified": false,
+              "name": null,
+              "compiler": null,
+              "http_status": 404,
+              "error": "http_status=404",
+              "abi_entries": 0
+            }
+          },
+          {
+            "address": "0x056f95c8ffaa1767e2bba963d66f96ad0f8ad755",
+            "logs": 32,
+            "topics": {
+              "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef": 26,
+              "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925": 6
+            },
+            "code_size_bytes": 3248,
+            "sourcify": {
+              "chain_id": 4663,
+              "address": "0x056f95c8ffaa1767e2bba963d66f96ad0f8ad755",
+              "verified": false,
+              "name": null,
+              "compiler": null,
+              "http_status": 404,
+              "error": "http_status=404",
+              "abi_entries": 0
+            }
+          },
+          {
+            "address": "0x2e8c31162b855a2ffa90f6f8634643ad6f111e18",
+            "logs": 30,
+            "topics": {
+              "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef": 28,
+              "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925": 2
+            },
+            "code_size_bytes": 44,
+            "sourcify": {
+              "chain_id": 4663,
+              "address": "0x2e8c31162b855a2ffa90f6f8634643ad6f111e18",
+              "verified": false,
+              "name": null,
+              "compiler": null,
+              "http_status": 404,
+              "error": "http_status=404",
+              "abi_entries": 0
+            }
+          },
+          {
+            "address": "0xc53cd6537ac80ae528b6ea60b065759a607cdc00",
+            "logs": 30,
+            "topics": {
+              "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef": 30
+            },
+            "code_size_bytes": 998,
+            "sourcify": {
+              "chain_id": 4663,
+              "address": "0xc53cd6537ac80ae528b6ea60b065759a607cdc00",
+              "verified": false,
+              "name": null,
+              "compiler": null,
+              "http_status": 404,
+              "error": "http_status=404",
+              "abi_entries": 0
+            }
+          },
+          {
+            "address": "0xccc88a9d1b4ed6b0eaba998850414b24f1c315be",
+            "logs": 26,
+            "topics": {
+              "0xafbab204e8271965231d37baed9b1abca8725b7409c70314455f68bc89142b91": 26
+            },
+            "code_size_bytes": 7746,
+            "sourcify": {
+              "chain_id": 4663,
+              "address": "0xccc88a9d1b4ed6b0eaba998850414b24f1c315be",
+              "verified": true,
+              "name": "RelayApprovalProxyV3",
+              "compiler": "0.8.28+commit.7893614a",
+              "http_status": 200,
+              "error": null,
+              "abi_entries": 32
+            }
+          },
+          {
+            "address": "0x52e65b17fb6e5ba00ed806f37afcd2daa50271ca",
+            "logs": 25,
+            "topics": {
+              "0xc42079f94a6350d7e6235f29174924f928cc2ac818eb64fed8004e115fbcca67": 25
+            },
+            "code_size_bytes": 22142,
+            "sourcify": {
+              "chain_id": 4663,
+              "address": "0x52e65b17fb6e5ba00ed806f37afcd2daa50271ca",
+              "verified": true,
+              "name": "UniswapV3Pool",
+              "compiler": "0.7.6+commit.7338295f",
+              "http_status": 200,
+              "error": null,
+              "abi_entries": 36
+            }
+          }
+        ]
+      }
+    },
+    "arc": {
+      "health": {
+        "chain": "arc",
+        "expected_chain_id": 5042,
+        "ok": true,
+        "reported_chain_id": 5042,
+        "chain_id_matches": true,
+        "latest_block": 21860881,
+        "latest_block_timestamp": 1789918551,
+        "block_age_seconds": 1.1,
+        "endpoint": "https://rpc.mainnet.arc.io",
+        "log_span": {
+          "mode": "unfiltered",
+          "accepted_span": 20,
+          "attempts": [
+            {
+              "span": 5,
+              "ok": true,
+              "logs": 208
+            },
+            {
+              "span": 20,
+              "ok": true,
+              "logs": 1227
+            }
+          ]
+        },
+        "error": null
+      },
+      "targets": [],
+      "attempts": [
+        {
+          "url": "https://rpc.mainnet.arc.io",
+          "method": "eth_chainId",
+          "ok": true,
+          "seconds": 0.67
+        },
+        {
+          "url": "https://rpc.mainnet.arc.io",
+          "method": "eth_blockNumber",
+          "ok": true,
+          "seconds": 0.177
+        },
+        {
+          "url": "https://rpc.mainnet.arc.io",
+          "method": "eth_getBlockByNumber",
+          "ok": true,
+          "seconds": 0.172
+        }
+      ],
+      "discovery": {
+        "chain_id": 5042,
+        "span_blocks": 20,
+        "from_block": 21860861,
+        "to_block": 21860881,
+        "total_logs": 1227,
+        "distinct_contracts": 107,
+        "candidates": [
+          {
+            "address": "0xfffffffffffffffffffffffffffffffffffffffe",
+            "logs": 335,
+            "topics": {
+              "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef": 335
+            },
+            "code_size_bytes": 0,
+            "sourcify": {
+              "chain_id": 5042,
+              "address": "0xfffffffffffffffffffffffffffffffffffffffe",
+              "verified": false,
+              "name": null,
+              "compiler": null,
+              "http_status": 404,
+              "error": "http_status=404",
+              "abi_entries": 0
+            }
+          },
+          {
+            "address": "0x3600000000000000000000000000000000000000",
+            "logs": 197,
+            "topics": {
+              "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef": 180,
+              "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925": 13,
+              "0x98de503528ee59b575ef0c0a2576a82497bfc029a5685b209e9ec333479b10a5": 4
+            },
+            "code_size_bytes": 1798,
+            "sourcify": {
+              "chain_id": 5042,
+              "address": "0x3600000000000000000000000000000000000000",
+              "verified": false,
+              "name": null,
+              "compiler": null,
+              "http_status": 404,
+              "error": "http_status=404",
+              "abi_entries": 0
+            }
+          },
+          {
+            "address": "0x8366a39cc670b4001a1121b8f6a443a643e40951",
+            "logs": 84,
+            "topics": {
+              "0x40e9cecb9f5f1f1c5b9c97dec2917b7ee92e57ba5563708daca94dd84ad7112f": 77,
+              "0x1b3d7edb2e9c0b0e7c525b20aaaef0f5940d2ed71663c7d39266ecafac728859": 3,
+              "0xf208f4912782fd25c7f114ca3723a2d5dd6f3bcc3ac8db5af63baa85f711d5ec": 3,
+              "0xdd466e674ea557f56295e2d0218a125ea4b4f0f6f3307b95f85e6110838d6438": 1
+            },
+            "code_size_bytes": 24009,
+            "sourcify": {
+              "chain_id": 5042,
+              "address": "0x8366a39cc670b4001a1121b8f6a443a643e40951",
+              "verified": true,
+              "name": "PoolManager",
+              "compiler": "0.8.26+commit.8a97fa7a",
+              "http_status": 200,
+              "error": null,
+              "abi_entries": 59
+            }
+          },
+          {
+            "address": "0xf31a0ee52f8e6f7befaf817e0279bc184a3a6562",
+            "logs": 77,
+            "topics": {
+              "0x9def4e2802183d68ce90a6a226a2962b59298616c27165f12c4fbc5c84cdd778": 77
+            },
+            "code_size_bytes": 45,
+            "sourcify": {
+              "chain_id": 5042,
+              "address": "0xf31a0ee52f8e6f7befaf817e0279bc184a3a6562",
+              "verified": false,
+              "name": null,
+              "compiler": null,
+              "http_status": 404,
+              "error": "http_status=404",
+              "abi_entries": 0
+            }
+          },
+          {
+            "address": "0xb154fbd6d7364dbc0bcf7ce26ef8d7cfb3eb5f0f",
+            "logs": 51,
+            "topics": {
+              "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef": 34,
+              "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925": 17
+            },
+            "code_size_bytes": 4655,
+            "sourcify": {
+              "chain_id": 5042,
+              "address": "0xb154fbd6d7364dbc0bcf7ce26ef8d7cfb3eb5f0f",
+              "verified": false,
+              "name": null,
+              "compiler": null,
+              "http_status": 404,
+              "error": "http_status=404",
+              "abi_entries": 0
+            }
+          },
+          {
+            "address": "0xd31680970eb852259b9691531bdb0fcb5fc1bfad",
+            "logs": 22,
+            "topics": {
+              "0x07262028a75a09656da1f52f6870e47072b413b19ebc93ccacbe99b823114c8b": 21,
+              "0xe849332147cf7dd7690360009a079d19aa94b428dc610f503c6b2e0d56192896": 1
+            },
+            "code_size_bytes": 3173,
+            "sourcify": {
+              "chain_id": 5042,
+              "address": "0xd31680970eb852259b9691531bdb0fcb5fc1bfad",
+              "verified": false,
+              "name": null,
+              "compiler": null,
+              "http_status": 404,
+              "error": "http_status=404",
+              "abi_entries": 0
+            }
+          },
+          {
+            "address": "0x364cafbf6b8ae3da1ec0fa5ecd9517facaafd78e",
+            "logs": 21,
+            "topics": {
+              "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef": 21
+            },
+            "code_size_bytes": 2872,
+            "sourcify": {
+              "chain_id": 5042,
+              "address": "0x364cafbf6b8ae3da1ec0fa5ecd9517facaafd78e",
+              "verified": false,
+              "name": null,
+              "compiler": null,
+              "http_status": 404,
+              "error": "http_status=404",
+              "abi_entries": 0
+            }
+          },
+          {
+            "address": "0xb97966a81a89824eb878e6ee6ed0feba2df2bd1e",
+            "logs": 21,
+            "topics": {
+              "0xaff7db96b6ba77941f10bb58a9b1f254fa059242cca8d642121d298bd7d5ec05": 21
+            },
+            "code_size_bytes": 1557,
+            "sourcify": {
+              "chain_id": 5042,
+              "address": "0xb97966a81a89824eb878e6ee6ed0feba2df2bd1e",
+              "verified": false,
+              "name": null,
+              "compiler": null,
+              "http_status": 404,
+              "error": "http_status=404",
+              "abi_entries": 0
+            }
+          },
+          {
+            "address": "0x2ef3b179aa02400b067931a2377ed3d2ed2db46e",
+            "logs": 21,
+            "topics": {
+              "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef": 21
+            },
+            "code_size_bytes": 13104,
+            "sourcify": {
+              "chain_id": 5042,
+              "address": "0x2ef3b179aa02400b067931a2377ed3d2ed2db46e",
+              "verified": false,
+              "name": null,
+              "compiler": null,
+              "http_status": 404,
+              "error": "http_status=404",
+              "abi_entries": 0
+            }
+          },
+          {
+            "address": "0x8e22e1afec4888356232ea184f465428b6d70219",
+            "logs": 21,
+            "topics": {
+              "0x20184b32cbd4991d985fb1b5c277fb6cc9e861ee84c893619ee628cfbad7fd1d": 21
+            },
+            "code_size_bytes": 4260,
+            "sourcify": {
+              "chain_id": 5042,
+              "address": "0x8e22e1afec4888356232ea184f465428b6d70219",
+              "verified": false,
+              "name": null,
+              "compiler": null,
+              "http_status": 404,
+              "error": "http_status=404",
+              "abi_entries": 0
+            }
+          },
+          {
+            "address": "0xd1c5fa38a0a433745e9d4d2633e1082f0ee41bbc",
+            "logs": 21,
+            "topics": {
+              "0x987b64d7f4707feeac0ef6a18fbf90c804cd8517feec05d43ea72a3a51dae728": 21
+            },
+            "code_size_bytes": 1060,
+            "sourcify": {
+              "chain_id": 5042,
+              "address": "0xd1c5fa38a0a433745e9d4d2633e1082f0ee41bbc",
+              "verified": false,
+              "name": null,
+              "compiler": null,
+              "http_status": 404,
+              "error": "http_status=404",
+              "abi_entries": 0
+            }
+          },
+          {
+            "address": "0x4337084d9e255ff0702461cf8895ce9e3b5ff108",
+            "logs": 18,
+            "topics": {
+              "0xbb47ee3e183a558b1a2ff0874b079f3fc5478b7454eacf2bfc5af2ff5878f972": 9,
+              "0x49628fd1471006c1482da88028e9ce4dbb080b815c9b0344d39e5a8e6ec1419f": 9
+            },
+            "code_size_bytes": 21738,
+            "sourcify": {
+              "chain_id": 5042,
+              "address": "0x4337084d9e255ff0702461cf8895ce9e3b5ff108",
+              "verified": false,
+              "name": null,
+              "compiler": null,
+              "http_status": 404,
+              "error": "http_status=404",
+              "abi_entries": 0
+            }
+          },
+          {
+            "address": "0x9f9b90410ad58baea8b63a055cab687216fd33b0",
+            "logs": 17,
+            "topics": {
+              "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef": 17
+            },
+            "code_size_bytes": 45,
+            "sourcify": {
+              "chain_id": 5042,
+              "address": "0x9f9b90410ad58baea8b63a055cab687216fd33b0",
+              "verified": false,
+              "name": null,
+              "compiler": null,
+              "http_status": 404,
+              "error": "http_status=404",
+              "abi_entries": 0
+            }
+          },
+          {
+            "address": "0x24dfd88a3225ca5aa5034dc3bb3cccd71b2b3432",
+            "logs": 15,
+            "topics": {
+              "0x6c703791f399558807424f489ccd811c72b4ff0b74af547264fad7c646776df0": 15
+            },
+            "code_size_bytes": 20733,
+            "sourcify": {
+              "chain_id": 5042,
+              "address": "0x24dfd88a3225ca5aa5034dc3bb3cccd71b2b3432",
+              "verified": false,
+              "name": null,
+              "compiler": null,
+              "http_status": 404,
+              "error": "http_status=404",
+              "abi_entries": 0
+            }
+          },
+          {
+            "address": "0xbabaddbe9c665e028634091ca1ad0c7912d5c5d4",
+            "logs": 14,
+            "topics": {
+              "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef": 13,
+              "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925": 1
+            },
+            "code_size_bytes": 1526,
+            "sourcify": {
+              "chain_id": 5042,
+              "address": "0xbabaddbe9c665e028634091ca1ad0c7912d5c5d4",
+              "verified": false,
+              "name": null,
+              "compiler": null,
+              "http_status": 404,
+              "error": "http_status=404",
+              "abi_entries": 0
+            }
+          },
+          {
+            "address": "0xe6b0a06c87a1422f966e8a31b5d1f3b3fa348c5a",
+            "logs": 14,
+            "topics": {
+              "0xe1fffcc4923d04b559f4d29a8bfc6cda04eb5b0d3c460751c2402c5c5cc9109c": 7,
+              "0x7fcf532c15f0a6db0bd6d0e038bea71d30d808c7d98cb3bf7268a95bf5081b65": 7
+            },
+            "code_size_bytes": 2028,
+            "sourcify": {
+              "chain_id": 5042,
+              "address": "0xe6b0a06c87a1422f966e8a31b5d1f3b3fa348c5a",
+              "verified": false,
+              "name": null,
+              "compiler": null,
+              "http_status": 404,
+              "error": "http_status=404",
+              "abi_entries": 0
+            }
+          },
+          {
+            "address": "0x53dea4f7783c1de84cecc5c989bc37a557154827",
+            "logs": 14,
+            "topics": {
+              "0x205442d60b70af1203d43cab62352c3b69b94f091be32fe683198057282b5c92": 7,
+              "0x8619026a40d38bedb4002fe511cea4bc4a9b336710efe8f21a61869a7ee0f02a": 7
+            },
+            "code_size_bytes": 752,
+            "sourcify": {
+              "chain_id": 5042,
+              "address": "0x53dea4f7783c1de84cecc5c989bc37a557154827",
+              "verified": false,
+              "name": null,
+              "compiler": null,
+              "http_status": 404,
+              "error": "http_status=404",
+              "abi_entries": 0
+            }
+          },
+          {
+            "address": "0x4cd00e387622c35bddb9b4c962c136462338bc31",
+            "logs": 13,
+            "topics": {
+              "0x49fed1d0b752ce30eee63c7a81133f3363b532fec5d4d7dd1ccfd005de4555e1": 12,
+              "0x4be109453ef7e895dc7215c929fff9b76b51483d56a4d04548b4866e9aa7c5ea": 1
+            },
+            "code_size_bytes": 8628,
+            "sourcify": {
+              "chain_id": 5042,
+              "address": "0x4cd00e387622c35bddb9b4c962c136462338bc31",
+              "verified": false,
+              "name": null,
+              "compiler": null,
+              "http_status": 404,
+              "error": "http_status=404",
+              "abi_entries": 0
+            }
+          },
+          {
+            "address": "0xb92fe925dc43a0ecde6c8b1a2709c170ec4fff4f",
+            "logs": 13,
+            "topics": {
+              "0x93485dcd31a905e3ffd7b012abe3438fa8fa77f98ddc9f50e879d3fa7ccdc324": 9,
+              "0xafbab204e8271965231d37baed9b1abca8725b7409c70314455f68bc89142b91": 4
+            },
+            "code_size_bytes": 4720,
+            "sourcify": {
+              "chain_id": 5042,
+              "address": "0xb92fe925dc43a0ecde6c8b1a2709c170ec4fff4f",
+              "verified": false,
+              "name": null,
+              "compiler": null,
+              "http_status": 404,
+              "error": "http_status=404",
+              "abi_entries": 0
+            }
+          },
+          {
+            "address": "0x0000000071727de22e5e9d8baf0edac6f37da032",
+            "logs": 12,
+            "topics": {
+              "0xbb47ee3e183a558b1a2ff0874b079f3fc5478b7454eacf2bfc5af2ff5878f972": 6,
+              "0x49628fd1471006c1482da88028e9ce4dbb080b815c9b0344d39e5a8e6ec1419f": 6
+            },
+            "code_size_bytes": 16035,
+            "sourcify": {
+              "chain_id": 5042,
+              "address": "0x0000000071727de22e5e9d8baf0edac6f37da032",
+              "verified": false,
+              "name": null,
+              "compiler": null,
+              "http_status": 404,
+              "error": "http_status=404",
+              "abi_entries": 0
+            }
+          },
+          {
+            "address": "0x6f0cb47cc5c078ddbd112715a0d4ef5f2be0ce8b",
+            "logs": 9,
+            "topics": {
+              "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef": 9
+            },
+            "code_size_bytes": 45,
+            "sourcify": {
+              "chain_id": 5042,
+              "address": "0x6f0cb47cc5c078ddbd112715a0d4ef5f2be0ce8b",
+              "verified": false,
+              "name": null,
+              "compiler": null,
+              "http_status": 404,
+              "error": "http_status=404",
+              "abi_entries": 0
+            }
+          },
+          {
+            "address": "0x30ac39dec8a854c5fd03aa429e3bef32a7e4c84a",
+            "logs": 8,
+            "topics": {
+              "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef": 6,
+              "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925": 2
+            },
+            "code_size_bytes": 45,
+            "sourcify": {
+              "chain_id": 5042,
+              "address": "0x30ac39dec8a854c5fd03aa429e3bef32a7e4c84a",
+              "verified": false,
+              "name": null,
+              "compiler": null,
+              "http_status": 404,
+              "error": "http_status=404",
+              "abi_entries": 0
+            }
+          },
+          {
+            "address": "0x8ee73611c452d3f481a07325774a517834580591",
+            "logs": 8,
+            "topics": {
+              "0xd8a33efa58f607a36c49d8a8c5477fce4b2c71986998476cbe3494fb8f5fb758": 8
+            },
+            "code_size_bytes": 45,
+            "sourcify": {
+              "chain_id": 5042,
+              "address": "0x8ee73611c452d3f481a07325774a517834580591",
+              "verified": false,
+              "name": null,
+              "compiler": null,
+              "http_status": 404,
+              "error": "http_status=404",
+              "abi_entries": 0
+            }
+          },
+          {
+            "address": "0xbef5f6d51cb62b58e6a8f77868681825c6fe21c1",
+            "logs": 7,
+            "topics": {
+              "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef": 5,
+              "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925": 2
+            },
+            "code_size_bytes": 1798,
+            "sourcify": {
+              "chain_id": 5042,
+              "address": "0xbef5f6d51cb62b58e6a8f77868681825c6fe21c1",
+              "verified": false,
+              "name": null,
+              "compiler": null,
+              "http_status": 404,
+              "error": "http_status=404",
+              "abi_entries": 0
+            }
+          },
+          {
+            "address": "0xf5b08979251f398180385b54381ee3d6fa1bbe09",
+            "logs": 7,
+            "topics": {
+              "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef": 6,
+              "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925": 1
+            },
+            "code_size_bytes": 758,
+            "sourcify": {
+              "chain_id": 5042,
+              "address": "0xf5b08979251f398180385b54381ee3d6fa1bbe09",
+              "verified": false,
+              "name": null,
+              "compiler": null,
+              "http_status": 404,
+              "error": "http_status=404",
+              "abi_entries": 0
+            }
+          }
+        ]
+      }
+    },
+    "stable": {
+      "health": {
+        "chain": "stable",
+        "expected_chain_id": 988,
+        "ok": true,
+        "reported_chain_id": 988,
+        "chain_id_matches": true,
+        "latest_block": 40095504,
+        "latest_block_timestamp": 1789918568,
+        "block_age_seconds": 1.4,
+        "endpoint": "https://rpc.stable.xyz",
+        "log_span": {
+          "mode": "unfiltered",
+          "accepted_span": 100,
+          "attempts": [
+            {
+              "span": 5,
+              "ok": true,
+              "logs": 0
+            },
+            {
+              "span": 20,
+              "ok": true,
+              "logs": 0
+            },
+            {
+              "span": 100,
+              "ok": true,
+              "logs": 73
+            }
+          ]
+        },
+        "error": null
+      },
+      "targets": [],
+      "attempts": [
+        {
+          "url": "https://rpc.stable.xyz",
+          "method": "eth_chainId",
+          "ok": true,
+          "seconds": 0.99
+        },
+        {
+          "url": "https://rpc.stable.xyz",
+          "method": "eth_blockNumber",
+          "ok": true,
+          "seconds": 0.329
+        },
+        {
+          "url": "https://rpc.stable.xyz",
+          "method": "eth_getBlockByNumber",
+          "ok": true,
+          "seconds": 0.325
+        }
+      ],
+      "discovery": {
+        "chain_id": 988,
+        "span_blocks": 500,
+        "from_block": 40095004,
+        "to_block": 40095504,
+        "total_logs": 388,
+        "distinct_contracts": 15,
+        "candidates": [
+          {
+            "address": "0x779ded0c9e1022225f8e0630b35a9b54be713736",
+            "logs": 139,
+            "topics": {
+              "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef": 136,
+              "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925": 3
+            },
+            "code_size_bytes": 2227,
+            "sourcify": {
+              "chain_id": 988,
+              "address": "0x779ded0c9e1022225f8e0630b35a9b54be713736",
+              "verified": true,
+              "name": "TransparentUpgradeableProxy",
+              "compiler": "0.8.9+commit.e5eed63a",
+              "http_status": 200,
+              "error": null,
+              "abi_entries": 6
+            }
+          },
+          {
+            "address": "0xd86800d5b021f5d79350c2f742bbb1ecc010bf82",
+            "logs": 82,
+            "topics": {
+              "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef": 50,
+              "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925": 32
+            },
+            "code_size_bytes": 3345,
+            "sourcify": {
+              "chain_id": 988,
+              "address": "0xd86800d5b021f5d79350c2f742bbb1ecc010bf82",
+              "verified": true,
+              "name": "PumperTokenStandalone",
+              "compiler": "0.8.35+commit.47b9dedd",
+              "http_status": 200,
+              "error": null,
+              "abi_entries": 33
+            }
+          },
+          {
+            "address": "0x817997ca8394e26cce3de3a076a4889b27dbf9de",
+            "logs": 68,
+            "topics": {
+              "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef": 25,
+              "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925": 18,
+              "0x7fcf532c15f0a6db0bd6d0e038bea71d30d808c7d98cb3bf7268a95bf5081b65": 16,
+              "0xe1fffcc4923d04b559f4d29a8bfc6cda04eb5b0d3c460751c2402c5c5cc9109c": 9
+            },
+            "code_size_bytes": 1952,
+            "sourcify": {
+              "chain_id": 988,
+              "address": "0x817997ca8394e26cce3de3a076a4889b27dbf9de",
+              "verified": false,
+              "name": null,
+              "compiler": null,
+              "http_status": 404,
+              "error": "http_status=404",
+              "abi_entries": 0
+            }
+          },
+          {
+            "address": "0xe545c5737b424050d39524d2231a20dd9b1b4eb2",
+            "logs": 25,
+            "topics": {
+              "0xc42079f94a6350d7e6235f29174924f928cc2ac818eb64fed8004e115fbcca67": 25
+            },
+            "code_size_bytes": 22142,
+            "sourcify": {
+              "chain_id": 988,
+              "address": "0xe545c5737b424050d39524d2231a20dd9b1b4eb2",
+              "verified": false,
+              "name": null,
+              "compiler": null,
+              "http_status": 404,
+              "error": "http_status=404",
+              "abi_entries": 0
+            }
+          },
+          {
+            "address": "0x37573241cf9da59c13468187c92aa12252a8e83b",
+            "logs": 25,
+            "topics": {
+              "0xc9163c3bdf7263acf1bb3d24072cc7da025f7181c31e2edc7e1673edf5e0ca32": 25
+            },
+            "code_size_bytes": 7490,
+            "sourcify": {
+              "chain_id": 988,
+              "address": "0x37573241cf9da59c13468187c92aa12252a8e83b",
+              "verified": false,
+              "name": null,
+              "compiler": null,
+              "http_status": 404,
+              "error": "http_status=404",
+              "abi_entries": 0
+            }
+          },
+          {
+            "address": "0x1d3dcd2e5ed48b20189c591df29d9a580544f639",
+            "logs": 25,
+            "topics": {
+              "0x8218f4f0b9678bdc937d18993537f67625585ea93ac5aeaae377a7db0b108ddd": 25
+            },
+            "code_size_bytes": 9606,
+            "sourcify": {
+              "chain_id": 988,
+              "address": "0x1d3dcd2e5ed48b20189c591df29d9a580544f639",
+              "verified": false,
+              "name": null,
+              "compiler": null,
+              "http_status": 404,
+              "error": "http_status=404",
+              "abi_entries": 0
+            }
+          },
+          {
+            "address": "0x3fd9ad7dc98e98c5e3fab8d20f8aaee5f7809933",
+            "logs": 6,
+            "topics": {
+              "0xb967c9b9e1b7af9a61ca71ff00e9f5b89ec6f2e268de8dacf12f0de8e51f3e47": 3,
+              "0x198d6990ef96613a9026203077e422916918b03ff47f0be6bee7b02d8e139ef0": 3
+            },
+            "code_size_bytes": 23562,
+            "sourcify": {
+              "chain_id": 988,
+              "address": "0x3fd9ad7dc98e98c5e3fab8d20f8aaee5f7809933",
+              "verified": false,
+              "name": null,
+              "compiler": null,
+              "http_status": 404,
+              "error": "http_status=404",
+              "abi_entries": 0
+            }
+          },
+          {
+            "address": "0xd027afcc69ffa2bcb288ba68da6b71ec90d7b1d2",
+            "logs": 5,
+            "topics": {
+              "0xd2245824774f1c2de21256e9fb34d9cc4633cf72c0952a82a996e45ad4df3c70": 5
+            },
+            "code_size_bytes": 21135,
+            "sourcify": {
+              "chain_id": 988,
+              "address": "0xd027afcc69ffa2bcb288ba68da6b71ec90d7b1d2",
+              "verified": false,
+              "name": null,
+              "compiler": null,
+              "http_status": 404,
+              "error": "http_status=404",
+              "abi_entries": 0
+            }
+          }
+        ]
+      }
+    },
+    "hyperevm": {
+      "health": {
+        "chain": "hyperevm",
+        "expected_chain_id": 999,
+        "ok": true,
+        "reported_chain_id": 999,
+        "chain_id_matches": true,
+        "latest_block": 46423181,
+        "latest_block_timestamp": 1789918588,
+        "block_age_seconds": 0.9,
+        "endpoint": "https://rpc.hyperliquid.xyz/evm",
+        "log_span": {
+          "mode": "unfiltered",
+          "accepted_span": 20,
+          "attempts": [
+            {
+              "span": 5,
+              "ok": true,
+              "logs": 68
+            },
+            {
+              "span": 20,
+              "ok": true,
+              "logs": 138
+            }
+          ]
+        },
+        "error": null
+      },
+      "targets": [],
+      "attempts": [
+        {
+          "url": "https://rpc.hyperliquid.xyz/evm",
+          "method": "eth_chainId",
+          "ok": true,
+          "seconds": 0.839
+        },
+        {
+          "url": "https://rpc.hyperliquid.xyz/evm",
+          "method": "eth_blockNumber",
+          "ok": true,
+          "seconds": 0.405
+        },
+        {
+          "url": "https://rpc.hyperliquid.xyz/evm",
+          "method": "eth_getBlockByNumber",
+          "ok": true,
+          "seconds": 0.272
+        }
+      ],
+      "discovery": {
+        "chain_id": 999,
+        "span_blocks": 5,
+        "from_block": 46423176,
+        "to_block": 46423181,
+        "total_logs": 97,
+        "distinct_contracts": 31,
+        "candidates": [
+          {
+            "address": "0xb88339cb7199b77e23db6e890353e22632ba630f",
+            "logs": 12,
+            "topics": {
+              "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef": 9,
+              "0xab8530f87dc9b59234c4623bf917212bb2536d647574c8e7e5da92c2ede0c9f8": 2,
+              "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925": 1
+            },
+            "code_size_bytes": 1798,
+            "sourcify": {
+              "chain_id": 999,
+              "address": "0xb88339cb7199b77e23db6e890353e22632ba630f",
+              "verified": false,
+              "name": null,
+              "compiler": null,
+              "http_status": 404,
+              "error": "http_status=404",
+              "abi_entries": 0
+            }
+          },
+          {
+            "address": "0x5555555555555555555555555555555555555555",
+            "logs": 12,
+            "topics": {
+              "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef": 7,
+              "0x7fcf532c15f0a6db0bd6d0e038bea71d30d808c7d98cb3bf7268a95bf5081b65": 5
+            },
+            "code_size_bytes": 2041,
+            "sourcify": {
+              "chain_id": 999,
+              "address": "0x5555555555555555555555555555555555555555",
+              "verified": true,
+              "name": "WHYPE9",
+              "compiler": "0.5.17+commit.d19bba13",
+              "http_status": 200,
+              "error": null,
+              "abi_entries": 16
+            }
+          },
+          {
+            "address": "0xa8ddb5cd96b5222afe198316e9a57caa642850d5",
+            "logs": 9,
+            "topics": {
+              "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef": 9
+            },
+            "code_size_bytes": 2138,
+            "sourcify": {
+              "chain_id": 999,
+              "address": "0xa8ddb5cd96b5222afe198316e9a57caa642850d5",
+              "verified": false,
+              "name": null,
+              "compiler": null,
+              "http_status": 404,
+              "error": "http_status=404",
+              "abi_entries": 0
+            }
+          },
+          {
+            "address": "0x0e6942cdfc559ab9fa40897ced6a5b28221c0999",
+            "logs": 8,
+            "topics": {
+              "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef": 7,
+              "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925": 1
+            },
+            "code_size_bytes": 6473,
+            "sourcify": {
+              "chain_id": 999,
+              "address": "0x0e6942cdfc559ab9fa40897ced6a5b28221c0999",
+              "verified": false,
+              "name": null,
+              "compiler": null,
+              "http_status": 404,
+              "error": "http_status=404",
+              "abi_entries": 0
+            }
+          },
+          {
+            "address": "0xb8ce59fc3717ada4c02eadf9682a9e934f625ebb",
+            "logs": 8,
+            "topics": {
+              "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef": 6,
+              "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925": 2
+            },
+            "code_size_bytes": 2227,
+            "sourcify": {
+              "chain_id": 999,
+              "address": "0xb8ce59fc3717ada4c02eadf9682a9e934f625ebb",
+              "verified": false,
+              "name": null,
+              "compiler": null,
+              "http_status": 404,
+              "error": "http_status=404",
+              "abi_entries": 0
+            }
+          },
+          {
+            "address": "0xc493f6511764fc0360fb76444ee896486824e1bf",
+            "logs": 6,
+            "topics": {
+              "0x1fddcdfe70304616af544c53643f907bd29d28577321bbf7f66910e3f83c8610": 6
+            },
+            "code_size_bytes": 5047,
+            "sourcify": {
+              "chain_id": 999,
+              "address": "0xc493f6511764fc0360fb76444ee896486824e1bf",
+              "verified": false,
+              "name": null,
+              "compiler": null,
+              "http_status": 404,
+              "error": "http_status=404",
+              "abi_entries": 0
+            }
+          }
+        ]
+      }
+    },
+    "sol": {
+      "health": {
+        "rpc": "https://solana-rpc.publicnode.com",
+        "health": "ok",
+        "version": "4.2.2",
+        "slot": 448774060,
+        "ok": true,
+        "seconds": 1.48
+      },
+      "targets": [
+        {
+          "target_id": "pump_fun_program",
+          "kind": "target",
+          "platform": "Pump.fun",
+          "address": "6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P",
+          "source": "pump.fun \u5b98\u65b9\u7a0b\u5e8f ID\uff08\u516c\u5f00\u8d44\u6599\uff09+ \u94fe\u4e0a\u8d26\u6237\u6838\u5b9e",
+          "target_kind": "launchpad",
+          "program_account": {
+            "program_id": "6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P",
+            "ok": true,
+            "owner": "BPFLoaderUpgradeab1e11111111111111111111111",
+            "executable": true,
+            "lamports": 8997612471,
+            "data_len": 36,
+            "rent_epoch": 18446744073709551615,
+            "space": 36
+          },
+          "activity": {
+            "address": "6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P",
+            "requested": 50,
+            "returned": 50,
+            "with_block_time": 50,
+            "newest_block_time": 1789918602,
+            "oldest_block_time": 1789918602,
+            "age_seconds": 10.3,
+            "recent_signature_samples": [
+              "yYBJACLp8hFHzgcoh7uEQVzC7L9kBFer97yQzX17awTyXvvrYt6hUtYKzfsAwiMccdmjBKsqLXKQWHoxfbMV5xV",
+              "5sZ1eNEemBjaLBHaoJCki3E8eGKVX4iqA6SqJPNDzzQcaJRYNB2nu5iusEZR3BGdjRdZgcuCKbM3UWGLogbfr15V",
+              "2zJzKvmGRGMTGuVkgREzzd4ZvgtghxmJwBn8eMPFG8npcsjhxhUfKAsFD2Zja62HR71311HvjuKjFQQKxh8ghfcv"
+            ],
+            "errors": [
+              {
+                "InstructionError": [
+                  3,
+                  {
+                    "Custom": 412
+                  }
+                ]
+              },
+              {
+                "InsufficientFundsForRent": {
+                  "account_index": 2
+                }
+              },
+              {
+                "InstructionError": [
+                  0,
+                  {
+                    "Custom": 1
+                  }
+                ]
+              },
+              {
+                "InstructionError": [
+                  4,
+                  {
+                    "Custom": 7
+                  }
+                ]
+              },
+              {
+                "InstructionError": [
+                  3,
+                  {
+                    "Custom": 7
+                  }
+                ]
+              }
+            ]
+          },
+          "instruction_probe": {
+            "found": false,
+            "checked_signatures": [
+              "5aUVpVCkSnZDEET4hLzQ9SCzaYfXraBfbAEXuJffdnVdF8DNxMvWi9rJ1HcZgyYJAvN8rShaf75LNA9zfC5fhz1b",
+              "5FqCFGfjhAZnPgXB9X5cte753gFUmAZwaBb7ZmbNTMnFkbBE6gzz72RGaGCE4m8Q3vP86ZMvEKSLNKr5irvezk4r",
+              "3Bk4wrmvMDsnQW8VG6S3PC65bebXNw8gBZ2qftU8CEKqVnERBC7Wx7ecU1o6KsJBwjfburu9Zj5xBA9rkaECvpRg",
+              "xyxopVJ4cnKUGRPbaTzt1uGcsPE4A8B7M5nBCPpHppcjHAZtGW6B2tBwEjdUxxjrhsbaKsxQRj1ZpCK1C5EqEtN",
+              "VeznqUfL29Vv8fz24EesBZAs8GPz3vAwnvGwfTMJLsUrV8ENp4HLRGuECxbFoee6Vqdssn9WMoMcs6EHTwVFNXX",
+              "64WrPkGca8wYNNg9yfSV75CWx6GnRgznxZk6dbdCKXfL9amFYDT2TJtZnRGxopwdaYnXydfxpzVTvzQpqcHcxfd2",
+              "3DMVgLcQcrMYsHa2BL9DDizRed76HehC45mnJtWBkncVegJVHfk3VdpVJzuEmGVP2otq2pxN1rEG9XkKpdaVi8pe",
+              "4rfSxkeM9KKNguMpKT1JqAHRzcFi7UPdvJKnSE8tzE39ek6y2qwxLqKgUtB9mqV991CmwyGPyzCrNGFn5TNwgVm7",
+              "5TYcmGfvm5XdhdTMfRLKftnCLoUDjWHanvKBZPH1tBNgCttjPknwEXqVj8m9vkVrhevMQyUxk6QYSLdAr9W4HuZj",
+              "3pegYwSRbBpPZShjikAzWSsVkRta1xn1kZM8Fb5Q7xd5QoWdCeWNRqDmyZRSjVUuwMwLCX6yVNZSZgc7gQrjrLR",
+              "2sUUMSEHJjv49s3HTryvSSncgNvVdzkno7YwHwaifTUSNqzP7S3GjiuNCRa1XGqy8xDb6GDm6325PjS2SgYHSCNj",
+              "22HaJeyaPELymKyCuobQekAA8voSqJVgiDqqNTs3ifSHMk8VsDyZgAXKGCPrH9aP8CkaCwVtEXzTEc1CYsjL633F",
+              "2QnSi1zrdDuXmL8tWpgm5TwrLuVvrfq9AKh5Sya2xeHv8NfJ348rEwkcwHYgjuFkAZasMsrzFB3RPmSJUSkCQ4fJ",
+              "3edLrBocuiJtU5hoRYtQdqjJtTYWwJKE7BP3EvNffxPGXcK9yNwPkzzAcknCVnamoFW8g7mbogXoqm7HX1AhT7EG",
+              "32KvNkxDPaNjLspZocpdLiSCQjekFeKva6Dbu4nqTt8vygcrA4oHhBBQio7HnmQK79Qo97uJEwYMksPgfXoVR86f",
+              "3TPuEX6MXQYDtKww486W871DWbDrnGHBco1XBdgURfYLxnDNSGLnfpe3NgrRLaXyCoeXaKgX1X9y5NBHmJiPFGeN",
+              "sFh8wP1r4fLhdWmC4Tuv2sT6XvPbLp7e58SarXZaoAFEUhjL49UhzdA1rHYo8QYAQakgL1PBwowKvth5TYhnTXt",
+              "2FexrkH4PYgu5WDgFoNP36N82B7VUMfgcjSLYq95BFP2FB6DDXDuCkXSHZsCYDzyZJXCZZNxXgjirhL3wEuzjSjR",
+              "2B6UPmovvWL7raHBh4WAFfmJZi3er616fSmYouwUivpXMM4c4sYKgdzbkNqyyjyFipEVgPBcarKRSQzhmWdb5f1v",
+              "3VHcxroBVw7izwNeeiC6BFDE77n9ZSDLuhv7u6gdwSUNpddwv8UzVfSpKBzSfH79yWFuEDRSyj8Wg9EMKyTW9BKz",
+              "VMZTiEVDFJDqAuV6VYigbUJ3P7i9sioePnNPKJ6jEqBtdeWgDgCHvBskoZFq5J3XMPhj3KN8YX1FHLZwcsjZFG3",
+              "4i6DPYxko73T86M6JZVC1GbEFpjFRgPMgATQNpd3uRo92eLfiMDzgxXGjMGdNbEtMo28gfi6Z9HhBo8s5i99DDWd",
+              "54rPXP1ZZKuGGoq4vRoX1CtRgTq2znupzhrGzo8TZX3TsmwEZaXaHwGvR4qKse5ddf12TmQViMa4mQxyLAP1ijFJ",
+              "4dkbrPmcC76DnTmfjx87Q6LHkMXtotnu63DALfootZeygvoaip9eC23jD243FfR3n3JMZLhBVEppPaUv8DSWQ64b",
+              "2FjvuCj1YjB1hYNpvuCzAHJoFbY7bhJRc17NSSVeQn6jY4vWjNdH1GsAbz4Z2y8nqKJpiV4XA8f1TymQGjp9r1aA",
+              "2byzFDvF91opXbagUSMo1bRH8WCn93FMf6K2yeictu4hqeGCYSa36j3bctSLRR9zXLP78rhfzL5EN3z1YV23LJVK",
+              "3STEQu5CKKfx1MugH3PPrNQgkR2ZVAc6mRDBbhRYfqGNQ9UKpuryY3p6GXpSFdr2DYgz1jPpu5gR1US4zSD8edVh",
+              "2EXkRwqBC2fhCFrw7o5M4FYYg6AqvazTrN7G82MFaV8pFL3BD7rrriN1nadRXdLAWS73NaSzkn5i2TH3FdvUznE3",
+              "4GLeQsySRU9hSNaK54h3nu9mWme7Umwa3sdfn9RLQvSPP3jSPp1quzKioDcTHtzCYphix9ku5wDWKBrnF36ihyS7",
+              "2jFHqkYUZH8TrzcHxBGuPhAAp6nP6zuXqP9MEofCe5RZjfYH9Kdw6ywxzwvF2EvRwTxhfSUzMefmqMQUQZbsTxZY",
+              "3kaEAYQ49qRr1Jz9Aerk7ciFdFwbqZdjSuq3jWAtQYGW71Qfq1KmkBqFm3KD9yiwZkMqEuFAuivWPHCFLSjXC8GM",
+              "3UY53Eqmc8rJphep5SsCbAQx51uQQ4LG2Q5w7qSnAmq9QMkhkkUXozfp4pYwUd39K5YcV6Exs2Tikf54KqAEwcri",
+              "u1KcnXkNEzAuFy5Y4sCAgaj4GQZpfc29zNbDGgPGcXrdsXnF1XqMAqAViRYBRXsGcXToAPwsGLkBUaUDqPms7q8",
+              "39UKsF9jhZLyFxuhwYH4mUMch6B6Z9yGjoQvr5nc4Q6qVeCdPAKXNv6BzvpSgwMZkCzqq3J9tLPQgDareSq1zzs6",
+              "3KosRjd8U24JefXwtX68fP7jh5a5qJiWoN2XJGJPJsukjPJ3KFgH8RUQ92catDqcKY8rWUMP3PaSEjxwCAMdfx4m",
+              "4VMZEDAf68JqcstozfDvJZdfFvUUDC5Nojn3VuS18u1P9vmnMqhhMRQAj2Leu8S4MzXkj7AkwSJffdMXxTEU7KMx",
+              "5vycYNZSfgrDLkGNNr4BEuPqkuDnSkneaorSFYxSWNiZRg2br9VaTFF3jUXdA43pqwzNj6dhKQkjxQduUzUMtm5N",
+              "5kBqYiWJD9HttHYSEerctHJT1cdubzdtamN1cjrpFA96zP57CJvqg2ybRDnu32RnUDbm8PsDysCDf6zgKhVPwX3C",
+              "5d7FH7haD2CpuDeR5P8uqnMb5E6vGH5vdTNPYdRktKBS17fcqyA21LSz7jdfyv1T2N7g4CNaEk3gC7e52KsVmzU9",
+              "3dWggqVaMScKTyRbVMo8Qp7zp8M6VvVqENUmKtiTHoAmTPgsKEoBrPzN6oTiK1nbJdWvuSmXrbkDLUsP7RKuke83"
+            ],
+            "discriminator": "181ec828051c0777",
+            "instruction_name_counts": {
+              "GetFeesWithQuoteMint": 4,
+              "TransferChecked": 4,
+              "Sell": 3,
+              "BalanceBelow": 3,
+              "Buy": 2,
+              "SellBondingCurvePercentage": 1,
+              "SellV2": 1,
+              "GetAccountDataSize": 1,
+              "InitializeImmutableOwner": 1,
+              "InitializeAccount3": 1
+            },
+            "discriminator_counts": {}
+          },
+          "ok": true
+        },
+        {
+          "target_id": "letsbonk_program",
+          "kind": "target",
+          "platform": "letsbonk",
+          "address": "LanMV9sAd7wArD4vJFi2qDdfnVhFxYSUg6eADduJ3uj",
+          "source": "chainstacklabs/pumpfun-bonkfun-bot src/platforms/letsbonk/address_provider.py\uff08Raydium LaunchLab program\uff09",
+          "target_kind": "launchpad",
+          "program_account": {
+            "program_id": "LanMV9sAd7wArD4vJFi2qDdfnVhFxYSUg6eADduJ3uj",
+            "ok": true,
+            "owner": "BPFLoaderUpgradeab1e11111111111111111111111",
+            "executable": true,
+            "lamports": 37580031,
+            "data_len": 36,
+            "rent_epoch": 18446744073709551615,
+            "space": 36
+          },
+          "activity": {
+            "address": "LanMV9sAd7wArD4vJFi2qDdfnVhFxYSUg6eADduJ3uj",
+            "requested": 50,
+            "returned": 50,
+            "with_block_time": 50,
+            "newest_block_time": 1789918615,
+            "oldest_block_time": 1789918614,
+            "age_seconds": 9.1,
+            "recent_signature_samples": [
+              "3Uyxp4LfiRQJtGDVcAjuGgzEf3YP5yt1LJF1FozgmMs7WTkJbwniMANKEraiA11pH2sA6WX3GNSb3Gn7Sn5tpQgv",
+              "5hAgWzTgpsnJW4AEGxDkFXmfnkL5D7HmBqj7EUcZeG9EZs6G9AeQcN1z2AazPyQnF3u39E6e8EAHxj5ZTQkXM2w7",
+              "3Pdn9VpJHnenZyEuY2LgvNBnSS5RL2KbnboVPWB4kkhcBdGdDkvKZp1V2X7yPRFFKSuAqAbcsjbnaoHvnChf3oH6"
+            ],
+            "errors": [
+              {
+                "InstructionError": [
+                  0,
+                  {
+                    "Custom": 7
+                  }
+                ]
+              },
+              {
+                "InstructionError": [
+                  3,
+                  {
+                    "Custom": 7
+                  }
+                ]
+              },
+              {
+                "InstructionError": [
+                  3,
+                  {
+                    "Custom": 7
+                  }
+                ]
+              },
+              {
+                "InstructionError": [
+                  0,
+                  {
+                    "Custom": 7
+                  }
+                ]
+              },
+              {
+                "InstructionError": [
+                  0,
+                  {
+                    "Custom": 7
+                  }
+                ]
+              }
+            ]
+          },
+          "ok": true
+        },
+        {
+          "target_id": "boop_program",
+          "kind": "target",
+          "platform": "boop",
+          "address": "boop8hVGQGqehUK2iVEMEnMrL5RbjywRzHKBmBE7ry4",
+          "source": "no-limit-nodes/every-solana-program-decoded programs/boop_boop README\uff08Program ID\uff09",
+          "target_kind": "launchpad",
+          "program_account": {
+            "program_id": "boop8hVGQGqehUK2iVEMEnMrL5RbjywRzHKBmBE7ry4",
+            "ok": true,
+            "owner": "BPFLoaderUpgradeab1e11111111111111111111111",
+            "executable": true,
+            "lamports": 1141446,
+            "data_len": 36,
+            "rent_epoch": 18446744073709551615,
+            "space": 36
+          },
+          "activity": {
+            "address": "boop8hVGQGqehUK2iVEMEnMrL5RbjywRzHKBmBE7ry4",
+            "requested": 50,
+            "returned": 12,
+            "with_block_time": 12,
+            "newest_block_time": 1789916746,
+            "oldest_block_time": 1789748879,
+            "age_seconds": 1878.6,
+            "recent_signature_samples": [
+              "6KhtrWFui2Jg2nCqNLSh52r5qe5RcnqPX2khvaXZdBvEyinqJtZHFnJJoBXxm1xRgPu9myyYbzW8dkRmpuMc48B",
+              "3TZ6CmS43yVE1ewaCFZ5vu95xwUX89NwmbbbJChCDJf5tUSviRb6TbAgfVbowD3AMpp6KwQHtCKkjatLdbYvbZgm",
+              "46Seoaamb7XJwsKAprpo432yRLoKDsm874YdmDug6ZNXgT7JTDNhbcRFitnTQXwmf7DWxv1zUFXWcTVHLpVUUfcZ"
+            ],
+            "errors": [
+              {
+                "InstructionError": [
+                  0,
+                  {
+                    "Custom": 6001
+                  }
+                ]
+              },
+              null,
+              null,
+              null,
+              null
+            ]
+          },
+          "ok": true
+        },
+        {
+          "target_id": "moonshot_program",
+          "kind": "target",
+          "platform": "moonshot_app",
+          "address": "MoonCVVNZFSYkqNXP6bxHLPL6QQJiMagDL3qcqUQTrG",
+          "source": "no-limit-nodes/every-solana-program-decoded programs/moonshot README\uff08Program ID\uff09",
+          "target_kind": "launchpad",
+          "program_account": {
+            "program_id": "MoonCVVNZFSYkqNXP6bxHLPL6QQJiMagDL3qcqUQTrG",
+            "ok": true,
+            "owner": "BPFLoaderUpgradeab1e11111111111111111111111",
+            "executable": true,
+            "lamports": 1141440,
+            "data_len": 36,
+            "rent_epoch": 18446744073709551615,
+            "space": 36
+          },
+          "activity": {
+            "address": "MoonCVVNZFSYkqNXP6bxHLPL6QQJiMagDL3qcqUQTrG",
+            "requested": 50,
+            "returned": 50,
+            "with_block_time": 50,
+            "newest_block_time": 1789915581,
+            "oldest_block_time": 1789861161,
+            "age_seconds": 3044.1,
+            "recent_signature_samples": [
+              "3DBYZRD3RjWbNnH6vVSkgxWC7R5G4nzG1yAynWmZvYCQNAYpQyyNqU9NL1okYZrDARLEHPomwxv2nJxym4AwmVoB",
+              "X6PDWzb2w2P3T1tceNxk7QfBuHCeva1ptdgUARpQKHfB3ocM7JeXVDwFRzp4JNhnybnRf4zo94fWdtqRrfUqA7u",
+              "qk9agabv7uoA99yyrCdNvA5iT4UYFqTUXxhVtL59ksvvdEGw1rjdNRdxdfTfdjSJwYahMkSDWPWEaqyNG1LGysC"
+            ],
+            "errors": [
+              null,
+              null,
+              null,
+              null,
+              null
+            ]
+          },
+          "ok": true
+        },
+        {
+          "target_id": "virtuals_solana_program",
+          "kind": "target",
+          "platform": "virtuals_solana",
+          "address": "5U3EU2ubXtK84QcRjWVmYt9RaDyA8gKxdUrPFXmZyaki",
+          "source": "no-limit-nodes/every-solana-program-decoded programs/virtuals README\uff08Program ID\uff09",
+          "target_kind": "launchpad",
+          "program_account": {
+            "program_id": "5U3EU2ubXtK84QcRjWVmYt9RaDyA8gKxdUrPFXmZyaki",
+            "ok": true,
+            "owner": "BPFLoaderUpgradeab1e11111111111111111111111",
+            "executable": true,
+            "lamports": 1141440,
+            "data_len": 36,
+            "rent_epoch": 18446744073709551615,
+            "space": 36
+          },
+          "activity": {
+            "address": "5U3EU2ubXtK84QcRjWVmYt9RaDyA8gKxdUrPFXmZyaki",
+            "requested": 50,
+            "returned": 0,
+            "with_block_time": 0,
+            "newest_block_time": null,
+            "oldest_block_time": null,
+            "age_seconds": null,
+            "recent_signature_samples": [],
+            "errors": []
+          },
+          "ok": false
+        }
+      ]
+    }
+  },
+  "blocked_targets": [
+    {
+      "chain": "bsc",
+      "platform": "cubepeg",
+      "blocked_reason": "\u7f3a\u5c11\u6709\u6765\u6e90\u7684\u5de5\u5382\u5730\u5740",
+      "next_step": "\u540c\u4e0a"
+    },
+    {
+      "chain": "bsc",
+      "platform": "likwid",
+      "blocked_reason": "\u7f3a\u5c11\u6709\u6765\u6e90\u7684\u5de5\u5382\u5730\u5740",
+      "next_step": "\u540c\u4e0a"
+    },
+    {
+      "chain": "bsc",
+      "platform": "goplus_creator",
+      "blocked_reason": "\u7f3a\u5c11\u6709\u6765\u6e90\u7684\u5de5\u5382\u5730\u5740",
+      "next_step": "\u540c\u4e0a"
+    },
+    {
+      "chain": "bsc",
+      "platform": "lunafun",
+      "blocked_reason": "\u7f3a\u5c11\u6709\u6765\u6e90\u7684\u5de5\u5382\u5730\u5740",
+      "next_step": "\u540c\u4e0a"
+    },
+    {
+      "chain": "bsc",
+      "platform": "four_xmode_agent",
+      "blocked_reason": "\u7f3a\u5c11\u6709\u6765\u6e90\u7684\u5de5\u5382\u5730\u5740",
+      "next_step": "\u540c\u4e0a"
+    },
+    {
+      "chain": "eth",
+      "platform": "trench",
+      "blocked_reason": "\u7f3a\u5c11\u6709\u6765\u6e90\u7684\u5de5\u5382\u5730\u5740",
+      "next_step": "\u4ece\u5b98\u65b9\u6e20\u9053\u6838\u5b9e\u5408\u7ea6\u540e\u52a0\u5165"
+    },
+    {
+      "chain": "eth",
+      "platform": "klik",
+      "blocked_reason": "\u7f3a\u5c11\u6709\u6765\u6e90\u7684\u5de5\u5382\u5730\u5740",
+      "next_step": "\u540c\u4e0a"
+    },
+    {
+      "chain": "eth",
+      "platform": "livo",
+      "blocked_reason": "\u7f3a\u5c11\u6709\u6765\u6e90\u7684\u5de5\u5382\u5730\u5740",
+      "next_step": "\u540c\u4e0a"
+    },
+    {
+      "chain": "eth",
+      "platform": "stroid",
+      "blocked_reason": "\u7f3a\u5c11\u6709\u6765\u6e90\u7684\u5de5\u5382\u5730\u5740",
+      "next_step": "\u540c\u4e0a"
+    },
+    {
+      "chain": "eth",
+      "platform": "printr",
+      "blocked_reason": "\u7f3a\u5c11\u6709\u6765\u6e90\u7684\u5de5\u5382\u5730\u5740",
+      "next_step": "\u540c\u4e0a"
+    },
+    {
+      "chain": "base",
+      "platform": "zora",
+      "blocked_reason": "0x777777... \u4e3a Zora1155Factory\uff08NFT\uff09\uff0cmeme \u53d1\u5c04\u53f0\u5408\u7ea6\u672a\u6838\u5b9e",
+      "next_step": "\u4ece Zora \u5b98\u65b9\u6587\u6863\u6838\u5b9e meme \u53d1\u5c04\u5408\u7ea6"
+    },
+    {
+      "chain": "base",
+      "platform": "basememe",
+      "blocked_reason": "\u7f3a\u5c11\u6709\u6765\u6e90\u7684\u5de5\u5382\u5730\u5740",
+      "next_step": "\u540c\u4e0a"
+    },
+    {
+      "chain": "base",
+      "platform": "virtuals_v2",
+      "blocked_reason": "\u7f3a\u5c11\u6709\u6765\u6e90\u7684\u5de5\u5382\u5730\u5740",
+      "next_step": "\u540c\u4e0a"
+    },
+    {
+      "chain": "base",
+      "platform": "klik",
+      "blocked_reason": "\u7f3a\u5c11\u6709\u6765\u6e90\u7684\u5de5\u5382\u5730\u5740",
+      "next_step": "\u540c\u4e0a"
+    },
+    {
+      "chain": "base",
+      "platform": "bankr",
+      "blocked_reason": "Bankr \u672c\u8eab\u4e0d\u53d1\u5e01\uff1b\u5b98\u65b9\u6587\u6863\u8bf4\u660e Base \u4e0a\u901a\u8fc7 Doppler provider \u90e8\u7f72\uff08docs.bankr.bot\uff09",
+      "next_step": "\u5df2\u6539\u4e3a\u6838\u5b9e Doppler \u5408\u7ea6\uff1bBankr \u524d\u7aef/CLI \u53ea\u662f\u5ba2\u6237\u7aef"
+    },
+    {
+      "chain": "robinhood",
+      "platform": "gmgn_robinhood_discovery",
+      "blocked_reason": "GMGN openapi \u9700\u8981\u4e2a\u4eba API key\uff08\u672c\u5730\u672a\u914d\u7f6e\uff09",
+      "next_step": "\u7528\u6237\u63d0\u4f9b GMGN_API_KEY \u540e\u53ef\u53ea\u8bfb\u9a8c\u8bc1 27 \u4e2a\u5e73\u53f0"
+    },
+    {
+      "chain": "robinhood",
+      "platform": "doppler (Robinhood)",
+      "blocked_reason": "\u5df2\u627e\u5230\u5b98\u65b9\u90e8\u7f72\u8868\u5e76\u5217\u5165 targets\uff1b\u672c\u8f6e\u9a8c\u8bc1\u7ed3\u679c\u89c1 report",
+      "next_step": "\u82e5\u7a97\u53e3\u5185\u65e0\u4e8b\u4ef6\uff0c\u9700\u6269\u5927\u7a97\u53e3\u6216\u6362 RPC"
+    },
+    {
+      "chain": "arc",
+      "platform": "arc_launchpads",
+      "blocked_reason": "GMGN \u53ea\u6709\u901a\u7528 swap/limit order\uff1b\u65e0\u9ed8\u8ba4\u5e73\u53f0\u6e05\u5355\uff0c\u672a\u53d1\u73b0\u5df2\u6838\u5b9e\u7684\u53d1\u5c04\u53f0\u5730\u5740",
+      "next_step": "\u7528\u94fe\u4e0a\u65e5\u5fd7\u53d1\u73b0\u6d3b\u8dc3\u5408\u7ea6\u540e\u6838\u5b9e"
+    },
+    {
+      "chain": "stable",
+      "platform": "stable_launchpads",
+      "blocked_reason": "getLogs \u4e0a\u9650 1024 \u533a\u5757\uff1bGMGN \u63a2\u6d4b 0 token",
+      "next_step": "\u53ea\u8bfb\u89c2\u5bdf\uff0c\u4e0d\u6295\u5165\u5f00\u53d1"
+    },
+    {
+      "chain": "hyperevm",
+      "platform": "hyperevm_dex",
+      "blocked_reason": "\u4e3b\u7f51 RPC \u5bf9\u65e0\u8fc7\u6ee4 getLogs \u6709\u54cd\u5e94\u4f53 1MB \u9650\u5236\uff1b\u5de5\u5382\u5730\u5740\u672a\u6838\u5b9e",
+      "next_step": "\u5148\u6309\u5730\u5740\u6838\u5b9e HyperSwap/KittenSwap \u5de5\u5382\uff0c\u518d\u505a\u65e5\u5fd7\u63a2\u6d4b"
+    },
+    {
+      "chain": "sol",
+      "platform": "bags",
+      "blocked_reason": "\u7a0b\u5e8f ID \u672a\u6838\u5b9e",
+      "next_step": "\u540c\u4e0a"
+    }
+  ]
+}

@@ -1,0 +1,559 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-09-20",
+  "notes": [
+    "只收录有来源的地址；无来源的平台列入 blocked，不做地址猜测。",
+    "target 必须通过：有代码 + 真实链上日志（含区块与交易哈希）才算 VERIFIED-LIVE。",
+    "topic0 由 harness 本地用 keccak 从事件签名计算，不硬编码。"
+  ],
+  "chains": {
+    "bsc": {
+      "chain_id": 56,
+      "family": "evm",
+      "rpc": [
+        "https://bsc-rpc.publicnode.com",
+        "https://bsc.publicnode.com"
+      ],
+      "explorer": "https://bscscan.com",
+      "target_span": 5000,
+      "discovery_span": 0,
+      "discovery_note": "该端点拒绝无地址过滤的 eth_getLogs（-32701），无法做全链发现，必须按地址核实。",
+      "targets": [
+        {
+          "id": "fourmeme_token_manager",
+          "kind": "launchpad",
+          "platform": "fourmeme",
+          "address": "0x5c952063c7fc8610FFDB798152D69F0B9550762b",
+          "source": "config/contracts.json + config/TokenManager2.lite.abi（本地已验证，v2 布局）",
+          "abi_path": "config/TokenManager2.lite.abi",
+          "topics": [
+            "TokenCreate(address,address,uint256,string,string,uint256,uint256,uint256)",
+            "TokenPurchase(address,address,uint256,uint256,uint256,uint256,uint256,uint256)",
+            "TokenSale(address,address,uint256,uint256,uint256,uint256,uint256,uint256)",
+            "LiquidityAdded(address,uint256,address,uint256)"
+          ],
+          "notes": "TokenSale 采样已解码成功，证明 v2 布局在实时日志上成立"
+        },
+        {
+          "id": "pancake_v2_factory",
+          "kind": "dex_factory",
+          "platform": "pancake_v2",
+          "address": "0xca143ce32fe78f1f7019d7d551a6402fc5350c73",
+          "source": "Sourcify full match（PancakeFactory）+ Chainlist 公开资料",
+          "expected_names": [
+            "PancakeFactory"
+          ],
+          "topics": [
+            "PairCreated(address,address,address,uint256)"
+          ],
+          "reads": [
+            {
+              "signature": "allPairsLength()",
+              "type": "uint"
+            }
+          ]
+        },
+        {
+          "id": "pancake_v3_factory",
+          "kind": "dex_factory",
+          "platform": "pancake_v3",
+          "address": "0x0bfbcf9fa4f9c56b0f40a671ad40e0805a091865",
+          "source": "公开标签 PancakeSwap: PancakeV3Factory；Sourcify 记录名为 PlunderV3Factory（名称待证，地址行为优先）",
+          "topics": [
+            "PoolCreated(address,address,uint24,int24,address)"
+          ],
+          "reads": [
+            {
+              "signature": "feeAmountTickSpacing(uint24)",
+              "type": "uint",
+              "args": [
+                100
+              ]
+            },
+            {
+              "signature": "getPool(address,address,uint24)",
+              "type": "address",
+              "args": [
+                "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+                "0x55d398326f99059fF775485246999027B3197955",
+                100
+              ]
+            }
+          ],
+          "linked_contracts": [
+            {
+              "id": "wbnb_usdt_001_pool",
+              "from_read": "getPool(address,address,uint24)",
+              "topics": [
+                "Swap(address,address,int256,int256,uint160,uint128,int24)"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "flap_portal",
+          "kind": "launchpad",
+          "platform": "flap",
+          "address": "0xe2ce6ab80874fa9fa2aae65d277dd6b8e65c9de0",
+          "source": "docs.flap.sh Deployed Contract Addresses（Portal v5.23.1）+ waifufun Flap SDK constants",
+          "proxy": true
+        },
+        {
+          "id": "openfour_registry",
+          "kind": "registry",
+          "platform": "openfour",
+          "address": "0x912cef0c3ae9ab6eb3ec87cab69371cfb317ab94",
+          "source": "OpenFour 官方文档 Known Registry addresses（BNB Smart Chain mainnet）",
+          "abi_urls": [
+            "https://api.github.com/repos/four-meme-community/openfour-docs/contents/scripts/abi/IOpenFourRegistry.json"
+          ],
+          "reads": [
+            {
+              "signature": "openFourCore()",
+              "type": "address"
+            }
+          ],
+          "linked_contracts": [
+            {
+              "id": "openfour_core",
+              "from_read": "openFourCore()",
+              "abi_urls": [
+                "https://api.github.com/repos/four-meme-community/openfour-docs/contents/scripts/abi/IOpenFourCore.json"
+              ],
+              "topics": [
+                "TokenCreated(uint256,uint256,address,address,string,string,uint256,uint256,uint256,uint256,address,address,address,address,address,address,address,string,uint256,bytes)"
+              ]
+            }
+          ]
+        }
+      ],
+      "blocked": [
+        {
+          "platform": "cubepeg",
+          "blocked_reason": "缺少有来源的工厂地址",
+          "next_step": "同上"
+        },
+        {
+          "platform": "likwid",
+          "blocked_reason": "缺少有来源的工厂地址",
+          "next_step": "同上"
+        },
+        {
+          "platform": "goplus_creator",
+          "blocked_reason": "缺少有来源的工厂地址",
+          "next_step": "同上"
+        },
+        {
+          "platform": "lunafun",
+          "blocked_reason": "缺少有来源的工厂地址",
+          "next_step": "同上"
+        },
+        {
+          "platform": "four_xmode_agent",
+          "blocked_reason": "缺少有来源的工厂地址",
+          "next_step": "同上"
+        }
+      ]
+    },
+    "eth": {
+      "chain_id": 1,
+      "family": "evm",
+      "rpc": [
+        "https://1rpc.io/eth",
+        "https://rpc.mevblocker.io",
+        "https://rpc.flashbots.net",
+        "https://eth.drpc.org"
+      ],
+      "explorer": "https://etherscan.io",
+      "target_span": 2000,
+      "discovery_span": 5,
+      "targets": [
+        {
+          "id": "uniswap_v2_factory",
+          "kind": "dex_factory",
+          "platform": "uniswap_v2",
+          "address": "0x5c69bee701ef814a2b6a3edd4b1652cb9cc5aa6f",
+          "source": "Sourcify full match（UniswapV2Factory）",
+          "expected_names": [
+            "UniswapV2Factory"
+          ],
+          "topics": [
+            "PairCreated(address,address,address,uint256)"
+          ],
+          "reads": [
+            {
+              "signature": "allPairsLength()",
+              "type": "uint"
+            }
+          ]
+        },
+        {
+          "id": "uniswap_v3_factory",
+          "kind": "dex_factory",
+          "platform": "uniswap_v3",
+          "address": "0x1f98431c8ad98523631ae4a59f267346ea31f984",
+          "source": "Sourcify full match（UniswapV3Factory）",
+          "expected_names": [
+            "UniswapV3Factory"
+          ],
+          "topics": [
+            "PoolCreated(address,address,uint24,int24,address)"
+          ]
+        },
+        {
+          "id": "doppler_deployer",
+          "kind": "launchpad",
+          "platform": "doppler",
+          "address": "0xb35469ee64a87afd19b31615094fe3962d73e421",
+          "source": "whetstoneresearch/doppler Deployments.md（官方部署表）"
+        },
+        {
+          "id": "doppler_hook_initializer",
+          "kind": "launchpad",
+          "platform": "doppler",
+          "address": "0xbdf938149ac6a781f94faa0ed45e6a0e984c6544",
+          "source": "whetstoneresearch/doppler Deployments.md（官方部署表）"
+        }
+      ],
+      "blocked": [
+        {
+          "platform": "trench",
+          "blocked_reason": "缺少有来源的工厂地址",
+          "next_step": "从官方渠道核实合约后加入"
+        },
+        {
+          "platform": "klik",
+          "blocked_reason": "缺少有来源的工厂地址",
+          "next_step": "同上"
+        },
+        {
+          "platform": "livo",
+          "blocked_reason": "缺少有来源的工厂地址",
+          "next_step": "同上"
+        },
+        {
+          "platform": "stroid",
+          "blocked_reason": "缺少有来源的工厂地址",
+          "next_step": "同上"
+        },
+        {
+          "platform": "printr",
+          "blocked_reason": "缺少有来源的工厂地址",
+          "next_step": "同上"
+        }
+      ]
+    },
+    "base": {
+      "chain_id": 8453,
+      "family": "evm",
+      "rpc": [
+        "https://mainnet.base.org",
+        "https://base.publicnode.com"
+      ],
+      "explorer": "https://basescan.org",
+      "target_span": 2000,
+      "discovery_span": 10,
+      "targets": [
+        {
+          "id": "uniswap_v3_factory",
+          "kind": "dex_factory",
+          "platform": "uniswap_v3",
+          "address": "0x33128a8fc17869897dce68ed026d694621f6fdfd",
+          "source": "Sourcify full match（UniswapV3Factory）",
+          "expected_names": [
+            "UniswapV3Factory"
+          ],
+          "topics": [
+            "PoolCreated(address,address,uint24,int24,address)"
+          ]
+        },
+        {
+          "id": "aerodrome_pool_factory",
+          "kind": "dex_factory",
+          "platform": "aerodrome",
+          "address": "0x420dd381b31aef6683db6b902084cb0ffece40da",
+          "source": "Sourcify full match（PoolFactory）",
+          "expected_names": [
+            "PoolFactory"
+          ],
+          "topics": [
+            "PoolCreated(address,address,bool,address,uint256)"
+          ],
+          "reads": [
+            {
+              "signature": "allPoolsLength()",
+              "type": "uint"
+            }
+          ]
+        },
+        {
+          "id": "clanker_v4",
+          "kind": "launchpad",
+          "platform": "clanker",
+          "address": "0xe85a59c628f7d27878aceb4bf3b35733630083a9",
+          "source": "clanker-devco/v4-contracts README（Base Mainnet v4.0 Clanker）+ Sourcify ABI 自动解码"
+        },
+        {
+          "id": "flaunch",
+          "kind": "launchpad",
+          "platform": "flaunch",
+          "address": "0x516af52d0c629b5e378da4dc64ecb0744ce10109",
+          "source": "flayerlabs/flaunchgg-contracts README（Base Mainnet Flaunch）"
+        },
+        {
+          "id": "doppler_deployer",
+          "kind": "launchpad",
+          "platform": "doppler",
+          "address": "0xb35469ee64a87afd19b31615094fe3962d73e421",
+          "source": "whetstoneresearch/doppler Deployments.md（官方部署表）"
+        },
+        {
+          "id": "doppler_hook_initializer",
+          "kind": "launchpad",
+          "platform": "doppler",
+          "address": "0xbdf938149ac6a781f94faa0ed45e6a0e984c6544",
+          "source": "whetstoneresearch/doppler Deployments.md（官方部署表）"
+        },
+        {
+          "id": "doppler_uniswap_v4_initializer",
+          "kind": "launchpad",
+          "platform": "doppler",
+          "address": "0x53b4c21a6cb61d64f636abbfa6e8e90e6558e8ad",
+          "source": "whetstoneresearch/doppler Deployments.md（官方部署表）"
+        }
+      ],
+      "blocked": [
+        {
+          "platform": "zora",
+          "blocked_reason": "0x777777... 为 Zora1155Factory（NFT），meme 发射台合约未核实",
+          "next_step": "从 Zora 官方文档核实 meme 发射合约"
+        },
+        {
+          "platform": "basememe",
+          "blocked_reason": "缺少有来源的工厂地址",
+          "next_step": "同上"
+        },
+        {
+          "platform": "virtuals_v2",
+          "blocked_reason": "缺少有来源的工厂地址",
+          "next_step": "同上"
+        },
+        {
+          "platform": "klik",
+          "blocked_reason": "缺少有来源的工厂地址",
+          "next_step": "同上"
+        },
+        {
+          "platform": "bankr",
+          "blocked_reason": "Bankr 本身不发币；官方文档说明 Base 上通过 Doppler provider 部署（docs.bankr.bot）",
+          "next_step": "已改为核实 Doppler 合约；Bankr 前端/CLI 只是客户端"
+        }
+      ]
+    },
+    "arbitrum": {
+      "chain_id": 42161,
+      "family": "evm",
+      "rpc": [
+        "https://arb1.arbitrum.io/rpc",
+        "https://arbitrum-one.publicnode.com"
+      ],
+      "explorer": "https://arbiscan.io",
+      "target_span": 20000,
+      "discovery_span": 0,
+      "discovery_note": "该端点拒绝无地址过滤的 eth_getLogs（-32701）。",
+      "targets": [
+        {
+          "id": "uniswap_v3_factory",
+          "kind": "dex_factory",
+          "platform": "uniswap_v3",
+          "address": "0x1f98431c8ad98523631ae4a59f267346ea31f984",
+          "source": "Sourcify full match（UniswapV3Factory）",
+          "expected_names": [
+            "UniswapV3Factory"
+          ],
+          "topics": [
+            "PoolCreated(address,address,uint24,int24,address)"
+          ]
+        },
+        {
+          "id": "camelot_factory",
+          "kind": "dex_factory",
+          "platform": "camelot",
+          "address": "0x6eccab422d763ac031210895c81787e87b43a652",
+          "source": "Sourcify full match（CamelotFactory）",
+          "expected_names": [
+            "CamelotFactory"
+          ]
+        },
+        {
+          "id": "doppler_deployer",
+          "kind": "launchpad",
+          "platform": "doppler",
+          "address": "0x4389ad34938b14f25cff7ed983c53f5a42a2573f",
+          "source": "whetstoneresearch/doppler Deployments.md（官方部署表）"
+        },
+        {
+          "id": "doppler_hook_initializer",
+          "kind": "launchpad",
+          "platform": "doppler",
+          "address": "0xaa7f809bb3752f715fa2e418230667c382a56544",
+          "source": "whetstoneresearch/doppler Deployments.md（官方部署表）"
+        }
+      ],
+      "blocked": []
+    },
+    "robinhood": {
+      "chain_id": 4663,
+      "family": "evm",
+      "rpc": [
+        "https://rpc.mainnet.chain.robinhood.com"
+      ],
+      "explorer": "https://robinscan.io",
+      "target_span": 2000,
+      "discovery_span": 20,
+      "targets": [
+        {
+          "id": "doppler_deployer",
+          "kind": "launchpad",
+          "platform": "doppler",
+          "address": "0x4389ad34938b14f25cff7ed983c53f5a42a2573f",
+          "source": "whetstoneresearch/doppler Deployments.md（官方部署表）"
+        },
+        {
+          "id": "doppler_hook_initializer",
+          "kind": "launchpad",
+          "platform": "doppler",
+          "address": "0x4e3468951d49f2eea976ed0d6e75ffcb44a9a544",
+          "source": "whetstoneresearch/doppler Deployments.md（官方部署表）"
+        },
+        {
+          "id": "doppler_uniswap_v4_initializer",
+          "kind": "launchpad",
+          "platform": "doppler",
+          "address": "0x6cce158b6d1747617fc218592b4d60b239b957ea",
+          "source": "whetstoneresearch/doppler Deployments.md（官方部署表）"
+        }
+      ],
+      "blocked": [
+        {
+          "platform": "gmgn_robinhood_discovery",
+          "blocked_reason": "GMGN openapi 需要个人 API key（本地未配置）",
+          "next_step": "用户提供 GMGN_API_KEY 后可只读验证 27 个平台"
+        },
+        {
+          "platform": "doppler (Robinhood)",
+          "blocked_reason": "已找到官方部署表并列入 targets；本轮验证结果见 report",
+          "next_step": "若窗口内无事件，需扩大窗口或换 RPC"
+        }
+      ],
+      "notes": "RPC 有 429 限流；harness 已加重试退避。2000 区块约 5–6 分钟。"
+    },
+    "arc": {
+      "chain_id": 5042,
+      "family": "evm",
+      "rpc": [
+        "https://rpc.mainnet.arc.io"
+      ],
+      "explorer": "https://explorer.arc.io",
+      "target_span": 20,
+      "discovery_span": 20,
+      "targets": [],
+      "blocked": [
+        {
+          "platform": "arc_launchpads",
+          "blocked_reason": "GMGN 只有通用 swap/limit order；无默认平台清单，未发现已核实的发射台地址",
+          "next_step": "用链上日志发现活跃合约后核实"
+        }
+      ]
+    },
+    "stable": {
+      "chain_id": 988,
+      "family": "evm",
+      "rpc": [
+        "https://rpc.stable.xyz"
+      ],
+      "explorer": "https://stablescan.xyz",
+      "target_span": 1000,
+      "discovery_span": 500,
+      "targets": [],
+      "blocked": [
+        {
+          "platform": "stable_launchpads",
+          "blocked_reason": "getLogs 上限 1024 区块；GMGN 探测 0 token",
+          "next_step": "只读观察，不投入开发"
+        }
+      ]
+    },
+    "hyperevm": {
+      "chain_id": 999,
+      "family": "evm",
+      "rpc": [
+        "https://rpc.hyperliquid.xyz/evm"
+      ],
+      "explorer": "",
+      "target_span": 5,
+      "discovery_span": 5,
+      "targets": [],
+      "blocked": [
+        {
+          "platform": "hyperevm_dex",
+          "blocked_reason": "主网 RPC 对无过滤 getLogs 有响应体 1MB 限制；工厂地址未核实",
+          "next_step": "先按地址核实 HyperSwap/KittenSwap 工厂，再做日志探测"
+        }
+      ]
+    },
+    "sol": {
+      "chain_id": null,
+      "family": "solana",
+      "rpc": [
+        "https://solana-rpc.publicnode.com"
+      ],
+      "explorer": "https://solscan.io",
+      "targets": [
+        {
+          "id": "pump_fun_program",
+          "kind": "launchpad",
+          "platform": "Pump.fun",
+          "address": "6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P",
+          "source": "pump.fun 官方程序 ID（公开资料）+ 链上账户核实",
+          "instruction": "create"
+        },
+        {
+          "id": "letsbonk_program",
+          "kind": "launchpad",
+          "platform": "letsbonk",
+          "address": "LanMV9sAd7wArD4vJFi2qDdfnVhFxYSUg6eADduJ3uj",
+          "source": "chainstacklabs/pumpfun-bonkfun-bot src/platforms/letsbonk/address_provider.py（Raydium LaunchLab program）"
+        },
+        {
+          "id": "boop_program",
+          "kind": "launchpad",
+          "platform": "boop",
+          "address": "boop8hVGQGqehUK2iVEMEnMrL5RbjywRzHKBmBE7ry4",
+          "source": "no-limit-nodes/every-solana-program-decoded programs/boop_boop README（Program ID）"
+        },
+        {
+          "id": "moonshot_program",
+          "kind": "launchpad",
+          "platform": "moonshot_app",
+          "address": "MoonCVVNZFSYkqNXP6bxHLPL6QQJiMagDL3qcqUQTrG",
+          "source": "no-limit-nodes/every-solana-program-decoded programs/moonshot README（Program ID）"
+        },
+        {
+          "id": "virtuals_solana_program",
+          "kind": "launchpad",
+          "platform": "virtuals_solana",
+          "address": "5U3EU2ubXtK84QcRjWVmYt9RaDyA8gKxdUrPFXmZyaki",
+          "source": "no-limit-nodes/every-solana-program-decoded programs/virtuals README（Program ID）"
+        }
+      ],
+      "blocked": [
+        {
+          "platform": "bags",
+          "blocked_reason": "程序 ID 未核实",
+          "next_step": "同上"
+        }
+      ]
+    }
+  }
+}
