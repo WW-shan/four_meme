@@ -183,7 +183,13 @@ class HybridModel:
             try:
                 sell_policy = _load_sb3_policy(str(policy_path))
             except Exception as exc:
-                logger.warning("failed to load optional sell policy from %s: %s", policy_path, exc)
+                # Not fatal, but it silently changes how positions exit: the bot falls back to
+                # rule-based sells instead of the learned policy. Say so explicitly.
+                logger.warning(
+                    "failed to load sell policy from %s: %s; falling back to rule-based exits",
+                    policy_path,
+                    exc,
+                )
                 sell_policy = None
 
         entry_value_model = None
