@@ -125,16 +125,166 @@
               ]
             }
           ]
+        },
+        {
+          "id": "fourmeme_token_manager_v1",
+          "kind": "launchpad",
+          "platform": "fourmeme",
+          "address": "0xec4549cadce5da21df6e6422d448034b5233bfbc",
+          "source": "four-meme-community/fourmeme-docs docs/integration-guide.md（官方社区文档，BSC）；TokenManager V1（只读交易）"
+        },
+        {
+          "id": "fourmeme_helper3",
+          "kind": "launchpad",
+          "platform": "fourmeme",
+          "address": "0xf251f83e40a78868fcfa3fa4599dad6494e46034",
+          "source": "four-meme-community/fourmeme-docs docs/integration-guide.md（官方社区文档，BSC）；TokenManagerHelper3（getTokenInfo/tryBuy/trySell）",
+          "verify_by": "reads",
+          "reads": [
+            {
+              "signature": "TOKEN_MANAGER()",
+              "type": "address"
+            },
+            {
+              "signature": "TOKEN_MANAGER_2()",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "id": "fourmeme_agent_identifier",
+          "kind": "launchpad",
+          "platform": "fourmeme_agent",
+          "address": "0x09b44a633de9f9ebf6fb9bdd5b5629d3dd2cef13",
+          "source": "four-meme-community/fourmeme-docs docs/integration-guide.md（官方社区文档，BSC）；AgentIdentifier（isAgent/nftCount）",
+          "verify_by": "reads",
+          "reads": [
+            {
+              "signature": "nftCount()",
+              "type": "uint"
+            }
+          ]
+        },
+        {
+          "id": "flap_vault_portal",
+          "kind": "launchpad",
+          "platform": "flap_pve",
+          "address": "0x90497450f2a706f1951b5bdda52b4e5d16f34c06",
+          "source": "链上发现（Pancake 新池创建者聚合）+ EIP-1967 实现 0x4031a21d10aceed69a6a8d9af3e48d90b3db8074（Sourcify VaultPortal）"
+        },
+        {
+          "id": "likwid_vault",
+          "kind": "launchpad",
+          "platform": "likwid",
+          "address": "0x065d449ec9d139740343990b7e1cf05fa830e4ba",
+          "source": "likwid-fi/likwid-docs docs/product/contract-address.md（官方文档，BNB Chain）；LikwidVault"
+        },
+        {
+          "id": "likwid_pair_position",
+          "kind": "launchpad",
+          "platform": "likwid",
+          "address": "0xb397fe16be79b082f17f1cd96e6489df19e07bcd",
+          "source": "likwid-fi/likwid-docs docs/product/contract-address.md（官方文档，BNB Chain）；LikwidPairPosition"
+        },
+        {
+          "id": "likwid_margin_position",
+          "kind": "launchpad",
+          "platform": "likwid",
+          "address": "0x6bec0c1dc4898484b7f094566ddf8bc82ed7abe8",
+          "source": "likwid-fi/likwid-docs docs/product/contract-address.md（官方文档，BNB Chain）；LikwidMarginPosition"
+        },
+        {
+          "id": "likwid_lend_position",
+          "kind": "launchpad",
+          "platform": "likwid",
+          "address": "0xce91db5947228bba595c3cac49eb24053a06618e",
+          "source": "likwid-fi/likwid-docs docs/product/contract-address.md（官方文档，BNB Chain）；LikwidLendPosition"
+        },
+        {
+          "id": "likwid_helper",
+          "kind": "launchpad",
+          "platform": "likwid",
+          "address": "0x16a9633f8a777ca733073ea2526705cd8338d510",
+          "source": "likwid-fi/likwid-docs docs/product/contract-address.md（官方文档，BNB Chain）；LikwidHelper"
+        },
+        {
+          "id": "flap_aioracle",
+          "kind": "launchpad",
+          "platform": "flap_aioracle",
+          "address": "0xaee3a7ca6fe6b53f6c32a3e8407ec5a9df8b7e39",
+          "source": "docs.flap.sh Deployed Contract Addresses（官方部署表）；AI Oracle（preview）"
+        },
+        {
+          "id": "flap_stocks_vault_factory_v1",
+          "kind": "launchpad",
+          "platform": "flap_stocks",
+          "address": "0xf8ac088f06d155f3c3f531f1ef80b14f1604530a",
+          "source": "docs.flap.sh Deployed Contract Addresses（官方部署表）；Stocks Vault RWAVaultFactory v1"
+        },
+        {
+          "id": "flap_stocks_vault_factory_v2",
+          "kind": "launchpad",
+          "platform": "flap_stocks",
+          "address": "0x40a9a2fda017e0923ea0b403f2f063f9e51168fb",
+          "source": "docs.flap.sh Deployed Contract Addresses（官方部署表）；Stocks Vault RWAVaultFactory v2"
+        },
+        {
+          "id": "flap_stocks_vault_factory_v3",
+          "kind": "launchpad",
+          "platform": "flap_stocks",
+          "address": "0x5418f7e8ff90354db0ecd48c8b710219244eb3c5",
+          "source": "docs.flap.sh Deployed Contract Addresses（官方部署表）；Stocks Vault IndexVaultFactory v3"
+        },
+        {
+          "id": "flap_trigger_service",
+          "kind": "launchpad",
+          "platform": "flap",
+          "address": "0xcf4ee25035cf883895110f367f5ba8172416a7f9",
+          "source": "docs.flap.sh Deployed Contract Addresses（官方部署表）；Trigger Service"
+        },
+        {
+          "id": "flap_candy_box",
+          "kind": "launchpad",
+          "platform": "flap",
+          "address": "0x6255fbd731272a517022e99f6cacf6a5de9414ee",
+          "source": "docs.flap.sh Deployed Contract Addresses（官方部署表）；Candy Box（preview）"
+        },
+        {
+          "id": "flap_tax_token_helper",
+          "kind": "launchpad",
+          "platform": "flap",
+          "address": "0x53841c73217735f37bc1775538b03b23fefd8346",
+          "source": "docs.flap.sh Deployed Contract Addresses（官方部署表）；Tax Token Helper"
+        },
+        {
+          "id": "cubepeg_launchpad_candidate",
+          "kind": "launchpad",
+          "platform": "cubepeg",
+          "address": "0x60a2dfa786c3ec6bd1a733c8fab910a6481f0b50",
+          "source": "anysearch 命中 BscScan “Launchpad | Address 0x60a2dfa7…” 页面标题；地址待链上核实"
+        },
+        {
+          "id": "clanker_v4_bsc",
+          "kind": "launchpad",
+          "platform": "clanker",
+          "address": "0xea30438e0b5f99096cb05a8da63be55a6a298f6a",
+          "source": "clanker.gitbook.io/documentation/references/deployed-contracts（官方部署表）；文档标注 Binance: 97（BSC 56 上待核实）",
+          "verify_by": "reads",
+          "reads": [
+            {
+              "signature": "owner()",
+              "type": "address"
+            },
+            {
+              "signature": "TOKEN_SUPPLY()",
+              "type": "uint"
+            }
+          ]
         }
       ],
       "blocked": [
         {
           "platform": "cubepeg",
-          "blocked_reason": "缺少有来源的工厂地址",
-          "next_step": "同上"
-        },
-        {
-          "platform": "likwid",
           "blocked_reason": "缺少有来源的工厂地址",
           "next_step": "同上"
         },
@@ -145,8 +295,8 @@
         },
         {
           "platform": "lunafun",
-          "blocked_reason": "缺少有来源的工厂地址",
-          "next_step": "同上"
+          "blocked_reason": "链上实测：LUNA.FUN 代币 0xbe3e95eb…4444 经官方 Helper3 getTokenInfo 返回 version=2、tokenManager=0x5c9520…（Four.meme TokenManager2）",
+          "next_step": "已由 fourmeme_token_manager 覆盖；GMGN 的 lunafun 是 Four.meme 上的合作方分类"
         },
         {
           "platform": "four_xmode_agent",
@@ -213,6 +363,52 @@
           "platform": "doppler",
           "address": "0xbdf938149ac6a781f94faa0ed45e6a0e984c6544",
           "source": "whetstoneresearch/doppler Deployments.md（官方部署表）"
+        },
+        {
+          "id": "klik_factory",
+          "kind": "launchpad",
+          "platform": "klik",
+          "address": "0x254bf550657040f78608476ce9aad820ab2266ad",
+          "source": "docs.mobula.io/almanac/robinhood-launchpads（整合文档，含“verify at indexed block”提示）+ 链上核实；Klik Ethereum factory"
+        },
+        {
+          "id": "uniswap_liquidity_launcher",
+          "kind": "launchpad",
+          "platform": "pools_trade",
+          "address": "0x0000ffffbe8efe702c8703ae3477ff5de3d319c0",
+          "source": "developers.uniswap.org/docs/liquidity/liquidity-launchpad/deployments（Uniswap 官方部署表）；LiquidityLauncher v3.2.0",
+          "verify_by": "reads",
+          "reads": [
+            {
+              "signature": "permit2()",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "id": "uniswap_lbp_strategy_v3",
+          "kind": "launchpad",
+          "platform": "pools_trade",
+          "address": "0x2eef0e2a9a652d755accad95a24541a98b5ca000",
+          "source": "developers.uniswap.org/docs/liquidity/liquidity-launchpad/deployments（Uniswap 官方部署表）；LBPStrategy v3.3.0（Ethereum）"
+        },
+        {
+          "id": "clanker_v4_eth",
+          "kind": "launchpad",
+          "platform": "clanker",
+          "address": "0x6c8599779b03b00aaae63c6378830919abb75473",
+          "source": "clanker.gitbook.io/documentation/references/deployed-contracts（官方部署表）；Mainnet 1 v4.0.0 Clanker",
+          "verify_by": "reads",
+          "reads": [
+            {
+              "signature": "owner()",
+              "type": "address"
+            },
+            {
+              "signature": "TOKEN_SUPPLY()",
+              "type": "uint"
+            }
+          ]
         }
       ],
       "blocked": [
@@ -220,11 +416,6 @@
           "platform": "trench",
           "blocked_reason": "缺少有来源的工厂地址",
           "next_step": "从官方渠道核实合约后加入"
-        },
-        {
-          "platform": "klik",
-          "blocked_reason": "缺少有来源的工厂地址",
-          "next_step": "同上"
         },
         {
           "platform": "livo",
@@ -348,14 +539,79 @@
           "platform": "uniswap_v2",
           "address": "0x8909dc15e40173ff4699343b6eb8132c65e18ec6",
           "source": "alsk1992/CloddsBot src/evm/virtuals.ts（第三方，注释称取自 Virtuals 白皮书与 BaseScan）+ 链上核实；Base Uniswap V2 工厂"
+        },
+        {
+          "id": "flap_portal",
+          "kind": "launchpad",
+          "platform": "flap",
+          "address": "0x0000bc1c4fd15dd79029af8f5d77d68ae4490000",
+          "source": "docs.flap.sh Deployed Contract Addresses（官方部署表）；Portal（Base）"
+        },
+        {
+          "id": "flap_vault_portal",
+          "kind": "launchpad",
+          "platform": "flap_pve",
+          "address": "0x00003877386745d059d92fa39159595bdabf0000",
+          "source": "docs.flap.sh Deployed Contract Addresses（官方部署表）；VaultPortal（Base）"
+        },
+        {
+          "id": "flap_tax_token_helper",
+          "kind": "launchpad",
+          "platform": "flap",
+          "address": "0x0000fdc1c95d399ef5aae461216b3628c6020000",
+          "source": "docs.flap.sh Deployed Contract Addresses（官方部署表）；Tax Token Helper（Base）"
+        },
+        {
+          "id": "klik_factory",
+          "kind": "launchpad",
+          "platform": "klik",
+          "address": "0xb6cb1c049ee8942683fd3172f7eba63b6e8a6835",
+          "source": "docs.mobula.io/almanac/robinhood-launchpads（整合文档，含“verify at indexed block”提示）+ 链上核实；Klik Base factory"
+        },
+        {
+          "id": "klik_hook",
+          "kind": "launchpad",
+          "platform": "klik",
+          "address": "0x487f034772b128e917b23a4edfd53442aa8de0cc",
+          "source": "docs.mobula.io/almanac/robinhood-launchpads（整合文档，含“verify at indexed block”提示）+ 链上核实；Klik Base hook"
+        },
+        {
+          "id": "zora_factory",
+          "kind": "launchpad",
+          "platform": "zora",
+          "address": "0x777777751622c0d3258f214f9df38e35bf45baf3",
+          "source": "docs.zora.co/coins/contracts/creating-a-coin（官方文档：ZoraFactory 全链同地址，Base 8453）"
+        },
+        {
+          "id": "uniswap_liquidity_launcher",
+          "kind": "launchpad",
+          "platform": "pools_trade",
+          "address": "0x0000ffffbe8efe702c8703ae3477ff5de3d319c0",
+          "source": "developers.uniswap.org/docs/liquidity/liquidity-launchpad/deployments（Uniswap 官方部署表）；LiquidityLauncher v3.2.0（全链同地址）",
+          "verify_by": "reads",
+          "reads": [
+            {
+              "signature": "permit2()",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "id": "uniswap_lbp_strategy_v3",
+          "kind": "launchpad",
+          "platform": "pools_trade",
+          "address": "0xf10124b01e9fa88b0a2ef3fa95a53b3310446000",
+          "source": "developers.uniswap.org/docs/liquidity/liquidity-launchpad/deployments（Uniswap 官方部署表）；LBPStrategy v3.3.0（Base）"
+        },
+        {
+          "id": "uniswap_uerc20_factory",
+          "kind": "launchpad",
+          "platform": "pools_trade",
+          "address": "0x000000e200088d55c39a11f609e5f667729ad49b",
+          "source": "developers.uniswap.org/docs/liquidity/liquidity-launchpad/deployments（Uniswap 官方部署表）；UERC20 工厂 v2.1.0"
         }
       ],
       "blocked": [
-        {
-          "platform": "zora",
-          "blocked_reason": "0x777777... 为 Zora1155Factory（NFT），meme 发射台合约未核实",
-          "next_step": "从 Zora 官方文档核实 meme 发射合约"
-        },
         {
           "platform": "basememe",
           "blocked_reason": "缺少有来源的工厂地址",
@@ -363,11 +619,6 @@
         },
         {
           "platform": "virtuals_v2",
-          "blocked_reason": "缺少有来源的工厂地址",
-          "next_step": "同上"
-        },
-        {
-          "platform": "klik",
           "blocked_reason": "缺少有来源的工厂地址",
           "next_step": "同上"
         },
@@ -600,6 +851,188 @@
           "platform": "virtuals",
           "address": "0xfc2e4da3edb2e18100473339c763705d263d20a9",
           "source": "0xfnzero/rbh-trade-sdk rbhtrade/addresses.go（第三方地址簿）+ 链上核实（Sourcify 名称 + 实时日志）；Virtuals 工厂（代理）"
+        },
+        {
+          "id": "flap_vault_portal",
+          "kind": "launchpad",
+          "platform": "flap_pve",
+          "address": "0xe9f7ab7de8fb8756acbb6a1cd13316a43308197b",
+          "source": "docs.flap.sh Deployed Contract Addresses（官方部署表）；VaultPortal（Robinhood）"
+        },
+        {
+          "id": "flap_tax_token_helper",
+          "kind": "launchpad",
+          "platform": "flap",
+          "address": "0xb10bd2672ae63735d677164a54b573a016f0203c",
+          "source": "docs.flap.sh Deployed Contract Addresses（官方部署表）；Tax Token Helper（Robinhood）"
+        },
+        {
+          "id": "flap_trigger_service",
+          "kind": "launchpad",
+          "platform": "flap",
+          "address": "0xd3421b1b616a72bb88993a0cf75709bb8d532cc1",
+          "source": "docs.flap.sh Deployed Contract Addresses（官方部署表）；Trigger Service（Robinhood）"
+        },
+        {
+          "id": "uniswap_v3_factory_robinhood",
+          "kind": "launchpad",
+          "platform": "uniswap_v3",
+          "address": "0x1f7d7550b1b028f7571e69a784071f0205fd2efa",
+          "source": "docs.mobula.io/almanac/robinhood-launchpads（整合文档，含“verify at indexed block”提示）+ 链上核实；Robinhood V3 工厂（Sourcify UniswapV3Factory）"
+        },
+        {
+          "id": "apestore_launcher",
+          "kind": "launchpad",
+          "platform": "apestore",
+          "address": "0x6e4910ea5a04376032f6564da9a9e4e88b7a87c1",
+          "source": "docs.mobula.io/almanac/robinhood-launchpads（整合文档，含“verify at indexed block”提示）+ 链上核实；ApeStore launcher"
+        },
+        {
+          "id": "bottomfun_factory",
+          "kind": "launchpad",
+          "platform": "bottomfun",
+          "address": "0x1bed2687321074a198302c004036b51923812b18",
+          "source": "docs.mobula.io/almanac/robinhood-launchpads（整合文档，含“verify at indexed block”提示）+ 链上核实；Bottom.fun Factory"
+        },
+        {
+          "id": "bottomfun_hook",
+          "kind": "launchpad",
+          "platform": "bottomfun",
+          "address": "0xd23c94bd8cbeb48c169c020e16a844aeab2368cc",
+          "source": "docs.mobula.io/almanac/robinhood-launchpads（整合文档，含“verify at indexed block”提示）+ 链上核实；Bottom.fun Hook"
+        },
+        {
+          "id": "bottomfun_locker",
+          "kind": "launchpad",
+          "platform": "bottomfun",
+          "address": "0xf46663171d1d0653fe7c3b8e42d43bccac137c56",
+          "source": "docs.mobula.io/almanac/robinhood-launchpads（整合文档，含“verify at indexed block”提示）+ 链上核实；Bottom.fun Locker"
+        },
+        {
+          "id": "bowfun_factory",
+          "kind": "launchpad",
+          "platform": "bowfun",
+          "address": "0xc70e510e14710ea535cab7b2414860af63feab79",
+          "source": "docs.mobula.io/almanac/robinhood-launchpads（整合文档，含“verify at indexed block”提示）+ 链上核实；Bow.fun factory"
+        },
+        {
+          "id": "dyorfun_factory",
+          "kind": "launchpad",
+          "platform": "dyorfun_v3",
+          "address": "0x80b42aed46d73f47119dc444bea28a9e68f32bf4",
+          "source": "docs.mobula.io/almanac/robinhood-launchpads（整合文档，含“verify at indexed block”提示）+ 链上核实；DYOR.fun launch factory"
+        },
+        {
+          "id": "klik_factory",
+          "kind": "launchpad",
+          "platform": "klik",
+          "address": "0x16cf6788b762ee8969744586ed16fc5705140dd7",
+          "source": "docs.mobula.io/almanac/robinhood-launchpads（整合文档，含“verify at indexed block”提示）+ 链上核实；Klik Robinhood factory"
+        },
+        {
+          "id": "klik_hook",
+          "kind": "launchpad",
+          "platform": "klik",
+          "address": "0x745d717620052a97a22deee2e5eba59583f3e0cc",
+          "source": "docs.mobula.io/almanac/robinhood-launchpads（整合文档，含“verify at indexed block”提示）+ 链上核实；Klik Robinhood hook"
+        },
+        {
+          "id": "launchproof_cca_factory",
+          "kind": "launchpad",
+          "platform": "launchproof",
+          "address": "0x000000001f26a0044baa66024e7b6599c61963f8",
+          "source": "docs.mobula.io/almanac/robinhood-launchpads（整合文档，含“verify at indexed block”提示）+ 链上核实；CCA factory"
+        },
+        {
+          "id": "launchproof_lbp_strategy",
+          "kind": "launchpad",
+          "platform": "launchproof",
+          "address": "0x05d552391067389ee44fec3924157ed33f976000",
+          "source": "docs.mobula.io/almanac/robinhood-launchpads（整合文档，含“verify at indexed block”提示）+ 链上核实；LBP strategy（Crowd）"
+        },
+        {
+          "id": "launchproof_instant_no_fees",
+          "kind": "launchpad",
+          "platform": "launchproof",
+          "address": "0xad44d55e7f8337c3ce113fbb591486e85be104b2",
+          "source": "docs.mobula.io/almanac/robinhood-launchpads（整合文档，含“verify at indexed block”提示）+ 链上核实；Instant strategy（无 creator fee）"
+        },
+        {
+          "id": "noxafun_factory",
+          "kind": "launchpad",
+          "platform": "noxa",
+          "address": "0xd9ec2db5f3d1b236843925949fe5bd8a3836fccb",
+          "source": "docs.mobula.io/almanac/robinhood-launchpads（整合文档，含“verify at indexed block”提示）+ 链上核实；Noxa.fun launch factory"
+        },
+        {
+          "id": "pons_active_factory",
+          "kind": "launchpad",
+          "platform": "pons",
+          "address": "0xa5aab3f0c6eeadf30ef1d3eb997108e976351feb",
+          "source": "docs.mobula.io/almanac/robinhood-launchpads（整合文档，含“verify at indexed block”提示）+ 链上核实；Pons active factory（v1/新版）"
+        },
+        {
+          "id": "pons_active_locker",
+          "kind": "launchpad",
+          "platform": "pons",
+          "address": "0x736d76699c26d0d966744cae304c000d471f7f35",
+          "source": "docs.mobula.io/almanac/robinhood-launchpads（整合文档，含“verify at indexed block”提示）+ 链上核实；Pons active locker"
+        },
+        {
+          "id": "pons_legacy_factory",
+          "kind": "launchpad",
+          "platform": "pons",
+          "address": "0x0c37a24f5d23a486fa692d1500881d698b1f77a4",
+          "source": "docs.mobula.io/almanac/robinhood-launchpads（整合文档，含“verify at indexed block”提示）+ 链上核实；Pons legacy factory"
+        },
+        {
+          "id": "pons_legacy_locker",
+          "kind": "launchpad",
+          "platform": "pons",
+          "address": "0x31ca5e101941a93a7dd6d0497928700625cf54b5",
+          "source": "docs.mobula.io/almanac/robinhood-launchpads（整合文档，含“verify at indexed block”提示）+ 链上核实；Pons legacy locker"
+        },
+        {
+          "id": "printr_protocol",
+          "kind": "launchpad",
+          "platform": "printr",
+          "address": "0xb77726291b125515d0a7affeea2b04f2ff243172",
+          "source": "docs.mobula.io/almanac/robinhood-launchpads（整合文档，含“verify at indexed block”提示）+ 链上核实；Printr protocol"
+        },
+        {
+          "id": "realfun_launcher",
+          "kind": "launchpad",
+          "platform": "realfun",
+          "address": "0xa3a71925be892c609ac4be4efe918dc9c35fc5e8",
+          "source": "docs.mobula.io/almanac/robinhood-launchpads（整合文档，含“verify at indexed block”提示）+ 链上核实；RealFun single-sided launcher"
+        },
+        {
+          "id": "robinfun_factory",
+          "kind": "launchpad",
+          "platform": "robinfun",
+          "address": "0xd861cb5dc71a0171e8f0f6586cadb069f3a35e4d",
+          "source": "docs.mobula.io/almanac/robinhood-launchpads（整合文档，含“verify at indexed block”提示）+ 链上核实；RobinFun factory/curve manager"
+        },
+        {
+          "id": "uniswap_lbp_strategy_v3",
+          "kind": "launchpad",
+          "platform": "pools_trade",
+          "address": "0xbf1ab81f7d534b2cc0da76fcf4d541322bb0e000",
+          "source": "developers.uniswap.org/docs/liquidity/liquidity-launchpad/deployments（Uniswap 官方部署表）；LBPStrategy v3.3.0（Robinhood）",
+          "verify_by": "reads",
+          "reads": [
+            {
+              "signature": "owner()",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "id": "pons_v2_launch_locker",
+          "kind": "launchpad",
+          "platform": "pons",
+          "address": "0x267444d099b10fb5ed7c3cc7b7c767adca574952",
+          "source": "docs.bitquery.io/docs/blockchain/robinhood/（PonsV2LaunchLocker）"
         }
       ],
       "blocked": [
@@ -625,7 +1058,36 @@
       "explorer": "https://explorer.arc.io",
       "target_span": 20,
       "discovery_span": 20,
-      "targets": [],
+      "targets": [
+        {
+          "id": "uniswap_liquidity_launcher",
+          "kind": "launchpad",
+          "platform": "pools_trade",
+          "address": "0x0000ffffbe8efe702c8703ae3477ff5de3d319c0",
+          "source": "developers.uniswap.org/docs/liquidity/liquidity-launchpad/deployments（Uniswap 官方部署表）；LiquidityLauncher v3.2.0（Arc）",
+          "verify_by": "reads",
+          "reads": [
+            {
+              "signature": "permit2()",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "id": "uniswap_lbp_strategy_v3",
+          "kind": "launchpad",
+          "platform": "pools_trade",
+          "address": "0x542bcda1015485ef0b1cd11b835dc58df5102000",
+          "source": "developers.uniswap.org/docs/liquidity/liquidity-launchpad/deployments（Uniswap 官方部署表）；LBPStrategy v3.3.0（Arc）",
+          "verify_by": "reads",
+          "reads": [
+            {
+              "signature": "permit2()",
+              "type": "address"
+            }
+          ]
+        }
+      ],
       "blocked": [
         {
           "platform": "arc_launchpads",
@@ -661,7 +1123,36 @@
       "explorer": "",
       "target_span": 5,
       "discovery_span": 5,
-      "targets": [],
+      "targets": [
+        {
+          "id": "hyperswap_v3_factory",
+          "kind": "dex_factory",
+          "platform": "hyperswap",
+          "address": "0xb1c0fa0b789320044a6f623cfe5ebda9562602e3",
+          "source": "docs.hyperswap.exchange/docs/amm/contracts/hyper-evm/v3/（官方文档 HyperEVM 0x3e7）",
+          "reads": [
+            {
+              "signature": "feeAmountTickSpacing(uint24)",
+              "type": "uint",
+              "args": [
+                3000
+              ]
+            },
+            {
+              "signature": "owner()",
+              "type": "address"
+            }
+          ],
+          "verify_by": "reads"
+        },
+        {
+          "id": "hyperswap_position_manager",
+          "kind": "dex_factory",
+          "platform": "hyperswap",
+          "address": "0x6eda206207c09e5428f281761ddc0d300851fbc8",
+          "source": "docs.hyperswap.exchange/docs/amm/contracts/hyper-evm/v3/（Non-fungible Position Manager）"
+        }
+      ],
       "blocked": [
         {
           "platform": "hyperevm_dex",
@@ -713,6 +1204,69 @@
           "platform": "virtuals_solana",
           "address": "5U3EU2ubXtK84QcRjWVmYt9RaDyA8gKxdUrPFXmZyaki",
           "source": "no-limit-nodes/every-solana-program-decoded programs/virtuals README（Program ID）"
+        },
+        {
+          "id": "bags_fee_share_v1",
+          "kind": "launchpad",
+          "platform": "bags",
+          "address": "FEEhPbKVKnco9EXnaY3i4R5rQVUx91wgVfu8qokixywi",
+          "source": "docs.bags.fm/principles/program-ids（Bags 官方程序清单）；Bags Fee Share V1"
+        },
+        {
+          "id": "bags_meteora_dbc",
+          "kind": "launchpad",
+          "platform": "bags",
+          "address": "dbcij3LWUppWqq96dh6gJWwBifmcGfLSB5D4DuSMaqN",
+          "source": "docs.bags.fm/principles/program-ids（Bags 官方程序清单）；Meteora DBC（Bags 代币创建/联合曲线）"
+        },
+        {
+          "id": "bags_meteora_damm_v2",
+          "kind": "launchpad",
+          "platform": "bags",
+          "address": "cpamdpZCGKUy5JxQXB4dcpGPiikHawvSWAd6mEn1sGG",
+          "source": "docs.bags.fm/principles/program-ids（Bags 官方程序清单）；Meteora DAMM v2（毕业后 AMM）"
+        },
+        {
+          "id": "raydium_amm_v4",
+          "kind": "dex_factory",
+          "platform": "pool_ray",
+          "address": "675kPX9MHTjS2zt1qfr1NYHuzeLXfQM9H24wFSUt1Mp8",
+          "source": "docs.raydium.io/reference/program-addresses（Raydium 官方程序表）；AMM v4"
+        },
+        {
+          "id": "raydium_cpmm",
+          "kind": "dex_factory",
+          "platform": "pool_ray",
+          "address": "CPMMoo8L3F4NbTegBCKVNunggL7H1ZpdTHKxQB5qKP1C",
+          "source": "docs.raydium.io/reference/program-addresses（Raydium 官方程序表）；CPMM"
+        },
+        {
+          "id": "raydium_clmm",
+          "kind": "dex_factory",
+          "platform": "pool_ray",
+          "address": "CAMMCzo5YL8w4VFF8KVHrK22GGUsp5VTaW7grrKgrWqK",
+          "source": "docs.raydium.io/reference/program-addresses（Raydium 官方程序表）；CLMM"
+        },
+        {
+          "id": "pump_amm",
+          "kind": "dex_factory",
+          "platform": "pool_pump_amm",
+          "address": "pAMMBay6oceH9fJKBRHGP5D4bD4sWpmSwMn52FMfXEA",
+          "source": "docs.solanatracker.io/guides/pumpfun-amm（PumpSwap 官方程序 ID）；PumpSwap AMM"
+        },
+        {
+          "id": "meteora_dlmm",
+          "kind": "dex_factory",
+          "platform": "pool_meteora",
+          "address": "LBUZKhRxPF3XUpBCjp4YzTKgLccjZhTSDM9YuVaPwxo",
+          "source": "docs.meteora.ag/developer-guides/dlmm（Meteora 官方文档）；DLMM"
+        },
+        {
+          "id": "orca_whirlpool",
+          "kind": "dex_factory",
+          "platform": "pool_orca",
+          "address": "whirLbMiicVdio4qvUfM5KAg6Ct8VwpYzGff3uctyCc",
+          "source": "docs.orca.so（Orca 官方文档）；Whirlpools"
         }
       ],
       "blocked": [

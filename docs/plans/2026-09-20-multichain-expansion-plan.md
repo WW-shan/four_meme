@@ -88,5 +88,7 @@
 - 2026-09-20：Solana 完成 pump.fun / letsbonk / boop / moonshot 程序核实；virtuals 程序休眠。
 - 2026-09-20：Base 完成 Clanker v4 / Flaunch / Doppler 核实；ETH 与 Arbitrum 完成 Uniswap V2/V3 核实。
 - 待办：BSC 其余发射台（cubepeg/likwid/goplus/lunafun 等）、Base basememe/virtuals_v2/klik、ETH trench/klik/livo/stroid/printr、Solana bags 发射程序、HyperEVM 工厂，均因缺少有来源地址而 blocked，禁止猜地址。
+- 2026-09-21：第二轮补齐——Flap 全套（AI Oracle/Stocks/VaultPortal/Trigger）、Clanker（BSC+ETH）、Klik（ETH/Base/RH）、Robinhood 全套 Mobula 文档发射台（apestore/bottom.fun/bow.fun/dyor.fun/LaunchProof/noxa.fun/Pons v1/printr/realfun/robinfun）、Zora、Uniswap Liquidity Launchpad、HyperSwap、Bags 与 Raydium/PumpSwap/Meteora/Orca 程序均已核实。
+- 全量结果：121 个目标里 52 个 VERIFIED-LIVE、69 个 code-only/失败；仍无来源的（cubepeg/basememe/baseapp/trench/livo/stroid/bonkers 等）保持 blocked。
 - 待办：X10.7 看板多链过滤；X10.8 每链 2–4 周影子。
 - 实盘：`ENABLE_TRADING=false`，未启用。

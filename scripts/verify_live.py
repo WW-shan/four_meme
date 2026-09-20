@@ -132,6 +132,10 @@ def verify_evm_chain(chain: str, spec: dict, *, span_override: int | None, disco
                 entry["ok"] = False
                 entry.setdefault("verification_notes", []).append(
                     "标准合约调用失败：" + "；".join(f"{item['signature']} -> {item['error']}" for item in read_failures))
+            elif target.get("verify_by") == "reads" and entry.get("code_size_bytes"):
+                entry["ok"] = True
+                entry.setdefault("verification_notes", []).append(
+                    "该合约不靠事件判定：代码存在且官方 ABI 的读取调用全部成功（read-verified）")
 
         linked_entries = []
         for linked in target.get("linked_contracts") or []:

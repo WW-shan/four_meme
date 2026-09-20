@@ -150,3 +150,39 @@ python3 scripts/verify_live.py --chain arc --out-dir /tmp/liveverify-arc
 
 输出：`evidence.json`（逐目标原始数据、尝试记录、样本区块/交易哈希）、`report.md`（表格汇总）。
 实盘状态不变：`ENABLE_TRADING=false`，本轮没有启用任何交易。
+
+---
+
+# 第二轮补齐（2026-09-21）
+
+第一轮之后仍有 38 个 GMGN 平台“看不到”。本轮改为“先网络检索（anysearch/Tavily）→ 官方文档 → 上链核实”，新增来源与结果如下。
+最新全量跑：**52 个目标 VERIFIED-LIVE，69 个 code-only/失败，共 121 个目标**（`evidence.json` / `report.md` 已重生成）。
+
+## 新拿到的官方来源（节选）
+
+| 平台/链 | 来源 | 结果 |
+|---|---|---|
+| Four.meme V1/Helper3/AgentIdentifier（BSC） | four-meme-community/fourmeme-docs + four-meme-ai | `TOKEN_MANAGER()=0xEC4549ca…`、`TOKEN_MANAGER_2()=0x5c952063…` 链上读取成功；`AgentIdentifier.nftCount()=0` |
+| Flap AI Oracle / Stocks Vault / VaultPortal / Trigger / Candy Box（BSC） | docs.flap.sh 官方部署表 | AI Oracle、Trigger Service（窗口内 6700 条事件）、VaultPortal 已 live；Stocks 三个工厂与 Candy Box 代码存在、窗口内无事件 |
+| Clanker（BSC + ETH） | clanker.gitbook.io 官方部署表 | BSC `0xea30438E…` 与 ETH `0x6C859977…` 均 Sourcify 命中 `Clanker`，`owner()/TOKEN_SUPPLY()` 读取成功 |
+| Klik（ETH + Base + Robinhood） | klik.finance/docs + Mobula | ETH 工厂 live（`ERC20TokenCreated`、`TokenPurchased`）；Base/Robinhood 工厂地址与 Sourcify `Factory`/`UniversalKlikHook` 一致 |
+| Robinhood 全套发射台 | docs.mobula.io/almanac/robinhood-launchpads | apestore / bottom.fun / bow.fun / dyor.fun / LaunchProof / noxa.fun / Pons v1+legacy / printr / realfun / robinfun 的工厂地址全部拿到，Sourcify 名称逐一对应 |
+| Pons V2 Locker | docs.bitquery.io/docs/blockchain/robinhood | `PonsV2LaunchLocker 0x267444D0…`，窗口内 `FeesClaimed` 事件 |
+| Zora Factory（Base） | docs.zora.co/coins/contracts/creating-a-coin | `0x777777751622c0d3…` live（窗口内 40 条事件） |
+| Uniswap Liquidity Launchpad（ETH/Base/Robinhood/Arc） | developers.uniswap.org 官方部署表 | `LiquidityLauncher 0x0000FffF…` 用 `permit2()` 读取成功（read-verified），LBPStrategy v3.3.0 各链地址 |
+| HyperSwap V3（HyperEVM） | docs.hyperswap.exchange | 工厂 `0xB1c0fa0B…`：`feeAmountTickSpacing(3000)=60`、`owner()` 读取成功 |
+| Bags（Solana） | docs.bags.fm/principles/program-ids | 官方程序：Fee Share V1/V2、**Meteora DBC（代币创建/联合曲线）**、Meteora DAMM v2，全部可执行且有实时签名 |
+| Raydium / PumpSwap / Meteora / Orca（Solana 池子） | docs.raydium.io、docs.meteora.ag、docs.orca.so、solanatracker | AMM v4 / CPMM / CLMM / PumpSwap / DLMM / Whirlpool 六个程序全部 live |
+| Virtuals（Base/Robinhood/Solana） | whitepaper.virtuals.io 官方合约页 | 确认 creator vault / sell wall / sell order 与 VIRTUAL 代币地址；Base 联合曲线地址官方页留空，仍标 unverified |
+| Four.meme 合作方（lunafun / goplus_skills） | 官方 Helper3 `getTokenInfo` | LUNA.FUN 与 SafuSkill 代币实测 `version=2`、`tokenManager=0x5c952063…`（TokenManager2）→ 由 four.meme 通道覆盖 |
+
+## 仍然看不到的（无公开合约来源）
+
+BSC：`cubepeg`（候选 `0x60a2dfa7…` 只命中一个泛用 `Launchpad` 合约，0 事件，不采用）、`goplus_creator`（GoPlus 侧没有公开合约；SafuSkill 已证明走 four.meme）。
+Base：`basememe`、`baseapp`、`virtuals_v2`（官方页联合曲线地址为空）。
+ETH：`trench`、`livo`、`stroid`（官方站点无合约页）。
+Robinhood：`trench`、`virtuals`（联合曲线未公开）、`livo`、`motion`、`stoxes`、`holoworld`、`pewfun`、`dyorswap`、`circus`、`arrowfinance`、`clanker`（官方部署表无 Robinhood）。
+Solana：`bonkers`（没有可核实的官方程序 ID）。
+Stable：GMGN 0 token，链上只发现 `PumperTokenStandalone` 代币实现，没有发射台工厂。
+
+这些条目继续保持 blocked，不写猜测地址；一旦出现官方合约页或 GMGN API key，可以按同一套 harness 直接补测。

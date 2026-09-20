@@ -18,23 +18,31 @@
           "fact_status": "verified",
           "enabled": false,
           "family": "evm",
-          "source": "Sourcify UniswapV3Factory；live-verify 2026-09-20（scripts/verify_live.py + docs/research/20260920-live-chain-verification/evidence.json）：20000 区块内 2 PoolCreated"
+          "source": "Sourcify full match（UniswapV3Factory）；live-verify 2026-09-21：20000 区块内 PoolCreated=4"
         },
         {
           "name": "camelot_factory",
           "address": "0x6eccab422d763ac031210895c81787e87b43a652",
-          "fact_status": "verified",
+          "fact_status": "unverified",
           "enabled": false,
           "family": "evm",
-          "source": "Sourcify CamelotFactory；live-verify 2026-09-20（scripts/verify_live.py + docs/research/20260920-live-chain-verification/evidence.json）：20000 区块内 0 事件（疑似已停用）"
+          "source": "Sourcify full match（CamelotFactory）；live-verify 2026-09-21：代码存在但 20000 区块窗口内无事件（code-only）"
         },
         {
           "name": "doppler_hook_initializer",
           "address": "0xaa7f809bb3752f715fa2e418230667c382a56544",
-          "fact_status": "verified",
+          "fact_status": "unverified",
           "enabled": false,
           "family": "evm",
-          "source": "whetstoneresearch/doppler Deployments.md；live-verify 2026-09-20（scripts/verify_live.py + docs/research/20260920-live-chain-verification/evidence.json）：代码存在，20000 区块内 0 事件"
+          "source": "whetstoneresearch/doppler Deployments.md（官方部署表）；live-verify 2026-09-21：代码存在但 20000 区块窗口内无事件（code-only）"
+        },
+        {
+          "name": "doppler_deployer",
+          "address": "0x4389ad34938b14f25cff7ed983c53f5a42a2573f",
+          "fact_status": "unverified",
+          "enabled": false,
+          "family": "evm",
+          "source": "whetstoneresearch/doppler Deployments.md（官方部署表）；live-verify 2026-09-21：代码存在但 20000 区块窗口内无事件（code-only）"
         }
       ]
     },
@@ -56,6 +64,22 @@
           "enabled": false,
           "family": "evm",
           "source": "链上发现（20 区块聚合）+ Sourcify PoolManager；live-verify 2026-09-20（scripts/verify_live.py + docs/research/20260920-live-chain-verification/evidence.json）：20 区块内 99 条事件（V4 Swap topic0 0x40e9cecb…）"
+        },
+        {
+          "name": "uniswap_liquidity_launcher",
+          "address": "0x0000ffffbe8efe702c8703ae3477ff5de3d319c0",
+          "fact_status": "verified",
+          "enabled": false,
+          "family": "evm",
+          "source": "developers.uniswap.org/docs/liquidity/liquidity-launchpad/deployments（Uniswap 官方部署表）；LiquidityLauncher v3.2.0（Arc）；live-verify 2026-09-21：read-verified（permit2()=0x000000000022d47303）"
+        },
+        {
+          "name": "uniswap_lbp_strategy_v3",
+          "address": "0x542bcda1015485ef0b1cd11b835dc58df5102000",
+          "fact_status": "unverified",
+          "enabled": false,
+          "family": "evm",
+          "source": "developers.uniswap.org/docs/liquidity/liquidity-launchpad/deployments（Uniswap 官方部署表）；LBPStrategy v3.3.0（Arc）；live-verify 2026-09-21：代码存在但 20 区块窗口内无事件（code-only）"
         }
       ]
     },
@@ -86,15 +110,15 @@
           "fact_status": "verified",
           "enabled": false,
           "family": "evm",
-          "source": "Sourcify UniswapV3Factory；live-verify 2026-09-20（scripts/verify_live.py + docs/research/20260920-live-chain-verification/evidence.json）：窗口内 0–1 条 PoolCreated（低频）"
+          "source": "Sourcify full match（UniswapV3Factory）；live-verify 2026-09-21：2000 区块内 PoolCreated=4"
         },
         {
           "name": "aerodrome_pool_factory",
           "address": "0x420dd381b31aef6683db6b902084cb0ffece40da",
-          "fact_status": "verified",
+          "fact_status": "unverified",
           "enabled": false,
           "family": "evm",
-          "source": "Sourcify PoolFactory；live-verify 2026-09-20（scripts/verify_live.py + docs/research/20260920-live-chain-verification/evidence.json）：窗口内 0–1 条 PoolCreated（低频），allPoolsLength≈29308"
+          "source": "Sourcify full match（PoolFactory）；live-verify 2026-09-21：代码存在但 2000 区块窗口内无事件（code-only）"
         },
         {
           "name": "clanker_v4",
@@ -102,7 +126,7 @@
           "fact_status": "verified",
           "enabled": false,
           "family": "evm",
-          "source": "clanker-devco/v4-contracts README（Base Mainnet v4.0）+ Sourcify Clanker；live-verify 2026-09-20（scripts/verify_live.py + docs/research/20260920-live-chain-verification/evidence.json）：2000 区块内 15 TokenCreated"
+          "source": "clanker-devco/v4-contracts README（Base Mainnet v4.0 Clanker）+ Sourcify ABI 自动解码；live-verify 2026-09-21：2000 区块内 ExtensionTriggered=29, TokenCreated=15, ClaimTeamFees=1"
         },
         {
           "name": "flaunch",
@@ -110,7 +134,7 @@
           "fact_status": "verified",
           "enabled": false,
           "family": "evm",
-          "source": "flayerlabs/flaunchgg-contracts README（Base Mainnet Flaunch）+ Sourcify Flaunch；live-verify 2026-09-20（scripts/verify_live.py + docs/research/20260920-live-chain-verification/evidence.json）：2000 区块内 18 条日志"
+          "source": "flayerlabs/flaunchgg-contracts README（Base Mainnet Flaunch）；live-verify 2026-09-21：2000 区块内 Transfer=14, Approval=7"
         },
         {
           "name": "doppler_hook_initializer",
@@ -118,15 +142,15 @@
           "fact_status": "verified",
           "enabled": false,
           "family": "evm",
-          "source": "whetstoneresearch/doppler Deployments.md（Bankr 的 Base 发币走 Doppler）；live-verify 2026-09-20：2000 区块内 11 Create / 953 Swap / 274 ModifyLiquidity"
+          "source": "whetstoneresearch/doppler Deployments.md（官方部署表）；live-verify 2026-09-21：2000 区块内 Swap=1034, ModifyLiquidity=260, Create=15"
         },
         {
           "name": "doppler_uniswap_v4_initializer",
           "address": "0x53b4c21a6cb61d64f636abbfa6e8e90e6558e8ad",
-          "fact_status": "verified",
+          "fact_status": "unverified",
           "enabled": false,
           "family": "evm",
-          "source": "whetstoneresearch/doppler Deployments.md；live-verify 2026-09-20（scripts/verify_live.py + docs/research/20260920-live-chain-verification/evidence.json）：代码存在，窗口内 0 事件"
+          "source": "whetstoneresearch/doppler Deployments.md（官方部署表）；live-verify 2026-09-21：代码存在但 2000 区块窗口内无事件（code-only）"
         },
         {
           "name": "uniswap_v2_factory",
@@ -134,7 +158,111 @@
           "fact_status": "verified",
           "enabled": false,
           "family": "evm",
-          "source": "alsk1992/CloddsBot src/evm/virtuals.ts（第三方地址）；live-verify 2026-09-20：Sourcify UniswapV2Factory，2000 区块内 33 PairCreated"
+          "source": "alsk1992/CloddsBot src/evm/virtuals.ts（第三方，注释称取自 Virtuals 白皮书与 BaseScan）+ 链上核实；Base Uniswap V2 工厂；live-verify 2026-09-21：2000 区块内 PairCreated=34"
+        },
+        {
+          "name": "doppler_deployer",
+          "address": "0xb35469ee64a87afd19b31615094fe3962d73e421",
+          "fact_status": "unverified",
+          "enabled": false,
+          "family": "evm",
+          "source": "whetstoneresearch/doppler Deployments.md（官方部署表）；live-verify 2026-09-21：代码存在但 2000 区块窗口内无事件（code-only）"
+        },
+        {
+          "name": "virtuals_bonding_proxy",
+          "address": "0xf66dea7b3e897cd44a5a231c61b6b4423d613259",
+          "fact_status": "unverified",
+          "enabled": false,
+          "family": "evm",
+          "source": "alsk1992/CloddsBot src/evm/virtuals.ts（第三方，注释称取自 Virtuals 白皮书与 BaseScan）+ 链上核实；Virtuals 联合曲线主路由；live-verify 2026-09-21：代码存在但 2000 区块窗口内无事件（code-only）"
+        },
+        {
+          "name": "virtuals_sell_executor",
+          "address": "0xf8dd39c71a278fe9f4377d009d7627ef140f809e",
+          "fact_status": "unverified",
+          "enabled": false,
+          "family": "evm",
+          "source": "alsk1992/CloddsBot src/evm/virtuals.ts（第三方，注释称取自 Virtuals 白皮书与 BaseScan）+ 链上核实；Virtuals 卖出执行器；live-verify 2026-09-21：代码存在但 2000 区块窗口内无事件（code-only）"
+        },
+        {
+          "name": "virtuals_creator_vault",
+          "address": "0xdad686299fb562f89e55da05f1d96fabeb2a2e32",
+          "fact_status": "unverified",
+          "enabled": false,
+          "family": "evm",
+          "source": "alsk1992/CloddsBot src/evm/virtuals.ts（第三方，注释称取自 Virtuals 白皮书与 BaseScan）+ 链上核实；Virtuals 创作者金库；live-verify 2026-09-21：未通过（无代码或无签名）"
+        },
+        {
+          "name": "flap_portal",
+          "address": "0x0000bc1c4fd15dd79029af8f5d77d68ae4490000",
+          "fact_status": "verified",
+          "enabled": false,
+          "family": "evm",
+          "source": "docs.flap.sh Deployed Contract Addresses（官方部署表）；Portal（Base）；live-verify 2026-09-21：2000 区块内 315 条事件"
+        },
+        {
+          "name": "flap_vault_portal",
+          "address": "0x00003877386745d059d92fa39159595bdabf0000",
+          "fact_status": "unverified",
+          "enabled": false,
+          "family": "evm",
+          "source": "docs.flap.sh Deployed Contract Addresses（官方部署表）；VaultPortal（Base）；live-verify 2026-09-21：代码存在但 2000 区块窗口内无事件（code-only）"
+        },
+        {
+          "name": "flap_tax_token_helper",
+          "address": "0x0000fdc1c95d399ef5aae461216b3628c6020000",
+          "fact_status": "unverified",
+          "enabled": false,
+          "family": "evm",
+          "source": "docs.flap.sh Deployed Contract Addresses（官方部署表）；Tax Token Helper（Base）；live-verify 2026-09-21：代码存在但 2000 区块窗口内无事件（code-only）"
+        },
+        {
+          "name": "klik_factory",
+          "address": "0xb6cb1c049ee8942683fd3172f7eba63b6e8a6835",
+          "fact_status": "unverified",
+          "enabled": false,
+          "family": "evm",
+          "source": "docs.mobula.io/almanac/robinhood-launchpads（整合文档，含“verify at indexed block”提示）+ 链上核实；Klik Base factory；live-verify 2026-09-21：代码存在但 2000 区块窗口内无事件（code-only）"
+        },
+        {
+          "name": "klik_hook",
+          "address": "0x487f034772b128e917b23a4edfd53442aa8de0cc",
+          "fact_status": "unverified",
+          "enabled": false,
+          "family": "evm",
+          "source": "docs.mobula.io/almanac/robinhood-launchpads（整合文档，含“verify at indexed block”提示）+ 链上核实；Klik Base hook；live-verify 2026-09-21：代码存在但 2000 区块窗口内无事件（code-only）"
+        },
+        {
+          "name": "zora_factory",
+          "address": "0x777777751622c0d3258f214f9df38e35bf45baf3",
+          "fact_status": "verified",
+          "enabled": false,
+          "family": "evm",
+          "source": "docs.zora.co/coins/contracts/creating-a-coin（官方文档：ZoraFactory 全链同地址，Base 8453）；live-verify 2026-09-21：2000 区块内 32 条事件"
+        },
+        {
+          "name": "uniswap_liquidity_launcher",
+          "address": "0x0000ffffbe8efe702c8703ae3477ff5de3d319c0",
+          "fact_status": "verified",
+          "enabled": false,
+          "family": "evm",
+          "source": "developers.uniswap.org/docs/liquidity/liquidity-launchpad/deployments（Uniswap 官方部署表）；LiquidityLauncher v3.2.0（全链同地址）；live-verify 2026-09-21：read-verified（permit2()=0x000000000022d47303）"
+        },
+        {
+          "name": "uniswap_lbp_strategy_v3",
+          "address": "0xf10124b01e9fa88b0a2ef3fa95a53b3310446000",
+          "fact_status": "unverified",
+          "enabled": false,
+          "family": "evm",
+          "source": "developers.uniswap.org/docs/liquidity/liquidity-launchpad/deployments（Uniswap 官方部署表）；LBPStrategy v3.3.0（Base）；live-verify 2026-09-21：代码存在但 2000 区块窗口内无事件（code-only）"
+        },
+        {
+          "name": "uniswap_uerc20_factory",
+          "address": "0x000000e200088d55c39a11f609e5f667729ad49b",
+          "fact_status": "unverified",
+          "enabled": false,
+          "family": "evm",
+          "source": "developers.uniswap.org/docs/liquidity/liquidity-launchpad/deployments（Uniswap 官方部署表）；UERC20 工厂 v2.1.0；live-verify 2026-09-21：未通过（无代码或无签名）"
         }
       ]
     },
@@ -172,7 +300,7 @@
           "fact_status": "verified",
           "enabled": false,
           "family": "evm",
-          "source": "config/contracts.json + TokenManager2 ABI；live-verify 2026-09-20（scripts/verify_live.py + docs/research/20260920-live-chain-verification/evidence.json）：5000 区块内 615 TokenCreate / 164 TokenPurchase / 31 TokenSale"
+          "source": "config/contracts.json + config/TokenManager2.lite.abi（本地已验证，v2 布局）；live-verify 2026-09-21：5000 区块内 TokenPurchase=634, TokenCreate=445, TokenSale=365"
         },
         {
           "name": "pancake_v2",
@@ -180,7 +308,7 @@
           "fact_status": "verified",
           "enabled": false,
           "family": "evm",
-          "source": "Sourcify PancakeFactory；live-verify 2026-09-20（scripts/verify_live.py + docs/research/20260920-live-chain-verification/evidence.json）：5000 区块内 560 PairCreated"
+          "source": "Sourcify full match（PancakeFactory）+ Chainlist 公开资料；live-verify 2026-09-21：5000 区块内 PairCreated=264"
         },
         {
           "name": "pancake_v3",
@@ -188,7 +316,7 @@
           "fact_status": "verified",
           "enabled": false,
           "family": "evm",
-          "source": "公开标签 PancakeV3Factory（Sourcify 记录名 PlunderV3Factory，名称待证）；live-verify 2026-09-20（scripts/verify_live.py + docs/research/20260920-live-chain-verification/evidence.json）：PoolCreated 2 条 + getPool 返回真实池"
+          "source": "公开标签 PancakeSwap: PancakeV3Factory；Sourcify 记录名为 PlunderV3Factory（名称待证，地址行为优先）；live-verify 2026-09-21：5000 区块内 PoolCreated=1"
         },
         {
           "name": "flap_portal",
@@ -196,7 +324,7 @@
           "fact_status": "verified",
           "enabled": false,
           "family": "evm",
-          "source": "docs.flap.sh Deployed Contract Addresses（Portal v5.23.1，代理实现 0xab8ec926b6e113c2212af152b086ea62d1fdced9）；live-verify 2026-09-20（scripts/verify_live.py + docs/research/20260920-live-chain-verification/evidence.json）：1250 区块内 212 TokenCreated、1956 TokenBought、1597 TokenSold"
+          "source": "docs.flap.sh Deployed Contract Addresses（Portal v5.23.1）+ waifufun Flap SDK constants；live-verify 2026-09-21：2500 区块内 FlapTokenCirculatingSupplyChanged=3143, FlapTokenProgressChanged=3141, TaxV2OnBondingCurvePaid=3003"
         },
         {
           "name": "openfour_registry",
@@ -204,7 +332,151 @@
           "fact_status": "verified",
           "enabled": false,
           "family": "evm",
-          "source": "OpenFour 官方文档 Known Registry addresses；live-verify 2026-09-20（scripts/verify_live.py + docs/research/20260920-live-chain-verification/evidence.json）：Registry.openFourCore() → 0xebe7b6c1089d9f72ad07f34e36d898e44e5e27f3 在 5000 区块内 64 TokenCreated"
+          "source": "OpenFour 官方文档 Known Registry addresses（BNB Smart Chain mainnet）；live-verify 2026-09-21：read-verified（openFourCore()=0xebe7b6c1089d9f72ad）"
+        },
+        {
+          "name": "fourmeme_token_manager_v1",
+          "address": "0xec4549cadce5da21df6e6422d448034b5233bfbc",
+          "fact_status": "unverified",
+          "enabled": false,
+          "family": "evm",
+          "source": "four-meme-community/fourmeme-docs docs/integration-guide.md（官方社区文档，BSC）；TokenManager V1（只读交易）；live-verify 2026-09-21：代码存在但 5000 区块窗口内无事件（code-only）"
+        },
+        {
+          "name": "fourmeme_helper3",
+          "address": "0xf251f83e40a78868fcfa3fa4599dad6494e46034",
+          "fact_status": "verified",
+          "enabled": false,
+          "family": "evm",
+          "source": "four-meme-community/fourmeme-docs docs/integration-guide.md（官方社区文档，BSC）；TokenManagerHelper3（getTokenInfo/tryBuy/trySell）；live-verify 2026-09-21：read-verified（TOKEN_MANAGER()=0xec4549cadce5da21df, TOKEN_MANAGER_2()=0x5c952063c7fc8610ff）"
+        },
+        {
+          "name": "fourmeme_agent_identifier",
+          "address": "0x09b44a633de9f9ebf6fb9bdd5b5629d3dd2cef13",
+          "fact_status": "verified",
+          "enabled": false,
+          "family": "evm",
+          "source": "four-meme-community/fourmeme-docs docs/integration-guide.md（官方社区文档，BSC）；AgentIdentifier（isAgent/nftCount）；live-verify 2026-09-21：read-verified（nftCount()=0）"
+        },
+        {
+          "name": "flap_vault_portal",
+          "address": "0x90497450f2a706f1951b5bdda52b4e5d16f34c06",
+          "fact_status": "verified",
+          "enabled": false,
+          "family": "evm",
+          "source": "链上发现（Pancake 新池创建者聚合）+ EIP-1967 实现 0x4031a21d10aceed69a6a8d9af3e48d90b3db8074（Sourcify VaultPortal）；live-verify 2026-09-21：5000 区块内 12 条事件"
+        },
+        {
+          "name": "likwid_vault",
+          "address": "0x065d449ec9d139740343990b7e1cf05fa830e4ba",
+          "fact_status": "unverified",
+          "enabled": false,
+          "family": "evm",
+          "source": "likwid-fi/likwid-docs docs/product/contract-address.md（官方文档，BNB Chain）；LikwidVault；live-verify 2026-09-21：代码存在但 5000 区块窗口内无事件（code-only）"
+        },
+        {
+          "name": "likwid_pair_position",
+          "address": "0xb397fe16be79b082f17f1cd96e6489df19e07bcd",
+          "fact_status": "unverified",
+          "enabled": false,
+          "family": "evm",
+          "source": "likwid-fi/likwid-docs docs/product/contract-address.md（官方文档，BNB Chain）；LikwidPairPosition；live-verify 2026-09-21：代码存在但 5000 区块窗口内无事件（code-only）"
+        },
+        {
+          "name": "likwid_margin_position",
+          "address": "0x6bec0c1dc4898484b7f094566ddf8bc82ed7abe8",
+          "fact_status": "unverified",
+          "enabled": false,
+          "family": "evm",
+          "source": "likwid-fi/likwid-docs docs/product/contract-address.md（官方文档，BNB Chain）；LikwidMarginPosition；live-verify 2026-09-21：代码存在但 5000 区块窗口内无事件（code-only）"
+        },
+        {
+          "name": "likwid_lend_position",
+          "address": "0xce91db5947228bba595c3cac49eb24053a06618e",
+          "fact_status": "unverified",
+          "enabled": false,
+          "family": "evm",
+          "source": "likwid-fi/likwid-docs docs/product/contract-address.md（官方文档，BNB Chain）；LikwidLendPosition；live-verify 2026-09-21：代码存在但 5000 区块窗口内无事件（code-only）"
+        },
+        {
+          "name": "likwid_helper",
+          "address": "0x16a9633f8a777ca733073ea2526705cd8338d510",
+          "fact_status": "unverified",
+          "enabled": false,
+          "family": "evm",
+          "source": "likwid-fi/likwid-docs docs/product/contract-address.md（官方文档，BNB Chain）；LikwidHelper；live-verify 2026-09-21：代码存在但 5000 区块窗口内无事件（code-only）"
+        },
+        {
+          "name": "flap_aioracle",
+          "address": "0xaee3a7ca6fe6b53f6c32a3e8407ec5a9df8b7e39",
+          "fact_status": "verified",
+          "enabled": false,
+          "family": "evm",
+          "source": "docs.flap.sh Deployed Contract Addresses（官方部署表）；AI Oracle（preview）；live-verify 2026-09-21：5000 区块内 5 条事件"
+        },
+        {
+          "name": "flap_stocks_vault_factory_v1",
+          "address": "0xf8ac088f06d155f3c3f531f1ef80b14f1604530a",
+          "fact_status": "unverified",
+          "enabled": false,
+          "family": "evm",
+          "source": "docs.flap.sh Deployed Contract Addresses（官方部署表）；Stocks Vault RWAVaultFactory v1；live-verify 2026-09-21：代码存在但 5000 区块窗口内无事件（code-only）"
+        },
+        {
+          "name": "flap_stocks_vault_factory_v2",
+          "address": "0x40a9a2fda017e0923ea0b403f2f063f9e51168fb",
+          "fact_status": "unverified",
+          "enabled": false,
+          "family": "evm",
+          "source": "docs.flap.sh Deployed Contract Addresses（官方部署表）；Stocks Vault RWAVaultFactory v2；live-verify 2026-09-21：代码存在但 5000 区块窗口内无事件（code-only）"
+        },
+        {
+          "name": "flap_stocks_vault_factory_v3",
+          "address": "0x5418f7e8ff90354db0ecd48c8b710219244eb3c5",
+          "fact_status": "unverified",
+          "enabled": false,
+          "family": "evm",
+          "source": "docs.flap.sh Deployed Contract Addresses（官方部署表）；Stocks Vault IndexVaultFactory v3；live-verify 2026-09-21：代码存在但 5000 区块窗口内无事件（code-only）"
+        },
+        {
+          "name": "flap_trigger_service",
+          "address": "0xcf4ee25035cf883895110f367f5ba8172416a7f9",
+          "fact_status": "verified",
+          "enabled": false,
+          "family": "evm",
+          "source": "docs.flap.sh Deployed Contract Addresses（官方部署表）；Trigger Service；live-verify 2026-09-21：5000 区块内 6674 条事件"
+        },
+        {
+          "name": "flap_candy_box",
+          "address": "0x6255fbd731272a517022e99f6cacf6a5de9414ee",
+          "fact_status": "unverified",
+          "enabled": false,
+          "family": "evm",
+          "source": "docs.flap.sh Deployed Contract Addresses（官方部署表）；Candy Box（preview）；live-verify 2026-09-21：代码存在但 5000 区块窗口内无事件（code-only）"
+        },
+        {
+          "name": "flap_tax_token_helper",
+          "address": "0x53841c73217735f37bc1775538b03b23fefd8346",
+          "fact_status": "unverified",
+          "enabled": false,
+          "family": "evm",
+          "source": "docs.flap.sh Deployed Contract Addresses（官方部署表）；Tax Token Helper；live-verify 2026-09-21：代码存在但 5000 区块窗口内无事件（code-only）"
+        },
+        {
+          "name": "cubepeg_launchpad_candidate",
+          "address": "0x60a2dfa786c3ec6bd1a733c8fab910a6481f0b50",
+          "fact_status": "unverified",
+          "enabled": false,
+          "family": "evm",
+          "source": "anysearch 命中 BscScan “Launchpad | Address 0x60a2dfa7…” 页面标题；地址待链上核实；live-verify 2026-09-21：代码存在但 5000 区块窗口内无事件（code-only）"
+        },
+        {
+          "name": "clanker_v4_bsc",
+          "address": "0xea30438e0b5f99096cb05a8da63be55a6a298f6a",
+          "fact_status": "verified",
+          "enabled": false,
+          "family": "evm",
+          "source": "clanker.gitbook.io/documentation/references/deployed-contracts（官方部署表）；文档标注 Binance: 97（BSC 56 上待核实）；live-verify 2026-09-21：read-verified（owner()=0xf0b0d6cca326e48008, TOKEN_SUPPLY()=10000000000000000000）"
         }
       ]
     },
@@ -234,7 +506,7 @@
           "fact_status": "verified",
           "enabled": false,
           "family": "evm",
-          "source": "Sourcify UniswapV2Factory；live-verify 2026-09-20（scripts/verify_live.py + docs/research/20260920-live-chain-verification/evidence.json）：2000 区块内 30 PairCreated"
+          "source": "Sourcify full match（UniswapV2Factory）；live-verify 2026-09-21：2000 区块内 PairCreated=48"
         },
         {
           "name": "uniswap_v3_factory",
@@ -242,23 +514,55 @@
           "fact_status": "verified",
           "enabled": false,
           "family": "evm",
-          "source": "Sourcify UniswapV3Factory；live-verify 2026-09-20（scripts/verify_live.py + docs/research/20260920-live-chain-verification/evidence.json）：2000 区块内 2 PoolCreated"
+          "source": "Sourcify full match（UniswapV3Factory）；live-verify 2026-09-21：2000 区块内 PoolCreated=4"
         },
         {
           "name": "doppler_deployer",
           "address": "0xb35469ee64a87afd19b31615094fe3962d73e421",
-          "fact_status": "verified",
+          "fact_status": "unverified",
           "enabled": false,
           "family": "evm",
-          "source": "whetstoneresearch/doppler Deployments.md；live-verify 2026-09-20（scripts/verify_live.py + docs/research/20260920-live-chain-verification/evidence.json）：代码存在，2000 区块内 0 事件（部署器低频）"
+          "source": "whetstoneresearch/doppler Deployments.md（官方部署表）；live-verify 2026-09-21：代码存在但 2000 区块窗口内无事件（code-only）"
         },
         {
           "name": "doppler_hook_initializer",
           "address": "0xbdf938149ac6a781f94faa0ed45e6a0e984c6544",
+          "fact_status": "unverified",
+          "enabled": false,
+          "family": "evm",
+          "source": "whetstoneresearch/doppler Deployments.md（官方部署表）；live-verify 2026-09-21：代码存在但 2000 区块窗口内无事件（code-only）"
+        },
+        {
+          "name": "klik_factory",
+          "address": "0x254bf550657040f78608476ce9aad820ab2266ad",
           "fact_status": "verified",
           "enabled": false,
           "family": "evm",
-          "source": "whetstoneresearch/doppler Deployments.md；live-verify 2026-09-20（scripts/verify_live.py + docs/research/20260920-live-chain-verification/evidence.json）：代码存在，2000 区块内 0 事件"
+          "source": "docs.mobula.io/almanac/robinhood-launchpads（整合文档，含“verify at indexed block”提示）+ 链上核实；Klik Ethereum factory；live-verify 2026-09-21：2000 区块内 ERC20TokenCreated=1, TokenPurchased=1"
+        },
+        {
+          "name": "uniswap_liquidity_launcher",
+          "address": "0x0000ffffbe8efe702c8703ae3477ff5de3d319c0",
+          "fact_status": "verified",
+          "enabled": false,
+          "family": "evm",
+          "source": "developers.uniswap.org/docs/liquidity/liquidity-launchpad/deployments（Uniswap 官方部署表）；LiquidityLauncher v3.2.0；live-verify 2026-09-21：read-verified（permit2()=0x000000000022d47303）"
+        },
+        {
+          "name": "uniswap_lbp_strategy_v3",
+          "address": "0x2eef0e2a9a652d755accad95a24541a98b5ca000",
+          "fact_status": "verified",
+          "enabled": false,
+          "family": "evm",
+          "source": "developers.uniswap.org/docs/liquidity/liquidity-launchpad/deployments（Uniswap 官方部署表）；LBPStrategy v3.3.0（Ethereum）；live-verify 2026-09-21：2000 区块内 1 条事件"
+        },
+        {
+          "name": "clanker_v4_eth",
+          "address": "0x6c8599779b03b00aaae63c6378830919abb75473",
+          "fact_status": "verified",
+          "enabled": false,
+          "family": "evm",
+          "source": "clanker.gitbook.io/documentation/references/deployed-contracts（官方部署表）；Mainnet 1 v4.0.0 Clanker；live-verify 2026-09-21：read-verified（owner()=0x0fca22ca4a2edd2ba5, TOKEN_SUPPLY()=10000000000000000000）"
         }
       ]
     },
@@ -272,7 +576,24 @@
       "gmgn_supported": true,
       "enabled": false,
       "platforms": [],
-      "launchpads": []
+      "launchpads": [
+        {
+          "name": "hyperswap_v3_factory",
+          "address": "0xb1c0fa0b789320044a6f623cfe5ebda9562602e3",
+          "fact_status": "verified",
+          "enabled": false,
+          "family": "evm",
+          "source": "docs.hyperswap.exchange/docs/amm/contracts/hyper-evm/v3/（官方文档 HyperEVM 0x3e7）；live-verify 2026-09-21：read-verified（feeAmountTickSpacing(uint24)=60, owner()=0xbc7e493fd3ed834ed5）"
+        },
+        {
+          "name": "hyperswap_position_manager",
+          "address": "0x6eda206207c09e5428f281761ddc0d300851fbc8",
+          "fact_status": "unverified",
+          "enabled": false,
+          "family": "evm",
+          "source": "docs.hyperswap.exchange/docs/amm/contracts/hyper-evm/v3/（Non-fungible Position Manager）；live-verify 2026-09-21：代码存在但 20 区块窗口内无事件（code-only）"
+        }
+      ]
     },
     {
       "chain": "robinhood",
@@ -319,23 +640,23 @@
           "fact_status": "verified",
           "enabled": false,
           "family": "evm",
-          "source": "whetstoneresearch/doppler Deployments.md + Sourcify DopplerHookInitializer；live-verify 2026-09-20：2000 区块内 4 Create / 637 Swap / 184 ModifyLiquidity"
+          "source": "whetstoneresearch/doppler Deployments.md（官方部署表）；live-verify 2026-09-21：2000 区块内 Swap=252, ModifyLiquidity=68, Create=9"
         },
         {
           "name": "doppler_deployer",
           "address": "0x4389ad34938b14f25cff7ed983c53f5a42a2573f",
-          "fact_status": "verified",
+          "fact_status": "unverified",
           "enabled": false,
           "family": "evm",
-          "source": "whetstoneresearch/doppler Deployments.md；live-verify 2026-09-20（scripts/verify_live.py + docs/research/20260920-live-chain-verification/evidence.json）：代码存在，200 区块内 0 事件（部署器低频）"
+          "source": "whetstoneresearch/doppler Deployments.md（官方部署表）；live-verify 2026-09-21：代码存在但 2000 区块窗口内无事件（code-only）"
         },
         {
           "name": "doppler_uniswap_v4_initializer",
           "address": "0x6cce158b6d1747617fc218592b4d60b239b957ea",
-          "fact_status": "verified",
+          "fact_status": "unverified",
           "enabled": false,
           "family": "evm",
-          "source": "whetstoneresearch/doppler Deployments.md；live-verify 2026-09-20（scripts/verify_live.py + docs/research/20260920-live-chain-verification/evidence.json）：代码存在，窗口内 0 事件"
+          "source": "whetstoneresearch/doppler Deployments.md（官方部署表）；live-verify 2026-09-21：代码存在但 2000 区块窗口内无事件（code-only）"
         },
         {
           "name": "pons_factory",
@@ -343,7 +664,7 @@
           "fact_status": "verified",
           "enabled": false,
           "family": "evm",
-          "source": "0xfnzero/rbh-trade-sdk rbhtrade/addresses.go（第三方地址簿）+ 链上核实（Sourcify 名称 + 实时日志）；PonsV2 工厂；live-verify 2026-09-20 2000 区块窗口"
+          "source": "0xfnzero/rbh-trade-sdk rbhtrade/addresses.go（第三方地址簿）+ 链上核实（Sourcify 名称 + 实时日志）；PonsV2 工厂；live-verify 2026-09-21：2000 区块内 TokenLaunched=25, CreatorFeeRecipientUpdated=2"
         },
         {
           "name": "pons_launch_and_buy",
@@ -351,7 +672,7 @@
           "fact_status": "verified",
           "enabled": false,
           "family": "evm",
-          "source": "0xfnzero/rbh-trade-sdk rbhtrade/addresses.go（第三方地址簿）+ 链上核实（Sourcify 名称 + 实时日志）；PonsV2 一键发币买入；live-verify 2026-09-20 2000 区块窗口"
+          "source": "0xfnzero/rbh-trade-sdk rbhtrade/addresses.go（第三方地址簿）+ 链上核实（Sourcify 名称 + 实时日志）；PonsV2 一键发币买入；live-verify 2026-09-21：2000 区块内 Launched=17"
         },
         {
           "name": "pons_meme_hook",
@@ -359,7 +680,7 @@
           "fact_status": "verified",
           "enabled": false,
           "family": "evm",
-          "source": "0xfnzero/rbh-trade-sdk rbhtrade/addresses.go（第三方地址簿）+ 链上核实（Sourcify 名称 + 实时日志）；PonsV2 Hook；live-verify 2026-09-20 2000 区块窗口"
+          "source": "0xfnzero/rbh-trade-sdk rbhtrade/addresses.go（第三方地址簿）+ 链上核实（Sourcify 名称 + 实时日志）；PonsV2 Hook；live-verify 2026-09-21：2000 区块内 HookFeeCollected=832, PoolFeesSwept=195"
         },
         {
           "name": "long_airlock",
@@ -367,7 +688,7 @@
           "fact_status": "verified",
           "enabled": false,
           "family": "evm",
-          "source": "0xfnzero/rbh-trade-sdk rbhtrade/addresses.go（第三方地址簿）+ 链上核实（Sourcify 名称 + 实时日志）；Long Airlock；live-verify 2026-09-20 2000 区块窗口"
+          "source": "0xfnzero/rbh-trade-sdk rbhtrade/addresses.go（第三方地址簿）+ 链上核实（Sourcify 名称 + 实时日志）；Long Airlock；live-verify 2026-09-21：2000 区块内 9 条事件"
         },
         {
           "name": "long_rehype_hook",
@@ -375,15 +696,15 @@
           "fact_status": "verified",
           "enabled": false,
           "family": "evm",
-          "source": "0xfnzero/rbh-trade-sdk rbhtrade/addresses.go（第三方地址簿）+ 链上核实（Sourcify 名称 + 实时日志）；Long Rehype Hook；live-verify 2026-09-20 2000 区块窗口"
+          "source": "0xfnzero/rbh-trade-sdk rbhtrade/addresses.go（第三方地址簿）+ 链上核实（Sourcify 名称 + 实时日志）；Long Rehype Hook；live-verify 2026-09-21：2000 区块内 4 条事件"
         },
         {
           "name": "o1_factory",
           "address": "0xce9c48cfa068947f77738c81be406b53338e5b0d",
-          "fact_status": "verified",
+          "fact_status": "unverified",
           "enabled": false,
           "family": "evm",
-          "source": "0xfnzero/rbh-trade-sdk rbhtrade/addresses.go（第三方地址簿）+ 链上核实（Sourcify 名称 + 实时日志）；o1 工厂；live-verify 2026-09-20 2000 区块窗口"
+          "source": "0xfnzero/rbh-trade-sdk rbhtrade/addresses.go（第三方地址簿）+ 链上核实（Sourcify 名称 + 实时日志）；o1 工厂；live-verify 2026-09-21：代码存在但 2000 区块窗口内无事件（code-only）"
         },
         {
           "name": "o1_hook",
@@ -391,7 +712,7 @@
           "fact_status": "verified",
           "enabled": false,
           "family": "evm",
-          "source": "0xfnzero/rbh-trade-sdk rbhtrade/addresses.go（第三方地址簿）+ 链上核实（Sourcify 名称 + 实时日志）；o1 LaunchHook；live-verify 2026-09-20 2000 区块窗口"
+          "source": "0xfnzero/rbh-trade-sdk rbhtrade/addresses.go（第三方地址簿）+ 链上核实（Sourcify 名称 + 实时日志）；o1 LaunchHook；live-verify 2026-09-21：2000 区块内 FeeComponentCredited=8, Trade=4"
         },
         {
           "name": "o1_fee_escrow",
@@ -399,71 +720,71 @@
           "fact_status": "verified",
           "enabled": false,
           "family": "evm",
-          "source": "0xfnzero/rbh-trade-sdk rbhtrade/addresses.go（第三方地址簿）+ 链上核实（Sourcify 名称 + 实时日志）；o1 FeeEscrow；live-verify 2026-09-20 2000 区块窗口"
+          "source": "0xfnzero/rbh-trade-sdk rbhtrade/addresses.go（第三方地址簿）+ 链上核实（Sourcify 名称 + 实时日志）；o1 FeeEscrow；live-verify 2026-09-21：2000 区块内 Credited=8"
         },
         {
           "name": "bags_factory",
           "address": "0xe8cc4431adf8b5a847c113ef0c6af9043219cb37",
-          "fact_status": "verified",
+          "fact_status": "unverified",
           "enabled": false,
           "family": "evm",
-          "source": "0xfnzero/rbh-trade-sdk rbhtrade/addresses.go（第三方地址簿）+ 链上核实（Sourcify 名称 + 实时日志）；Bags 工厂（代理）；live-verify 2026-09-20 2000 区块窗口"
+          "source": "0xfnzero/rbh-trade-sdk rbhtrade/addresses.go（第三方地址簿）+ 链上核实（Sourcify 名称 + 实时日志）；Bags 工厂（代理）；live-verify 2026-09-21：代码存在但 2000 区块窗口内无事件（code-only）"
         },
         {
           "name": "bags_hook",
           "address": "0x2380abf72c17aabab76480244759ac7e2932eecc",
-          "fact_status": "verified",
+          "fact_status": "unverified",
           "enabled": false,
           "family": "evm",
-          "source": "0xfnzero/rbh-trade-sdk rbhtrade/addresses.go（第三方地址簿）+ 链上核实（Sourcify 名称 + 实时日志）；Bags V4 Hook；live-verify 2026-09-20 2000 区块窗口"
+          "source": "0xfnzero/rbh-trade-sdk rbhtrade/addresses.go（第三方地址簿）+ 链上核实（Sourcify 名称 + 实时日志）；Bags V4 Hook；live-verify 2026-09-21：代码存在但 2000 区块窗口内无事件（code-only）"
         },
         {
           "name": "bags_vault",
           "address": "0x4861446aa7ffd9e67a83cbbacb1a4b70540b83aa",
-          "fact_status": "verified",
+          "fact_status": "unverified",
           "enabled": false,
           "family": "evm",
-          "source": "0xfnzero/rbh-trade-sdk rbhtrade/addresses.go（第三方地址簿）+ 链上核实（Sourcify 名称 + 实时日志）；Bags Vault（代理）；live-verify 2026-09-20 2000 区块窗口"
+          "source": "0xfnzero/rbh-trade-sdk rbhtrade/addresses.go（第三方地址簿）+ 链上核实（Sourcify 名称 + 实时日志）；Bags Vault（代理）；live-verify 2026-09-21：代码存在但 2000 区块窗口内无事件（code-only）"
         },
         {
           "name": "letscash_factory",
           "address": "0x5bd1fbe78a78fe8236fa00cf48fbeba74ae34661",
-          "fact_status": "verified",
+          "fact_status": "unverified",
           "enabled": false,
           "family": "evm",
-          "source": "0xfnzero/rbh-trade-sdk rbhtrade/addresses.go（第三方地址簿）+ 链上核实（Sourcify 名称 + 实时日志）；LetsCash 工厂（代理）；live-verify 2026-09-20 2000 区块窗口"
+          "source": "0xfnzero/rbh-trade-sdk rbhtrade/addresses.go（第三方地址簿）+ 链上核实（Sourcify 名称 + 实时日志）；LetsCash 工厂（代理）；live-verify 2026-09-21：代码存在但 2000 区块窗口内无事件（code-only）"
         },
         {
           "name": "letscash_hook",
           "address": "0x75a54357d9c78a2db19004a5fdc76c50f9242aec",
-          "fact_status": "verified",
+          "fact_status": "unverified",
           "enabled": false,
           "family": "evm",
-          "source": "0xfnzero/rbh-trade-sdk rbhtrade/addresses.go（第三方地址簿）+ 链上核实（Sourcify 名称 + 实时日志）；LetsCash Hook；live-verify 2026-09-20 2000 区块窗口"
+          "source": "0xfnzero/rbh-trade-sdk rbhtrade/addresses.go（第三方地址簿）+ 链上核实（Sourcify 名称 + 实时日志）；LetsCash Hook；live-verify 2026-09-21：代码存在但 2000 区块窗口内无事件（code-only）"
         },
         {
           "name": "pools_entry",
           "address": "0x0000ffffbe8efe702c8703ae3477ff5de3d319c0",
-          "fact_status": "verified",
+          "fact_status": "unverified",
           "enabled": false,
           "family": "evm",
-          "source": "0xfnzero/rbh-trade-sdk rbhtrade/addresses.go（第三方地址簿）+ 链上核实（Sourcify 名称 + 实时日志）；Pools.trade Entry；live-verify 2026-09-20 2000 区块窗口"
+          "source": "0xfnzero/rbh-trade-sdk rbhtrade/addresses.go（第三方地址簿）+ 链上核实（Sourcify 名称 + 实时日志）；Pools.trade Entry；live-verify 2026-09-21：代码存在但 2000 区块窗口内无事件（code-only）"
         },
         {
           "name": "pools_token_factory",
           "address": "0x000000e200088d55c39a11f609e5f667729ad49b",
-          "fact_status": "verified",
+          "fact_status": "unverified",
           "enabled": false,
           "family": "evm",
-          "source": "0xfnzero/rbh-trade-sdk rbhtrade/addresses.go（第三方地址簿）+ 链上核实（Sourcify 名称 + 实时日志）；Pools.trade TokenFactory；live-verify 2026-09-20 2000 区块窗口"
+          "source": "0xfnzero/rbh-trade-sdk rbhtrade/addresses.go（第三方地址簿）+ 链上核实（Sourcify 名称 + 实时日志）；Pools.trade TokenFactory；live-verify 2026-09-21：代码存在但 2000 区块窗口内无事件（code-only）"
         },
         {
           "name": "pair_launchpad",
           "address": "0x8660a7f019c7943b0b0a91b8e39aff3b6db6ae62",
-          "fact_status": "verified",
+          "fact_status": "unverified",
           "enabled": false,
           "family": "evm",
-          "source": "0xfnzero/rbh-trade-sdk rbhtrade/addresses.go（第三方地址簿）+ 链上核实（Sourcify 名称 + 实时日志）；PAIR 发射台（代理）；live-verify 2026-09-20 2000 区块窗口"
+          "source": "0xfnzero/rbh-trade-sdk rbhtrade/addresses.go（第三方地址簿）+ 链上核实（Sourcify 名称 + 实时日志）；PAIR 发射台（代理）；live-verify 2026-09-21：代码存在但 2000 区块窗口内无事件（code-only）"
         },
         {
           "name": "flap_controller",
@@ -471,31 +792,231 @@
           "fact_status": "verified",
           "enabled": false,
           "family": "evm",
-          "source": "0xfnzero/rbh-trade-sdk rbhtrade/addresses.go（第三方地址簿）+ 链上核实（Sourcify 名称 + 实时日志）；Flap Controller（代理）；live-verify 2026-09-20 2000 区块窗口"
+          "source": "0xfnzero/rbh-trade-sdk rbhtrade/addresses.go（第三方地址簿）+ 链上核实（Sourcify 名称 + 实时日志）；Flap Controller（代理）；live-verify 2026-09-21：2000 区块内 116 条事件"
         },
         {
           "name": "varo_launchpad",
           "address": "0x851153fe84239c2dc55fa191ac2f099e20a6d0b8",
-          "fact_status": "verified",
+          "fact_status": "unverified",
           "enabled": false,
           "family": "evm",
-          "source": "0xfnzero/rbh-trade-sdk rbhtrade/addresses.go（第三方地址簿）+ 链上核实（Sourcify 名称 + 实时日志）；Varo 发射台（代理）；live-verify 2026-09-20 2000 区块窗口"
+          "source": "0xfnzero/rbh-trade-sdk rbhtrade/addresses.go（第三方地址簿）+ 链上核实（Sourcify 名称 + 实时日志）；Varo 发射台（代理）；live-verify 2026-09-21：代码存在但 2000 区块窗口内无事件（code-only）"
         },
         {
           "name": "virtuals_launchpad",
           "address": "0xd4ccbfa37e2f35611b3042e4096ad7a3459bd007",
-          "fact_status": "verified",
+          "fact_status": "unverified",
           "enabled": false,
           "family": "evm",
-          "source": "0xfnzero/rbh-trade-sdk rbhtrade/addresses.go（第三方地址簿）+ 链上核实（Sourcify 名称 + 实时日志）；Virtuals 发射台（代理）；live-verify 2026-09-20 2000 区块窗口"
+          "source": "0xfnzero/rbh-trade-sdk rbhtrade/addresses.go（第三方地址簿）+ 链上核实（Sourcify 名称 + 实时日志）；Virtuals 发射台（代理）；live-verify 2026-09-21：代码存在但 2000 区块窗口内无事件（code-only）"
         },
         {
           "name": "virtuals_factory",
           "address": "0xfc2e4da3edb2e18100473339c763705d263d20a9",
+          "fact_status": "unverified",
+          "enabled": false,
+          "family": "evm",
+          "source": "0xfnzero/rbh-trade-sdk rbhtrade/addresses.go（第三方地址簿）+ 链上核实（Sourcify 名称 + 实时日志）；Virtuals 工厂（代理）；live-verify 2026-09-21：代码存在但 2000 区块窗口内无事件（code-only）"
+        },
+        {
+          "name": "flap_vault_portal",
+          "address": "0xe9f7ab7de8fb8756acbb6a1cd13316a43308197b",
+          "fact_status": "unverified",
+          "enabled": false,
+          "family": "evm",
+          "source": "docs.flap.sh Deployed Contract Addresses（官方部署表）；VaultPortal（Robinhood）；live-verify 2026-09-21：代码存在但 2000 区块窗口内无事件（code-only）"
+        },
+        {
+          "name": "flap_tax_token_helper",
+          "address": "0xb10bd2672ae63735d677164a54b573a016f0203c",
+          "fact_status": "unverified",
+          "enabled": false,
+          "family": "evm",
+          "source": "docs.flap.sh Deployed Contract Addresses（官方部署表）；Tax Token Helper（Robinhood）；live-verify 2026-09-21：代码存在但 2000 区块窗口内无事件（code-only）"
+        },
+        {
+          "name": "flap_trigger_service",
+          "address": "0xd3421b1b616a72bb88993a0cf75709bb8d532cc1",
+          "fact_status": "unverified",
+          "enabled": false,
+          "family": "evm",
+          "source": "docs.flap.sh Deployed Contract Addresses（官方部署表）；Trigger Service（Robinhood）；live-verify 2026-09-21：代码存在但 2000 区块窗口内无事件（code-only）"
+        },
+        {
+          "name": "uniswap_v3_factory_robinhood",
+          "address": "0x1f7d7550b1b028f7571e69a784071f0205fd2efa",
           "fact_status": "verified",
           "enabled": false,
           "family": "evm",
-          "source": "0xfnzero/rbh-trade-sdk rbhtrade/addresses.go（第三方地址簿）+ 链上核实（Sourcify 名称 + 实时日志）；Virtuals 工厂（代理）；live-verify 2026-09-20 2000 区块窗口"
+          "source": "docs.mobula.io/almanac/robinhood-launchpads（整合文档，含“verify at indexed block”提示）+ 链上核实；Robinhood V3 工厂（Sourcify UniswapV3Factory）；live-verify 2026-09-21：2000 区块内 PoolCreated=1"
+        },
+        {
+          "name": "apestore_launcher",
+          "address": "0x6e4910ea5a04376032f6564da9a9e4e88b7a87c1",
+          "fact_status": "unverified",
+          "enabled": false,
+          "family": "evm",
+          "source": "docs.mobula.io/almanac/robinhood-launchpads（整合文档，含“verify at indexed block”提示）+ 链上核实；ApeStore launcher；live-verify 2026-09-21：代码存在但 2000 区块窗口内无事件（code-only）"
+        },
+        {
+          "name": "bottomfun_factory",
+          "address": "0x1bed2687321074a198302c004036b51923812b18",
+          "fact_status": "unverified",
+          "enabled": false,
+          "family": "evm",
+          "source": "docs.mobula.io/almanac/robinhood-launchpads（整合文档，含“verify at indexed block”提示）+ 链上核实；Bottom.fun Factory；live-verify 2026-09-21：代码存在但 2000 区块窗口内无事件（code-only）"
+        },
+        {
+          "name": "bottomfun_hook",
+          "address": "0xd23c94bd8cbeb48c169c020e16a844aeab2368cc",
+          "fact_status": "unverified",
+          "enabled": false,
+          "family": "evm",
+          "source": "docs.mobula.io/almanac/robinhood-launchpads（整合文档，含“verify at indexed block”提示）+ 链上核实；Bottom.fun Hook；live-verify 2026-09-21：代码存在但 2000 区块窗口内无事件（code-only）"
+        },
+        {
+          "name": "bottomfun_locker",
+          "address": "0xf46663171d1d0653fe7c3b8e42d43bccac137c56",
+          "fact_status": "unverified",
+          "enabled": false,
+          "family": "evm",
+          "source": "docs.mobula.io/almanac/robinhood-launchpads（整合文档，含“verify at indexed block”提示）+ 链上核实；Bottom.fun Locker；live-verify 2026-09-21：代码存在但 2000 区块窗口内无事件（code-only）"
+        },
+        {
+          "name": "bowfun_factory",
+          "address": "0xc70e510e14710ea535cab7b2414860af63feab79",
+          "fact_status": "unverified",
+          "enabled": false,
+          "family": "evm",
+          "source": "docs.mobula.io/almanac/robinhood-launchpads（整合文档，含“verify at indexed block”提示）+ 链上核实；Bow.fun factory；live-verify 2026-09-21：代码存在但 2000 区块窗口内无事件（code-only）"
+        },
+        {
+          "name": "dyorfun_factory",
+          "address": "0x80b42aed46d73f47119dc444bea28a9e68f32bf4",
+          "fact_status": "unverified",
+          "enabled": false,
+          "family": "evm",
+          "source": "docs.mobula.io/almanac/robinhood-launchpads（整合文档，含“verify at indexed block”提示）+ 链上核实；DYOR.fun launch factory；live-verify 2026-09-21：代码存在但 2000 区块窗口内无事件（code-only）"
+        },
+        {
+          "name": "klik_factory",
+          "address": "0x16cf6788b762ee8969744586ed16fc5705140dd7",
+          "fact_status": "unverified",
+          "enabled": false,
+          "family": "evm",
+          "source": "docs.mobula.io/almanac/robinhood-launchpads（整合文档，含“verify at indexed block”提示）+ 链上核实；Klik Robinhood factory；live-verify 2026-09-21：代码存在但 2000 区块窗口内无事件（code-only）"
+        },
+        {
+          "name": "klik_hook",
+          "address": "0x745d717620052a97a22deee2e5eba59583f3e0cc",
+          "fact_status": "unverified",
+          "enabled": false,
+          "family": "evm",
+          "source": "docs.mobula.io/almanac/robinhood-launchpads（整合文档，含“verify at indexed block”提示）+ 链上核实；Klik Robinhood hook；live-verify 2026-09-21：代码存在但 2000 区块窗口内无事件（code-only）"
+        },
+        {
+          "name": "launchproof_cca_factory",
+          "address": "0x000000001f26a0044baa66024e7b6599c61963f8",
+          "fact_status": "unverified",
+          "enabled": false,
+          "family": "evm",
+          "source": "docs.mobula.io/almanac/robinhood-launchpads（整合文档，含“verify at indexed block”提示）+ 链上核实；CCA factory；live-verify 2026-09-21：代码存在但 2000 区块窗口内无事件（code-only）"
+        },
+        {
+          "name": "launchproof_lbp_strategy",
+          "address": "0x05d552391067389ee44fec3924157ed33f976000",
+          "fact_status": "unverified",
+          "enabled": false,
+          "family": "evm",
+          "source": "docs.mobula.io/almanac/robinhood-launchpads（整合文档，含“verify at indexed block”提示）+ 链上核实；LBP strategy（Crowd）；live-verify 2026-09-21：代码存在但 2000 区块窗口内无事件（code-only）"
+        },
+        {
+          "name": "launchproof_instant_no_fees",
+          "address": "0xad44d55e7f8337c3ce113fbb591486e85be104b2",
+          "fact_status": "unverified",
+          "enabled": false,
+          "family": "evm",
+          "source": "docs.mobula.io/almanac/robinhood-launchpads（整合文档，含“verify at indexed block”提示）+ 链上核实；Instant strategy（无 creator fee）；live-verify 2026-09-21：代码存在但 2000 区块窗口内无事件（code-only）"
+        },
+        {
+          "name": "noxafun_factory",
+          "address": "0xd9ec2db5f3d1b236843925949fe5bd8a3836fccb",
+          "fact_status": "unverified",
+          "enabled": false,
+          "family": "evm",
+          "source": "docs.mobula.io/almanac/robinhood-launchpads（整合文档，含“verify at indexed block”提示）+ 链上核实；Noxa.fun launch factory；live-verify 2026-09-21：代码存在但 2000 区块窗口内无事件（code-only）"
+        },
+        {
+          "name": "pons_active_factory",
+          "address": "0xa5aab3f0c6eeadf30ef1d3eb997108e976351feb",
+          "fact_status": "unverified",
+          "enabled": false,
+          "family": "evm",
+          "source": "docs.mobula.io/almanac/robinhood-launchpads（整合文档，含“verify at indexed block”提示）+ 链上核实；Pons active factory（v1/新版）；live-verify 2026-09-21：代码存在但 2000 区块窗口内无事件（code-only）"
+        },
+        {
+          "name": "pons_active_locker",
+          "address": "0x736d76699c26d0d966744cae304c000d471f7f35",
+          "fact_status": "verified",
+          "enabled": false,
+          "family": "evm",
+          "source": "docs.mobula.io/almanac/robinhood-launchpads（整合文档，含“verify at indexed block”提示）+ 链上核实；Pons active locker；live-verify 2026-09-21：2000 区块内 FeesClaimed=1"
+        },
+        {
+          "name": "pons_legacy_factory",
+          "address": "0x0c37a24f5d23a486fa692d1500881d698b1f77a4",
+          "fact_status": "unverified",
+          "enabled": false,
+          "family": "evm",
+          "source": "docs.mobula.io/almanac/robinhood-launchpads（整合文档，含“verify at indexed block”提示）+ 链上核实；Pons legacy factory；live-verify 2026-09-21：代码存在但 2000 区块窗口内无事件（code-only）"
+        },
+        {
+          "name": "pons_legacy_locker",
+          "address": "0x31ca5e101941a93a7dd6d0497928700625cf54b5",
+          "fact_status": "unverified",
+          "enabled": false,
+          "family": "evm",
+          "source": "docs.mobula.io/almanac/robinhood-launchpads（整合文档，含“verify at indexed block”提示）+ 链上核实；Pons legacy locker；live-verify 2026-09-21：代码存在但 2000 区块窗口内无事件（code-only）"
+        },
+        {
+          "name": "printr_protocol",
+          "address": "0xb77726291b125515d0a7affeea2b04f2ff243172",
+          "fact_status": "unverified",
+          "enabled": false,
+          "family": "evm",
+          "source": "docs.mobula.io/almanac/robinhood-launchpads（整合文档，含“verify at indexed block”提示）+ 链上核实；Printr protocol；live-verify 2026-09-21：代码存在但 2000 区块窗口内无事件（code-only）"
+        },
+        {
+          "name": "realfun_launcher",
+          "address": "0xa3a71925be892c609ac4be4efe918dc9c35fc5e8",
+          "fact_status": "unverified",
+          "enabled": false,
+          "family": "evm",
+          "source": "docs.mobula.io/almanac/robinhood-launchpads（整合文档，含“verify at indexed block”提示）+ 链上核实；RealFun single-sided launcher；live-verify 2026-09-21：代码存在但 2000 区块窗口内无事件（code-only）"
+        },
+        {
+          "name": "robinfun_factory",
+          "address": "0xd861cb5dc71a0171e8f0f6586cadb069f3a35e4d",
+          "fact_status": "unverified",
+          "enabled": false,
+          "family": "evm",
+          "source": "docs.mobula.io/almanac/robinhood-launchpads（整合文档，含“verify at indexed block”提示）+ 链上核实；RobinFun factory/curve manager；live-verify 2026-09-21：代码存在但 2000 区块窗口内无事件（code-only）"
+        },
+        {
+          "name": "uniswap_lbp_strategy_v3",
+          "address": "0xbf1ab81f7d534b2cc0da76fcf4d541322bb0e000",
+          "fact_status": "unverified",
+          "enabled": false,
+          "family": "evm",
+          "source": "developers.uniswap.org/docs/liquidity/liquidity-launchpad/deployments（Uniswap 官方部署表）；LBPStrategy v3.3.0（Robinhood）；live-verify 2026-09-21：代码存在但 2000 区块窗口内无事件（code-only）"
+        },
+        {
+          "name": "pons_v2_launch_locker",
+          "address": "0x267444d099b10fb5ed7c3cc7b7c767adca574952",
+          "fact_status": "unverified",
+          "enabled": false,
+          "family": "evm",
+          "source": "docs.bitquery.io/docs/blockchain/robinhood/（PonsV2LaunchLocker）；live-verify 2026-09-21：代码存在但 2000 区块窗口内无事件（code-only）"
         }
       ]
     },
@@ -528,7 +1049,7 @@
           "fact_status": "verified",
           "enabled": false,
           "family": "solana",
-          "source": "pump.fun 程序 ID（chainstacklabs/pumpfun-bonkfun-bot + no-limit-nodes 解码库一致）；live-verify 2026-09-20（scripts/verify_live.py + docs/research/20260920-live-chain-verification/evidence.json）：executable=True，50 条签名/10 秒内，指令日志含 Buy/SellV2/Swap"
+          "source": "pump.fun 官方程序 ID（公开资料）+ 链上账户核实；live-verify 2026-09-21：程序可执行，最近 50 条签名"
         },
         {
           "name": "letsbonk_program",
@@ -536,7 +1057,7 @@
           "fact_status": "verified",
           "enabled": false,
           "family": "solana",
-          "source": "Raydium LaunchLab 程序 ID（chainstacklabs address_provider + no-limit-nodes 一致）；live-verify 2026-09-20（scripts/verify_live.py + docs/research/20260920-live-chain-verification/evidence.json）：executable=True，50 条签名/10 秒内"
+          "source": "chainstacklabs/pumpfun-bonkfun-bot src/platforms/letsbonk/address_provider.py（Raydium LaunchLab program）；live-verify 2026-09-21：程序可执行，最近 50 条签名"
         },
         {
           "name": "boop_program",
@@ -544,7 +1065,7 @@
           "fact_status": "verified",
           "enabled": false,
           "family": "solana",
-          "source": "no-limit-nodes/every-solana-program-decoded（boop_boop）；live-verify 2026-09-20（scripts/verify_live.py + docs/research/20260920-live-chain-verification/evidence.json）：executable=True，窗口内 12 条签名"
+          "source": "no-limit-nodes/every-solana-program-decoded programs/boop_boop README（Program ID）；live-verify 2026-09-21：程序可执行，最近 10 条签名"
         },
         {
           "name": "moonshot_program",
@@ -552,15 +1073,87 @@
           "fact_status": "verified",
           "enabled": false,
           "family": "solana",
-          "source": "no-limit-nodes/every-solana-program-decoded（moonshot）；live-verify 2026-09-20（scripts/verify_live.py + docs/research/20260920-live-chain-verification/evidence.json）：executable=True，50 条签名"
+          "source": "no-limit-nodes/every-solana-program-decoded programs/moonshot README（Program ID）；live-verify 2026-09-21：程序可执行，最近 50 条签名"
         },
         {
           "name": "virtuals_solana_program",
           "address": "5U3EU2ubXtK84QcRjWVmYt9RaDyA8gKxdUrPFXmZyaki",
+          "fact_status": "unverified",
+          "enabled": false,
+          "family": "solana",
+          "source": "no-limit-nodes/every-solana-program-decoded programs/virtuals README（Program ID）；live-verify 2026-09-21：未通过（无代码或无签名）"
+        },
+        {
+          "name": "bags_fee_share_v1",
+          "address": "FEEhPbKVKnco9EXnaY3i4R5rQVUx91wgVfu8qokixywi",
           "fact_status": "verified",
           "enabled": false,
           "family": "solana",
-          "source": "no-limit-nodes/every-solana-program-decoded（virtuals）；live-verify 2026-09-20（scripts/verify_live.py + docs/research/20260920-live-chain-verification/evidence.json）：程序存在但窗口内 0 条签名（休眠）"
+          "source": "docs.bags.fm/principles/program-ids（Bags 官方程序清单）；Bags Fee Share V1；live-verify 2026-09-21：程序可执行，最近 3 条签名"
+        },
+        {
+          "name": "bags_meteora_dbc",
+          "address": "dbcij3LWUppWqq96dh6gJWwBifmcGfLSB5D4DuSMaqN",
+          "fact_status": "verified",
+          "enabled": false,
+          "family": "solana",
+          "source": "docs.bags.fm/principles/program-ids（Bags 官方程序清单）；Meteora DBC（Bags 代币创建/联合曲线）；live-verify 2026-09-21：程序可执行，最近 50 条签名"
+        },
+        {
+          "name": "bags_meteora_damm_v2",
+          "address": "cpamdpZCGKUy5JxQXB4dcpGPiikHawvSWAd6mEn1sGG",
+          "fact_status": "verified",
+          "enabled": false,
+          "family": "solana",
+          "source": "docs.bags.fm/principles/program-ids（Bags 官方程序清单）；Meteora DAMM v2（毕业后 AMM）；live-verify 2026-09-21：程序可执行，最近 50 条签名"
+        },
+        {
+          "name": "raydium_amm_v4",
+          "address": "675kPX9MHTjS2zt1qfr1NYHuzeLXfQM9H24wFSUt1Mp8",
+          "fact_status": "verified",
+          "enabled": false,
+          "family": "solana",
+          "source": "docs.raydium.io/reference/program-addresses（Raydium 官方程序表）；AMM v4；live-verify 2026-09-21：程序可执行，最近 50 条签名"
+        },
+        {
+          "name": "raydium_cpmm",
+          "address": "CPMMoo8L3F4NbTegBCKVNunggL7H1ZpdTHKxQB5qKP1C",
+          "fact_status": "verified",
+          "enabled": false,
+          "family": "solana",
+          "source": "docs.raydium.io/reference/program-addresses（Raydium 官方程序表）；CPMM；live-verify 2026-09-21：程序可执行，最近 50 条签名"
+        },
+        {
+          "name": "raydium_clmm",
+          "address": "CAMMCzo5YL8w4VFF8KVHrK22GGUsp5VTaW7grrKgrWqK",
+          "fact_status": "verified",
+          "enabled": false,
+          "family": "solana",
+          "source": "docs.raydium.io/reference/program-addresses（Raydium 官方程序表）；CLMM；live-verify 2026-09-21：程序可执行，最近 50 条签名"
+        },
+        {
+          "name": "pump_amm",
+          "address": "pAMMBay6oceH9fJKBRHGP5D4bD4sWpmSwMn52FMfXEA",
+          "fact_status": "verified",
+          "enabled": false,
+          "family": "solana",
+          "source": "docs.solanatracker.io/guides/pumpfun-amm（PumpSwap 官方程序 ID）；PumpSwap AMM；live-verify 2026-09-21：程序可执行，最近 50 条签名"
+        },
+        {
+          "name": "meteora_dlmm",
+          "address": "LBUZKhRxPF3XUpBCjp4YzTKgLccjZhTSDM9YuVaPwxo",
+          "fact_status": "verified",
+          "enabled": false,
+          "family": "solana",
+          "source": "docs.meteora.ag/developer-guides/dlmm（Meteora 官方文档）；DLMM；live-verify 2026-09-21：程序可执行，最近 50 条签名"
+        },
+        {
+          "name": "orca_whirlpool",
+          "address": "whirLbMiicVdio4qvUfM5KAg6Ct8VwpYzGff3uctyCc",
+          "fact_status": "verified",
+          "enabled": false,
+          "family": "solana",
+          "source": "docs.orca.so（Orca 官方文档）；Whirlpools；live-verify 2026-09-21：程序可执行，最近 50 条签名"
         }
       ]
     },
