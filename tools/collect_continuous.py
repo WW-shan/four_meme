@@ -41,9 +41,6 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# Events whose tokens are worth re-checking for real buyer flow. A brand-new token has no
-# buyers yet, so the candidate sweep looks again every SCANNER_CANDIDATE_SWEEP_SECONDS.
-CANDIDATE_WATCH_EVENTS = {"TokenCreate", "LiquidityAdded"}
 
 
 class ContinuousCollector:
@@ -104,8 +101,13 @@ class ContinuousCollector:
         self.candidate_max_age_seconds = max(
             60.0, float(os.getenv('SCANNER_CANDIDATE_MAX_AGE_SECONDS', '3600'))
         )
+        # Counting wallets alone let $0.05 dust through while a token with 352 in buy volume
+        # waited behind it. The floor is in the token's own quote asset: measured on
+        # 2026-09-22, dust sat at <=0.1 and the real movers at >=12.
+        self.candidate_min_buy_volume = max(
+            0.0, float(os.getenv('SCANNER_CANDIDATE_MIN_BUY_VOLUME', '1.0'))
+        )
         self.candidate_task = None
-        self._candidate_watch = {}
         self._candidate_alerted = {}
         # Flow stats for tokens the previous run had already flushed to disk: their addresses
         # are restored, but their buys/sells are not in memory, so the numbers are kept here
@@ -336,12 +338,13 @@ class ContinuousCollector:
                             ", ".join(sorted(self.scanner_signal_events)),
                         )
                 if self.candidate_sweep_seconds > 0:
-                    seeded = self._seed_candidate_watch()
+                    seeded = self._seed_candidate_stats()
                     logger.info(
-                        "🔎 Candidate sweep every %.0fs (max %s/hour, age <= %.0fmin, >= %s fresh buyers)"
-                        " | watch seeded from disk: %s",
+                        "🔎 Candidate sweep every %.0fs (max %s/hour, age <= %.0fmin, >= %s fresh "
+                        "buyers, buy volume >= %s) | seeded from disk: %s",
                         self.candidate_sweep_seconds, self.candidate_max_per_hour or "unlimited",
-                        self.candidate_max_age_seconds / 60.0, self.signal_min_unique_buyers, seeded,
+                        self.candidate_max_age_seconds / 60.0, self.signal_min_unique_buyers,
+                        self.candidate_min_buy_volume, seeded,
                     )
 
             restored_metadata = self.collector.load_token_metadata_index()
@@ -531,18 +534,14 @@ class ContinuousCollector:
         if self.scanner is None:
             return
         await self.scanner.handle_event(event_name, event_data)
-        watching = self.candidate_sweep_seconds > 0 and event_name in CANDIDATE_WATCH_EVENTS
-        if event_name not in self.scanner_signal_events and not watching:
+        if event_name not in self.scanner_signal_events:
             return
         from src.radar.events import launch_from_event
 
         launch = launch_from_event(event_name, event_data, chain=self.scanner.chain)
         if launch is None or not launch.token:
             return
-        if watching:
-            self._candidate_watch.setdefault(launch.token.lower(), time.time())
-        if event_name in self.scanner_signal_events:
-            self._schedule_signal_scan(launch)
+        self._schedule_signal_scan(launch)
 
     def _schedule_signal_scan(self, launch):
         """Queue a signal scan, bounded so a busy block cannot pile up scans."""
@@ -629,8 +628,9 @@ class ContinuousCollector:
                     break
                 summary = await asyncio.to_thread(self._sweep_candidates)
                 logger.info(
-                    "🔎 Candidate sweep: watched={watched} qualifying={qualifying} pushed={pushed}".format(
-                        **summary
+                    "🔎 Candidate sweep: watched={watched} qualifying={qualifying} pushed={pushed}{detail}".format(
+                        detail=(" -> " + ", ".join(summary["tokens"])) if summary.get("tokens") else "",
+                        **summary,
                     )
                 )
             except asyncio.CancelledError:
@@ -638,8 +638,8 @@ class ContinuousCollector:
             except Exception as exc:
                 logger.error(f"候选扫链失败: {exc}")
 
-    def _seed_candidate_watch(self, max_files: int = 5, max_bytes_per_file: int = 8 * 1024 * 1024) -> int:
-        """Rebuild the watch set from the most recent incremental files after a restart.
+    def _seed_candidate_stats(self, max_files: int = 5, max_bytes_per_file: int = 8 * 1024 * 1024) -> int:
+        """Rebuild candidate flow stats from the most recent incremental files after a restart.
 
         Each run flushes its in-memory tokens on shutdown, so a restart would otherwise start
         with an empty watch set and ignore every token created in the preceding hour. One file
@@ -685,9 +685,8 @@ class ContinuousCollector:
                             continue
                         if not 0 <= age <= self.candidate_max_age_seconds:
                             continue
-                        if token not in self._candidate_watch:
+                        if token not in self._candidate_seed_stats:
                             seeded += 1
-                        self._candidate_watch.setdefault(token, now)
                         stats = self._flow_stats_from_lifecycle(
                             row, min_unique_buyers=self.signal_min_unique_buyers
                         )
@@ -702,24 +701,30 @@ class ContinuousCollector:
         return seeded
 
     def _sweep_candidates(self) -> dict:
-        """Push candidates that crossed the on-chain demand bar. Runs in a worker thread."""
+        """Push candidates that crossed the on-chain demand bar. Runs in a worker thread.
+
+        The sweep iterates what the collector actually holds, not a watch list built from
+        creation events. A token that was created before this process started and is still
+        trading lives in memory but is not in any watch list, and those are exactly the tokens
+        worth alerting on: the first version of this sweep missed every real mover that way.
+        """
         if self.scanner is None or self.scanner.notifier is None:
-            return {"watched": 0, "qualifying": 0, "pushed": 0}
+            return {"watched": 0, "qualifying": 0, "pushed": 0, "tokens": []}
         now = time.time()
-        for token in [t for t, seen in self._candidate_watch.items()
-                      if now - seen > self.candidate_max_age_seconds]:
-            self._candidate_watch.pop(token, None)
+        live = self._lifecycle_index(getattr(self.collector, "token_lifecycle", None))
+        candidates = dict(live)
+        for token in self._candidate_seed_stats:
+            candidates.setdefault(token, None)
         pushed_this_hour = sum(1 for ts in self._candidate_alerted.values() if now - ts < 3600)
-        by_address = self._lifecycle_index(getattr(self.collector, "token_lifecycle", None))
         pushed = 0
         qualifying = 0
-        for token in list(self._candidate_watch):
+        pushed_tokens = []
+        for token, lifecycle in candidates.items():
             if self.candidate_max_per_hour and pushed_this_hour >= self.candidate_max_per_hour:
                 logger.info("🔎 Candidate alert cap reached for this hour; skipping the rest")
                 break
             if token in self._candidate_alerted:
                 continue
-            lifecycle = by_address.get(token)
             # A restarted collector only sees the buys that arrived after the restart, so the
             # in-memory record can be thinner than what the previous run already flushed.
             # Take whichever record shows more distinct buyers.
@@ -733,6 +738,11 @@ class ContinuousCollector:
                 stats = live_stats
             if not stats or not stats["funding_confirmed"]:
                 continue
+            if stats["buy_volume"] < self.candidate_min_buy_volume:
+                continue
+            age = stats.get("age_seconds")
+            if age is not None and age > self.candidate_max_age_seconds:
+                continue
             meta = lifecycle or self._candidate_seed_meta.get(token) or {}
             qualifying += 1
             if self.scanner.announce_candidate(
@@ -744,7 +754,9 @@ class ContinuousCollector:
                 self._candidate_alerted[token] = now
                 pushed_this_hour += 1
                 pushed += 1
-        return {"watched": len(self._candidate_watch), "qualifying": qualifying, "pushed": pushed}
+                pushed_tokens.append(f"{token[:12]}({stats['fresh_buyers']}b/{stats['buy_volume']:.1f})")
+        return {"watched": len(candidates), "qualifying": qualifying, "pushed": pushed,
+                "tokens": pushed_tokens}
 
     async def _run_signal_scan(self, launch):
         """Run the read-only scan off the event loop: the safety fetchers use sync HTTP."""

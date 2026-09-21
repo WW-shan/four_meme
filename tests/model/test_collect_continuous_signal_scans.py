@@ -201,20 +201,19 @@ class SchedulingTests(unittest.TestCase):
         async def scenario():
             await collector._handle_scanner_event("LiquidityAdded", {"args": {}})
             self.assertEqual(set(), collector._signal_scan_tasks)
-            self.assertEqual({}, collector._candidate_watch)
 
         asyncio.run(scenario())
 
-    def test_launch_event_watches_the_token_for_candidates(self):
+    def test_event_without_a_signal_subscription_is_only_recorded(self):
         collector = ContinuousCollector()
         collector.scanner = FakeScanner(DecisionStub())
-        collector.candidate_sweep_seconds = 60.0
+        collector.scanner_signal_events = set()
 
         async def scenario():
             await collector._handle_scanner_event("TokenCreate", self._event("TokenCreate"))
+            self.assertEqual(set(), collector._signal_scan_tasks)
 
         asyncio.run(scenario())
-        self.assertEqual({TOKEN.lower()}, set(collector._candidate_watch))
 
 
 if __name__ == "__main__":
@@ -268,7 +267,6 @@ class CandidateSweepTests(unittest.TestCase):
         collector.signal_min_unique_buyers = 3
         collector.candidate_max_per_hour = 20
         collector.candidate_max_age_seconds = 3600.0
-        collector._candidate_watch = {TOKEN.lower(): time.time()}
         collector.collector.token_lifecycle = {TOKEN: {
             "symbol": "FOO",
             "name": "Foo Token",
@@ -312,7 +310,6 @@ class CandidateSweepTests(unittest.TestCase):
         collector = self._collector()
         collector.candidate_max_per_hour = 1
         second = "0x" + "77" * 20
-        collector._candidate_watch[second] = time.time()
         collector.collector.token_lifecycle[second] = dict(
             collector.collector.token_lifecycle[TOKEN], buys=[
                 {"account": f"0x{i:040x}", "bnb_amount": 2.0} for i in range(5)
@@ -321,12 +318,11 @@ class CandidateSweepTests(unittest.TestCase):
         self.assertEqual(1, collector._sweep_candidates()["pushed"])
         self.assertEqual(1, len(collector.scanner.candidates))
 
-    def test_stale_watched_tokens_are_pruned(self):
+    def test_tokens_older_than_the_window_are_skipped(self):
         collector = self._collector()
         collector.candidate_max_age_seconds = 60.0
-        collector._candidate_watch[TOKEN] = time.time() - 600
+        collector.collector.token_lifecycle[TOKEN]["create_timestamp"] = int(time.time()) - 600
         self.assertEqual(0, collector._sweep_candidates()["pushed"])
-        self.assertEqual({}, collector._candidate_watch)
 
     def test_rejected_delivery_is_not_marked_as_alerted(self):
         collector = self._collector(accepted=False)
@@ -356,7 +352,6 @@ class AddressKeyTests(unittest.TestCase):
         collector.scanner = FakeScanner(DecisionStub())
         collector.signal_min_unique_buyers = 3
         checksummed = "0xAbCdEf0000000000000000000000000000000002"
-        collector._candidate_watch = {checksummed.lower(): time.time()}
         collector.collector.token_lifecycle = {checksummed: {
             "symbol": "CASE",
             "buys": [{"account": f"0x{i:040x}", "bnb_amount": 1.0} for i in range(3)],
@@ -367,7 +362,7 @@ class AddressKeyTests(unittest.TestCase):
         self.assertEqual("CASE", collector.scanner.candidates[0][1]["symbol"])
 
 
-class WatchSeedingTests(unittest.TestCase):
+class SeedStatsTests(unittest.TestCase):
     """A restart must not forget the tokens the previous run had already collected."""
 
     def _collector_with_dir(self, rows, *, max_age=3600.0, tail_bytes=None):
@@ -396,8 +391,8 @@ class WatchSeedingTests(unittest.TestCase):
             {"token_address": "", "create_timestamp": int(now) - 60},
         ]
         collector, _ = self._collector_with_dir(rows)
-        self.assertEqual(2, collector._seed_candidate_watch())
-        self.assertEqual({"0xrecent1", "0xrecent2"}, set(collector._candidate_watch))
+        self.assertEqual(2, collector._seed_candidate_stats())
+        self.assertEqual({"0xrecent1", "0xrecent2"}, set(collector._candidate_seed_stats))
 
     def test_older_files_are_read_too(self):
         import json as jsonlib
@@ -424,7 +419,7 @@ class WatchSeedingTests(unittest.TestCase):
         collector.scanner = FakeScanner(DecisionStub())
         collector.collector.token_lifecycle = {}
 
-        self.assertEqual(2, collector._seed_candidate_watch())
+        self.assertEqual(2, collector._seed_candidate_stats())
         summary = collector._sweep_candidates()
         self.assertEqual(1, summary["pushed"])
         self.assertEqual("0xold", collector.scanner.candidates[0][0])
@@ -438,15 +433,15 @@ class WatchSeedingTests(unittest.TestCase):
         tmp = tempfile.TemporaryDirectory()
         self.addCleanup(tmp.cleanup)
         collector.collector.output_dir = PathlibPath(tmp.name)
-        self.assertEqual(0, collector._seed_candidate_watch())
+        self.assertEqual(0, collector._seed_candidate_stats())
 
     def test_tail_read_skips_a_partial_first_line(self):
         now = time.time()
         rows = [{"token_address": f"0xTok{i}", "create_timestamp": int(now) - 60} for i in range(200)]
         collector, _ = self._collector_with_dir(rows)
-        seeded = collector._seed_candidate_watch(max_bytes_per_file=200)
+        seeded = collector._seed_candidate_stats(max_bytes_per_file=200)
         self.assertGreater(seeded, 0)
-        for token in collector._candidate_watch:
+        for token in collector._candidate_seed_stats:
             self.assertTrue(token.startswith("0xtok"))
 
 
@@ -479,7 +474,7 @@ class SeededStatsTests(unittest.TestCase):
         collector.scanner = FakeScanner(DecisionStub())
         collector.collector.token_lifecycle = {}   # restart: memory is empty
 
-        self.assertEqual(1, collector._seed_candidate_watch())
+        self.assertEqual(1, collector._seed_candidate_stats())
         summary = collector._sweep_candidates()
         self.assertEqual(1, summary["qualifying"])
         self.assertEqual(1, summary["pushed"])
@@ -519,7 +514,79 @@ class SeededVersusLiveTests(unittest.TestCase):
             "symbol": "RICH", "create_timestamp": int(now) - 1800,
             "buys": [{"account": "0x" + "aa" * 20, "bnb_amount": 3.0}], "sells": [],
         }}
-        collector._seed_candidate_watch()
+        collector._seed_candidate_stats()
         summary = collector._sweep_candidates()
         self.assertEqual(1, summary["pushed"])
         self.assertEqual(6, collector.scanner.candidates[0][1]["stats"]["fresh_buyers"])
+
+
+class LiveMemorySweepTests(unittest.TestCase):
+    """The sweep must scan the collector's own state, not just tokens it saw created."""
+
+    def test_mover_held_in_memory_is_pushed_without_any_watch_entry(self):
+        collector = ContinuousCollector()
+        collector.scanner = FakeScanner(DecisionStub())
+        collector.signal_min_unique_buyers = 2
+        collector.candidate_max_per_hour = 20
+        collector.candidate_max_age_seconds = 3600.0
+        mover = "0x46c91b9300e3bfffad61870f09b56bac094bffff"
+        collector.collector.token_lifecycle = {mover: {
+            "symbol": "REAL", "name": "Real Mover", "create_timestamp": int(time.time()) - 1200,
+            "buys": [{"account": f"0x{i:040x}", "bnb_amount": 12.0} for i in range(9)],
+            "sells": [],
+        }}
+        summary = collector._sweep_candidates()
+        self.assertEqual(1, summary["pushed"])
+        token, kwargs = collector.scanner.candidates[0]
+        self.assertEqual(mover.lower(), token)
+        self.assertEqual(9, kwargs["stats"]["fresh_buyers"])
+
+    def test_dust_token_below_the_bar_is_not_pushed(self):
+        collector = ContinuousCollector()
+        collector.scanner = FakeScanner(DecisionStub())
+        collector.signal_min_unique_buyers = 2
+        collector.collector.token_lifecycle = {"0x" + "11" * 20: {
+            "symbol": "DUST", "create_timestamp": int(time.time()) - 300,
+            "buys": [{"account": "0x" + "22" * 20, "bnb_amount": 0.05}], "sells": [],
+        }}
+        self.assertEqual(0, collector._sweep_candidates()["pushed"])
+
+    def test_token_older_than_the_window_is_not_pushed(self):
+        collector = ContinuousCollector()
+        collector.scanner = FakeScanner(DecisionStub())
+        collector.signal_min_unique_buyers = 2
+        collector.candidate_max_age_seconds = 600.0
+        collector.collector.token_lifecycle = {"0x" + "33" * 20: {
+            "symbol": "OLD", "create_timestamp": int(time.time()) - 3600,
+            "buys": [{"account": f"0x{i:040x}", "bnb_amount": 9.0} for i in range(5)], "sells": [],
+        }}
+        self.assertEqual(0, collector._sweep_candidates()["pushed"])
+
+
+class VolumeFloorTests(unittest.TestCase):
+    """Wallet count alone cannot tell a real mover from dust."""
+
+    def _collector(self, volume, buyers=2):
+        collector = ContinuousCollector()
+        collector.scanner = FakeScanner(DecisionStub())
+        collector.signal_min_unique_buyers = 2
+        collector.candidate_min_buy_volume = 1.0
+        collector.candidate_max_age_seconds = 3600.0
+        collector.collector.token_lifecycle = {"0x" + "55" * 20: {
+            "symbol": "X", "create_timestamp": int(time.time()) - 300,
+            "buys": [{"account": f"0x{i:040x}", "bnb_amount": volume / buyers} for i in range(buyers)],
+            "sells": [],
+        }}
+        return collector
+
+    def test_dust_below_the_floor_is_not_pushed(self):
+        self.assertEqual(0, self._collector(0.05)._sweep_candidates()["pushed"])
+
+    def test_real_volume_is_pushed(self):
+        collector = self._collector(352.1, buyers=4)
+        self.assertEqual(1, collector._sweep_candidates()["pushed"])
+
+    def test_floor_can_be_disabled(self):
+        collector = self._collector(0.05)
+        collector.candidate_min_buy_volume = 0.0
+        self.assertEqual(1, collector._sweep_candidates()["pushed"])
