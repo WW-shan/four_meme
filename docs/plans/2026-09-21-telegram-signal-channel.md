@@ -183,6 +183,17 @@ Verification after the rewrite: the same ground-truth query over the same window
 token, and the scanner pushed exactly it — no dust, nothing missed. Sent alerts are also written to
 the scanner database, so "what did the channel send?" has a durable answer.
 
+Two follow-up defects came out of watching it run:
+
+- The chain seed sent bare topic hashes to `eth_getLogs`; the node rejects those, so the first
+  version silently seeded nothing and every restart began with an empty window.
+- The sweep's log line collided with its own `top` key in `str.format`, so every sweep raised after
+  it had already sent its alert. Two delivered alerts were therefore invisible in the log, and
+  `qualifying=0` next to a token with 12 buyers looked like a filtering bug when it was the hourly
+  dedupe working. The counters are now `over_bar / suppressed / pushed`, the log prints why a token
+  was skipped for volume, and a regression test drives the loop once and asserts it logs without
+  raising.
+
 ## What this is not
 
 It is not evidence of profitability, not a trading authorisation, and not the shadow run. Signals are
