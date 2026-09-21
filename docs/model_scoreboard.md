@@ -2,6 +2,13 @@
 
 This file records accepted and rejected model candidates for live FourMeme trading. Selection is based on live-sized replay with 10% position sizing, gas costs, current execution delay assumptions, walk-forward checks, and stress replay.
 
+## 2026-09-21 Collector Restart: Backfill Gap Closed
+
+- **What happened:** restarting the collector to load the audited code exposed a silent data-loss path. `resume_max_catchup_blocks` was hard-coded to 256, so a checkpoint 38037 blocks behind was truncated to the chain head and that whole range was skipped from collection — one warning line, no other signal.
+- **Closure:** the range was re-collected with `scripts/backfill_fourmeme_month_raw.py --from-block 123160296 --to-block 123198076` against the endpoint the collector itself uses. 38 chunks, 4516 tokens, output in `data/training/gap_20260921/` with `backfill_summary.json`. The first attempt against the script's default endpoint (`bsc.rpc.blxrbdn.com`) only produced repeated read timeouts and range bisection, so the working endpoint matters.
+- **Code change:** `COLLECTOR_RESUME_MAX_CATCHUP_BLOCKS` now controls the window and `0` disables truncation, so a restart can keep backfilling from the checkpoint instead of dropping the range. Default stays 256. Covered by four tests.
+- **Decision:** no model trained or promoted, no threshold, sizing or trading switch changed, and no on-chain transaction sent. Scoreboard updated because the collection window and a recovered data gap are operational facts about the training corpus.
+
 ## 2026-09-21 Telegram Channel Live Run
 
 - **Live verification:** with the operator's own bot and chat, `getMe`/`getChat` succeeded and five real messages were delivered across four paths: `signal-test`, a full-chain `buy` on a synthetic safe snapshot, a rate-limit/dedupe probe (2 delivered, 2 dropped as designed), and the collector path (`LiquidityAdded` → schedule → `asyncio.to_thread` → scan → push). A real `signal-scan` on a live Four.meme token queried GoPlus (200), DexScreener (200), honeypot.is (404 for that token) and GMGN (`gmgn_api_key_missing`) and correctly rejected.
