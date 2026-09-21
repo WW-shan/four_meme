@@ -189,9 +189,12 @@ def format_candidate(
             )
             + (f" | 买卖比: {ratio:.2f}" if ratio is not None else "")
         )
+    window = _number(stats.get("window_seconds"))
+    if window is not None:
+        lines.append(f"统计窗口: 近 {window / 60:.0f} 分钟")
     age = _number(stats.get("age_seconds"))
     if age is not None:
-        lines.append(f"上线时长: {age / 60:.1f} 分钟")
+        lines.append(f"最近成交: {age / 60:.1f} 分钟前")
     verdict = snapshot.get("safety_verdict")
     if verdict:
         lines.append(f"安全检查: {escape(verdict)}")

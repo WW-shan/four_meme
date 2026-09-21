@@ -98,9 +98,15 @@ class ContinuousCollector:
         # Candidate sweep: watch new tokens and push the ones that attract real buyers.
         self.candidate_sweep_seconds = max(0.0, float(os.getenv('SCANNER_CANDIDATE_SWEEP_SECONDS', '0')))
         self.candidate_max_per_hour = max(0, int(os.getenv('SCANNER_CANDIDATE_MAX_PER_HOUR', '20')))
-        self.candidate_max_age_seconds = max(
-            60.0, float(os.getenv('SCANNER_CANDIDATE_MAX_AGE_SECONDS', '3600'))
+        # The scanner follows recent trades, not token creation: measured on 2026-09-22, every
+        # token with real money in a 30 minute window had been created hours earlier, so an
+        # age filter on creation time excluded all of them.
+        self.activity_window_seconds = max(
+            60.0, float(os.getenv('SCANNER_CANDIDATE_ACTIVITY_WINDOW_SECONDS', '1800'))
         )
+        self._recent_trades = {}
+        self._recent_trade_meta = {}
+        self._activity_seeded_blocks = 0
         # Counting wallets alone let $0.05 dust through while a token with 352 in buy volume
         # waited behind it. The floor is in the token's own quote asset: measured on
         # 2026-09-22, dust sat at <=0.1 and the real movers at >=12.
@@ -109,11 +115,6 @@ class ContinuousCollector:
         )
         self.candidate_task = None
         self._candidate_alerted = {}
-        # Flow stats for tokens the previous run had already flushed to disk: their addresses
-        # are restored, but their buys/sells are not in memory, so the numbers are kept here
-        # instead of re-injecting rows into the collected corpus.
-        self._candidate_seed_stats = {}
-        self._candidate_seed_meta = {}
 
     @staticmethod
     def _parse_signal_events(raw: str) -> set:
@@ -319,6 +320,11 @@ class ContinuousCollector:
                 )
                 self.listener.register_handler('TokenCreate', self._handle_scanner_event)
                 self.listener.register_handler('LiquidityAdded', self._handle_scanner_event)
+                # Trades drive the candidate window, so the scanner sees them for every token,
+                # including tokens this process never saw created.
+                for trade_event in ('TokenPurchase', 'TokenSale', 'TokenPurchaseV1', 'TokenSaleV1',
+                                    'TokenPurchase2', 'TokenSale2'):
+                    self.listener.register_handler(trade_event, self._handle_scanner_event)
                 logger.info("🔎 Scanner pipeline enabled (read-only): %s", scanner_config.mode)
                 self.signal_scans_blocked_by_mode = False
                 if self.scanner_signal_events:
@@ -338,13 +344,16 @@ class ContinuousCollector:
                             ", ".join(sorted(self.scanner_signal_events)),
                         )
                 if self.candidate_sweep_seconds > 0:
-                    seeded = self._seed_candidate_stats()
+                    seeded = await self._seed_activity_from_chain()
+                    recent_alerts = self._load_recent_alerts()
                     logger.info(
-                        "🔎 Candidate sweep every %.0fs (max %s/hour, age <= %.0fmin, >= %s fresh "
-                        "buyers, buy volume >= %s) | seeded from disk: %s",
+                        "🔎 Candidate sweep every %.0fs (max %s/hour, window %.0fmin, >= %s fresh "
+                        "buyers, buy volume >= %s) | activity seeded from chain: %s events over %s "
+                        "blocks | recent alerts carried over: %s",
                         self.candidate_sweep_seconds, self.candidate_max_per_hour or "unlimited",
-                        self.candidate_max_age_seconds / 60.0, self.signal_min_unique_buyers,
-                        self.candidate_min_buy_volume, seeded,
+                        self.activity_window_seconds / 60.0, self.signal_min_unique_buyers,
+                        self.candidate_min_buy_volume, seeded, self._activity_seeded_blocks,
+                        recent_alerts,
                     )
 
             restored_metadata = self.collector.load_token_metadata_index()
@@ -530,8 +539,11 @@ class ContinuousCollector:
                 logger.error(f"保存 collector checkpoint 失败: {e}")
 
     async def _handle_scanner_event(self, event_name: str, event_data: dict):
-        """Persist launch/graduation evidence, watch candidates, optionally scan for a signal."""
+        """Feed the activity window, persist launch evidence, optionally scan for a signal."""
         if self.scanner is None:
+            return
+        if event_name not in {"TokenCreate", "LiquidityAdded"}:
+            self._record_trade_event(event_name, event_data)
             return
         await self.scanner.handle_event(event_name, event_data)
         if event_name not in self.scanner_signal_events:
@@ -542,6 +554,36 @@ class ContinuousCollector:
         if launch is None or not launch.token:
             return
         self._schedule_signal_scan(launch)
+
+    def _record_trade(self, token: str, side: str, account: str, amount: float, ts: float) -> None:
+        """Append one trade to the rolling window and drop what fell out of it."""
+        token = str(token or "").lower()
+        if not token or side not in {"buy", "sell"}:
+            return
+        trades = self._recent_trades.setdefault(token, [])
+        trades.append({"ts": float(ts), "side": side, "account": str(account or "").lower(),
+                       "amount": float(amount or 0.0)})
+        cutoff = float(ts) - self.activity_window_seconds
+        if trades[0]["ts"] < cutoff:
+            self._recent_trades[token] = [trade for trade in trades if trade["ts"] >= cutoff]
+
+    def _record_trade_event(self, event_name: str, event_data: dict) -> None:
+        """Decode a listener trade event into the activity window."""
+        args = event_data.get("args") or {}
+        side = "buy" if "Purchase" in event_name else ("sell" if "Sale" in event_name else None)
+        if side is None:
+            return
+        token = args.get("token") or args.get("base")
+        try:
+            ts = float(event_data.get("timestamp") or time.time())
+        except (TypeError, ValueError):
+            ts = time.time()
+        try:
+            amount = float(args.get("cost") or args.get("bnb_amount") or 0) / 1e18
+        except (TypeError, ValueError):
+            amount = 0.0
+        self._record_trade(str(token or ""), side, str(args.get("account") or args.get("buyer") or ""),
+                           amount, ts)
 
     def _schedule_signal_scan(self, launch):
         """Queue a signal scan, bounded so a busy block cannot pile up scans."""
@@ -638,113 +680,157 @@ class ContinuousCollector:
             except Exception as exc:
                 logger.error(f"候选扫链失败: {exc}")
 
-    def _seed_candidate_stats(self, max_files: int = 5, max_bytes_per_file: int = 8 * 1024 * 1024) -> int:
-        """Rebuild candidate flow stats from the most recent incremental files after a restart.
+    def _fetch_recent_trade_logs(self, from_block: int, to_block: int) -> list:
+        """Read Four.meme trade logs straight from an HTTP endpoint, through the proxy."""
+        import requests
+        from web3 import Web3
 
-        Each run flushes its in-memory tokens on shutdown, so a restart would otherwise start
-        with an empty watch set and ignore every token created in the preceding hour. One file
-        is not enough: the newest one only holds the tokens the previous run happened to see,
-        so the last few are read and deduplicated by address.
-        """
-        now = time.time()
+        from src.data.fourmeme_log_decoder import TRADE_TOPICS
+
+        endpoints = list(Config.get_log_http_pool() or [])
+        if not endpoints:
+            return []
+        contract = Web3.to_checksum_address(Config.get_contract_config()["contract_address"])
+        proxy = Config.get_local_proxy_url()
+        session = requests.Session()
+        if proxy:
+            session.proxies.update({"http": proxy, "https": proxy})
+        logs = []
         try:
-            candidates = sorted(
-                self.collector.output_dir.glob("lifecycle_incremental_*.jsonl"),
-                key=lambda item: item.stat().st_mtime,
-                reverse=True,
-            )
-        except Exception:
+            for start_block in range(from_block, to_block + 1, 200):
+                # TRADE_TOPICS keys are bare hashes; eth_getLogs wants 0x-prefixed hex.
+                topics = ["0x" + topic if not topic.startswith("0x") else topic
+                          for topic in TRADE_TOPICS]
+                payload = {
+                    "jsonrpc": "2.0", "id": 1, "method": "eth_getLogs",
+                    "params": [{
+                        "fromBlock": hex(start_block), "toBlock": hex(min(start_block + 199, to_block)),
+                        "address": contract, "topics": [topics],
+                    }],
+                }
+                response = session.post(endpoints[0], json=payload, timeout=30)
+                response.raise_for_status()
+                body = response.json()
+                if "error" in body:
+                    raise RuntimeError(body["error"])
+                logs.extend(body.get("result") or [])
+        finally:
+            session.close()
+        return logs
+
+    async def _seed_activity_from_chain(self) -> int:
+        """Fill the activity window from the chain so a restart does not start blind.
+
+        Live events only cover the current process, and the tokens carrying real money are
+        often hours old, so replaying the window from the chain is the only honest way to
+        start. Timestamps are approximated from block distance at ~3s per BSC block.
+        """
+        from src.data.fourmeme_log_decoder import decode_fourmeme_log
+
+        if self.listener is None or self.listener.w3 is None:
             return 0
-        # Only files written inside the watch window can hold a token that is still young
-        # enough to alert on, and the newest one is always worth reading.
-        fresh = [item for item in candidates
-                 if now - item.stat().st_mtime <= self.candidate_max_age_seconds]
-        files = (fresh or candidates[:1])[:max_files]
+        try:
+            head = int(await self.listener.w3.eth.block_number)
+        except Exception as exc:
+            logger.warning(f"🔎 Activity seed skipped, no chain head: {exc}")
+            return 0
+        from_block = max(0, head - int(self.activity_window_seconds / 3.0) - 60)
+        try:
+            logs = await asyncio.to_thread(self._fetch_recent_trade_logs, from_block, head)
+        except Exception as exc:
+            logger.warning(f"🔎 Activity seed failed: {exc}")
+            return 0
+        now = time.time()
         seeded = 0
-        for path in files:
+        for log in logs:
+            decoded = decode_fourmeme_log(log)
+            if not decoded:
+                continue
+            name, args = decoded
+            side = "buy" if "Purchase" in name else ("sell" if "Sale" in name else None)
+            if side is None:
+                continue
             try:
-                size = path.stat().st_size
-                with path.open("r", encoding="utf-8") as handle:
-                    if size > max_bytes_per_file:
-                        handle.seek(size - max_bytes_per_file)
-                        handle.readline()  # drop the partial line the seek landed in
-                    for line in handle:
-                        if '"create_timestamp"' not in line:
-                            continue
-                        try:
-                            row = json.loads(line)
-                        except Exception:
-                            continue
-                        token = str(row.get("token_address") or "").lower()
-                        created = row.get("create_timestamp")
-                        if not token or not created:
-                            continue
-                        try:
-                            age = now - float(created)
-                        except (TypeError, ValueError):
-                            continue
-                        if not 0 <= age <= self.candidate_max_age_seconds:
-                            continue
-                        if token not in self._candidate_seed_stats:
-                            seeded += 1
-                        stats = self._flow_stats_from_lifecycle(
-                            row, min_unique_buyers=self.signal_min_unique_buyers
-                        )
-                        if stats and (token not in self._candidate_seed_stats
-                                      or stats["fresh_buyers"] >= self._candidate_seed_stats[token]["fresh_buyers"]):
-                            self._candidate_seed_stats[token] = stats
-                            self._candidate_seed_meta[token] = {
-                                "symbol": row.get("symbol"), "name": row.get("name"),
-                            }
-            except Exception as exc:
-                logger.warning(f"🔎 Candidate watch seed failed for {path.name}: {exc}")
+                block = int(log.get("blockNumber"), 16)
+                amount = float(args.get("cost") or args.get("bnb_amount") or 0) / 1e18
+            except (TypeError, ValueError):
+                continue
+            self._record_trade(str(args.get("token") or args.get("base") or ""), side,
+                               str(args.get("account") or args.get("buyer") or ""), amount,
+                               now - max(0, head - block) * 3.0)
+            seeded += 1
+        self._activity_seeded_blocks = max(0, head - from_block)
         return seeded
 
-    def _sweep_candidates(self) -> dict:
-        """Push candidates that crossed the on-chain demand bar. Runs in a worker thread.
+    def _load_recent_alerts(self, within_seconds: float = 3600.0) -> int:
+        """Carry alert dedupe across a restart, so the channel does not repeat itself."""
+        if self.scanner is None or self.scanner.store is None:
+            return 0
+        try:
+            rows = self.scanner.store.rows("candidate_alert", limit=10_000)
+        except Exception as exc:
+            logger.warning(f"🔎 Could not read recent candidate alerts: {exc}")
+            return 0
+        cutoff = time.time() - within_seconds
+        loaded = 0
+        for row in rows:
+            try:
+                observed = float(row.get("observed_at") or 0.0)
+            except (TypeError, ValueError):
+                continue
+            if observed < cutoff:
+                continue
+            token = str(row.get("entity") or "").lower()
+            if token:
+                self._candidate_alerted[token] = observed
+                loaded += 1
+        return loaded
 
-        The sweep iterates what the collector actually holds, not a watch list built from
-        creation events. A token that was created before this process started and is still
-        trading lives in memory but is not in any watch list, and those are exactly the tokens
-        worth alerting on: the first version of this sweep missed every real mover that way.
+    def _sweep_candidates(self) -> dict:
+        """Alert on tokens that real money is buying right now. Runs in a worker thread.
+
+        The window is what matters, not the token's age: every token with meaningful volume in
+        the 2026-09-22 sample had been created hours earlier, so an age filter on creation time
+        excluded all of them, and a creation-event watch list never saw them at all.
         """
         if self.scanner is None or self.scanner.notifier is None:
             return {"watched": 0, "qualifying": 0, "pushed": 0, "tokens": []}
         now = time.time()
-        live = self._lifecycle_index(getattr(self.collector, "token_lifecycle", None))
-        candidates = dict(live)
-        for token in self._candidate_seed_stats:
-            candidates.setdefault(token, None)
+        cutoff = now - self.activity_window_seconds
         pushed_this_hour = sum(1 for ts in self._candidate_alerted.values() if now - ts < 3600)
         pushed = 0
         qualifying = 0
         pushed_tokens = []
-        for token, lifecycle in candidates.items():
+        for token in list(self._recent_trades):
+            trades = [trade for trade in self._recent_trades.get(token, []) if trade["ts"] >= cutoff]
+            if not trades:
+                self._recent_trades.pop(token, None)
+                continue
+            buyers = {trade["account"] for trade in trades if trade["side"] == "buy" and trade["account"]}
+            sellers = {trade["account"] for trade in trades if trade["side"] == "sell" and trade["account"]}
+            fresh_buyers = buyers - sellers
+            buy_volume = sum(trade["amount"] for trade in trades if trade["side"] == "buy")
+            sell_volume = sum(trade["amount"] for trade in trades if trade["side"] == "sell")
+            if len(fresh_buyers) < self.signal_min_unique_buyers:
+                continue
+            if buy_volume < self.candidate_min_buy_volume or buy_volume <= sell_volume:
+                continue
+            if token in self._candidate_alerted:
+                continue
             if self.candidate_max_per_hour and pushed_this_hour >= self.candidate_max_per_hour:
                 logger.info("🔎 Candidate alert cap reached for this hour; skipping the rest")
                 break
-            if token in self._candidate_alerted:
-                continue
-            # A restarted collector only sees the buys that arrived after the restart, so the
-            # in-memory record can be thinner than what the previous run already flushed.
-            # Take whichever record shows more distinct buyers.
-            live_stats = self._flow_stats_from_lifecycle(
-                lifecycle, min_unique_buyers=self.signal_min_unique_buyers
-            ) if lifecycle else None
-            seed_stats = self._candidate_seed_stats.get(token)
-            if seed_stats and (not live_stats or seed_stats["fresh_buyers"] > live_stats["fresh_buyers"]):
-                stats = seed_stats
-            else:
-                stats = live_stats
-            if not stats or not stats["funding_confirmed"]:
-                continue
-            if stats["buy_volume"] < self.candidate_min_buy_volume:
-                continue
-            age = stats.get("age_seconds")
-            if age is not None and age > self.candidate_max_age_seconds:
-                continue
-            meta = lifecycle or self._candidate_seed_meta.get(token) or {}
+            stats = {
+                "fresh_buyers": len(fresh_buyers),
+                "buyers": len(buyers),
+                "buy_volume": buy_volume,
+                "sell_volume": sell_volume,
+                "window_seconds": self.activity_window_seconds,
+                "age_seconds": now - min(trade["ts"] for trade in trades),
+                "funding_confirmed": True,
+            }
             qualifying += 1
+            meta = self._recent_trade_meta.get(token) or {}
             if self.scanner.announce_candidate(
                 token,
                 stats=stats,
@@ -754,8 +840,8 @@ class ContinuousCollector:
                 self._candidate_alerted[token] = now
                 pushed_this_hour += 1
                 pushed += 1
-                pushed_tokens.append(f"{token[:12]}({stats['fresh_buyers']}b/{stats['buy_volume']:.1f})")
-        return {"watched": len(candidates), "qualifying": qualifying, "pushed": pushed,
+                pushed_tokens.append(f"{token[:12]}({stats['fresh_buyers']}b/{buy_volume:.1f})")
+        return {"watched": len(self._recent_trades), "qualifying": qualifying, "pushed": pushed,
                 "tokens": pushed_tokens}
 
     async def _run_signal_scan(self, launch):

@@ -282,9 +282,14 @@ class CandidateMessageTests(unittest.TestCase):
         self.assertIn("未卖出的买家: 7", text)
         self.assertIn("$1.2k", text)
         self.assertIn("买卖比: 5.88", text)
-        self.assertIn("上线时长: 8.0 分钟", text)
+        self.assertIn("最近成交: 8.0 分钟前", text)
         self.assertIn("不是交易授权", text)
         self.assertNotIn("🟢", text)
+
+    def test_candidate_shows_the_statistics_window(self):
+        text = format_candidate(TOKEN, chain="bsc",
+                                stats={**self.STATS, "window_seconds": 1800.0})
+        self.assertIn("统计窗口: 近 30 分钟", text)
 
     def test_candidate_without_market_data_stays_honest(self):
         text = format_candidate(TOKEN, chain="bsc", stats={"fresh_buyers": 4})
