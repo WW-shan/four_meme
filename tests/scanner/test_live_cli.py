@@ -123,3 +123,52 @@ class PerChainGateTests(unittest.TestCase):
             self.assertEqual(1, len(records_from_store(store, chain="sol")))
             self.assertEqual(2, len(records_from_store(store)))
             self.assertEqual("sol", records_from_store(store, chain="sol")[0]["chain"])
+
+
+class SignalScanModeTests(unittest.TestCase):
+    """A signal scan must not run in a mode that can never authorise a buy."""
+
+    def test_learning_config_is_overridden_to_safe(self):
+        import io
+        import contextlib
+        import json
+        import tempfile
+        from pathlib import Path
+
+        from scripts.run_scanner import scanner_config_for_signal
+
+        with tempfile.TemporaryDirectory() as tmp:
+            config_path = Path(tmp) / "scanner.json"
+            config_path.write_text(json.dumps({"mode": "learning"}), encoding="utf-8")
+
+            class Args:
+                config = str(config_path)
+                safety_mode = "safe"
+
+            with contextlib.redirect_stderr(io.StringIO()) as buffer:
+                config = scanner_config_for_signal(Args())
+        self.assertEqual("safe", config.mode)
+        self.assertIn("overridden", buffer.getvalue())
+
+    def test_explicit_learning_mode_is_respected(self):
+        from scripts.run_scanner import scanner_config_for_signal
+
+        class Args:
+            config = None
+            safety_mode = "learning"
+
+        self.assertEqual("learning", scanner_config_for_signal(Args()).mode)
+
+    def test_safe_is_the_default_for_signal_scans(self):
+        import contextlib
+        import io
+
+        from scripts.run_scanner import main
+
+        with contextlib.redirect_stdout(io.StringIO()) as buffer:
+            with self.assertRaises(SystemExit) as captured:
+                main(["signal-scan", "--help"])
+        self.assertEqual(0, captured.exception.code)
+        help_text = buffer.getvalue()
+        self.assertIn("--safety-mode {safe,learning}", help_text)
+        self.assertIn("required for a buy", help_text)

@@ -219,6 +219,62 @@ def command_signal_preview(args) -> int:
     return 0
 
 
+def scanner_config_for_signal(args):
+    """Scanner config for a signal scan, forced into a mode that can authorise a buy.
+
+    The default scanner mode is "learning", and the decision layer refuses to buy on a
+    learning report (it only blocks on honeypot_sim, so trusting it would be fail-open).
+    Left alone, a signal scan would spend provider calls and always reject.
+    """
+    config = ScannerConfig.load(args.config)
+    wanted = getattr(args, "safety_mode", None)
+    if wanted and config.mode != wanted:
+        print(f"Scanner mode {config.mode!r} overridden to {wanted!r} for this signal scan",
+              file=sys.stderr)
+        config.mode = wanted
+    return config
+
+
+def command_signal_scan(args) -> int:
+    """Run snapshot -> safety -> decision -> signal for one token and print the decision."""
+    from src.radar.pipeline import ScannerPipeline
+    from src.radar.store import ScannerStore
+
+    store = ScannerStore(args.db)
+    pipeline = ScannerPipeline(
+        store, scanner_config_for_signal(args), fetcher=_live_fetcher(),
+        chain=args.chain, notifier=_signal_notifier(),
+    )
+    decision = pipeline.scan(args.token, funding_confirmed=args.funding_confirmed,
+                             mode=args.mode, symbol=args.symbol)
+    print(json.dumps(decision.to_dict(), ensure_ascii=False, indent=2))
+    if args.push and pipeline.notifier is None:
+        print("No Telegram notifier configured; decision was only stored.", file=sys.stderr)
+    return 0 if decision.action == "buy" else 2
+
+
+def _signal_notifier():
+    """Build the Telegram notifier from env, or return None when it is not usable."""
+    from config.notify_config import NotifyConfig
+
+    try:
+        NotifyConfig.validate()
+    except ValueError as exc:
+        print(f"Telegram config invalid: {exc}", file=sys.stderr)
+        return None
+    if not NotifyConfig.TELEGRAM_SIGNAL_ENABLED:
+        return None
+    import requests
+
+    from src.notify.telegram import TelegramSignalBot
+
+    bot = TelegramSignalBot.from_config(session=requests.Session())
+    if not bot.ready:
+        print(f"Telegram signals are not ready: {bot.not_ready_reason()}", file=sys.stderr)
+        return None
+    return bot
+
+
 def command_signal_test(args) -> int:
     """Send one operator message through the configured Telegram credentials."""
     from config.notify_config import NotifyConfig
@@ -320,6 +376,20 @@ def main(argv=None) -> int:
     preview.add_argument("--funding-confirmed", action="store_true")
     preview.add_argument("--ttl", type=float, default=45.0)
     preview.set_defaults(func=command_signal_preview)
+    signal_scan = sub.add_parser("signal-scan", help="Scan one token and push the signal if it qualifies")
+    signal_scan.add_argument("--token", required=True)
+    signal_scan.add_argument("--chain", default="bsc")
+    signal_scan.add_argument("--db", default="data/scanner/evidence.sqlite")
+    signal_scan.add_argument("--config", help="Optional scanner config JSON")
+    signal_scan.add_argument("--mode", choices=("shadow", "live"), default="shadow")
+    signal_scan.add_argument("--safety-mode", choices=("safe", "learning"), default="safe",
+                             help="Scanner safety mode; safe is required for a buy to be possible")
+    signal_scan.add_argument("--symbol")
+    signal_scan.add_argument("--funding-confirmed", action="store_true",
+                             help="Set only when funding/flow was verified out of band")
+    signal_scan.add_argument("--push", action="store_true",
+                             help="Report when no Telegram notifier is configured")
+    signal_scan.set_defaults(func=command_signal_scan)
     signal_test = sub.add_parser("signal-test", help="Send one test message to the configured chat")
     signal_test.add_argument("--text", default="meme scanner 信号通道测试")
     signal_test.set_defaults(func=command_signal_test)

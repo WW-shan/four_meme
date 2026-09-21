@@ -79,6 +79,32 @@ class ContinuousCollector:
         self.collector_batch_size = 500
         self.events_enqueued = 0
         self.events_processed = 0
+        # Optional automatic signal scans. Empty by default: the scanner only records
+        # launches until an operator asks for signals on specific events.
+        self.scanner = None
+        self.scanner_signal_events = self._parse_signal_events(os.getenv('SCANNER_SIGNAL_EVENTS', ''))
+        self.signal_scan_max_inflight = max(1, int(os.getenv('SCANNER_SIGNAL_MAX_INFLIGHT', '2')))
+        self.signal_scan_dedupe_seconds = float(os.getenv('SCANNER_SIGNAL_DEDUPE_SECONDS', '3600'))
+        self.signal_min_unique_buyers = max(1, int(os.getenv('SCANNER_SIGNAL_MIN_UNIQUE_BUYERS', '3')))
+        self._signal_scan_tasks = set()
+        self._signal_scan_seen = {}
+        self.signal_scans_blocked_by_mode = False
+
+    @staticmethod
+    def _parse_signal_events(raw: str) -> set:
+        """Map operator-facing event names onto listener event names."""
+        mapping = {'launch': 'TokenCreate', 'graduation': 'LiquidityAdded'}
+        events = set()
+        for part in str(raw or '').split(','):
+            name = part.strip().lower()
+            if not name:
+                continue
+            if name not in mapping:
+                raise ValueError(
+                    f"SCANNER_SIGNAL_EVENTS has unsupported value {name!r}; use launch, graduation or both"
+                )
+            events.add(mapping[name])
+        return events
 
     def _should_skip_resume_due_to_checkpoint_age(self, state_payload: dict, now_ts: int | None = None) -> bool:
         if self.resume_max_age_seconds <= 0:
@@ -229,7 +255,6 @@ class ContinuousCollector:
             self.listener.register_handler('LiquidityAdded', self._handle_event)
 
             # Optional read-only scanner pipeline. Disabled unless explicitly enabled.
-            self.scanner = None
             if os.getenv('SCANNER_ENABLED', 'false').strip().lower() == 'true':
                 from config.scanner_config import ScannerConfig
                 from src.radar.pipeline import ScannerPipeline
@@ -266,6 +291,23 @@ class ContinuousCollector:
                 self.listener.register_handler('TokenCreate', self._handle_scanner_event)
                 self.listener.register_handler('LiquidityAdded', self._handle_scanner_event)
                 logger.info("🔎 Scanner pipeline enabled (read-only): %s", scanner_config.mode)
+                self.signal_scans_blocked_by_mode = False
+                if self.scanner_signal_events:
+                    if scanner_config.mode != "safe":
+                        # The decision layer refuses to buy on a learning-mode report, so
+                        # scheduling scans here would only burn provider calls.
+                        self.signal_scans_blocked_by_mode = True
+                        logger.warning(
+                            "📡 Automatic signal scans are configured but scanner mode is %r; "
+                            "no buy can be authorised in that mode. Set SCANNER_CONFIG with "
+                            "mode=safe to receive signals.",
+                            scanner_config.mode,
+                        )
+                    else:
+                        logger.info(
+                            "📡 Automatic signal scans enabled for: %s",
+                            ", ".join(sorted(self.scanner_signal_events)),
+                        )
 
             restored_metadata = self.collector.load_token_metadata_index()
             if restored_metadata <= 0:
@@ -447,9 +489,74 @@ class ContinuousCollector:
                 logger.error(f"保存 collector checkpoint 失败: {e}")
 
     async def _handle_scanner_event(self, event_name: str, event_data: dict):
-        """Persist launch/graduation evidence for the read-only scanner pipeline."""
-        if self.scanner is not None:
-            await self.scanner.handle_event(event_name, event_data)
+        """Persist launch/graduation evidence and optionally scan for a signal."""
+        if self.scanner is None:
+            return
+        await self.scanner.handle_event(event_name, event_data)
+        if event_name in self.scanner_signal_events:
+            self._schedule_signal_scan(event_name, event_data)
+
+    def _schedule_signal_scan(self, event_name: str, event_data: dict):
+        """Queue a signal scan, bounded so a busy block cannot pile up scans."""
+        if self.scanner is None or self.scanner.notifier is None:
+            return
+        if self.signal_scans_blocked_by_mode:
+            return
+        from src.radar.events import launch_from_event
+
+        launch = launch_from_event(event_name, event_data, chain=self.scanner.chain)
+        if launch is None or not launch.token:
+            return
+        token = launch.token.lower()
+        now = time.time()
+        last = self._signal_scan_seen.get(token)
+        if last is not None and now - last < self.signal_scan_dedupe_seconds:
+            return
+        if len(self._signal_scan_tasks) >= self.signal_scan_max_inflight:
+            logger.info(f"📡 Signal scan queue is full; skipping {token}")
+            return
+        self._signal_scan_seen[token] = now
+        if len(self._signal_scan_seen) > 10_000:
+            cutoff = now - self.signal_scan_dedupe_seconds
+            self._signal_scan_seen = {k: v for k, v in self._signal_scan_seen.items() if v >= cutoff}
+        task = asyncio.create_task(self._run_signal_scan(launch))
+        self._signal_scan_tasks.add(task)
+        task.add_done_callback(self._signal_scan_tasks.discard)
+
+    def _funding_confirmed_for(self, token_address: str) -> bool:
+        """Coarse on-chain funding check from the collector's own lifecycle record.
+
+        Not the wallet-flow model: it only asks whether more than the configured
+        minimum of distinct wallets bought and whether buy volume still exceeds sell
+        volume. A wallet that already sold does not count as fresh demand. The two
+        volumes are in the token's own quote asset, which is fine for a ratio.
+        """
+        lifecycle = getattr(self.collector, "token_lifecycle", {}).get(token_address)
+        if not lifecycle:
+            return False
+        buys = lifecycle.get("buys") or []
+        sells = lifecycle.get("sells") or []
+        sold_by = {str(item.get("account", "")).lower() for item in sells if item.get("account")}
+        buyers = {str(item.get("account", "")).lower() for item in buys if item.get("account")}
+        buyers -= sold_by
+        buy_volume = sum(float(item.get("bnb_amount", 0.0) or 0.0) for item in buys)
+        sell_volume = sum(float(item.get("bnb_amount", 0.0) or 0.0) for item in sells)
+        return len(buyers) >= self.signal_min_unique_buyers and buy_volume > sell_volume
+
+    async def _run_signal_scan(self, launch):
+        """Run the read-only scan off the event loop: the safety fetchers use sync HTTP."""
+        try:
+            funding = self._funding_confirmed_for(launch.token)
+            decision = await asyncio.to_thread(
+                self.scanner.scan, launch.token, funding_confirmed=funding,
+                symbol=None, name=None,
+            )
+            logger.info(
+                f"📡 Signal scan {launch.token} -> {decision.action} "
+                f"({','.join(decision.reason_codes) or 'no_reason_codes'})"
+            )
+        except Exception as exc:
+            logger.warning(f"📡 Signal scan failed for {launch.token}: {exc}")
 
     async def _handle_event(self, event_name: str, event_data: dict):
         """监听器回调仅入队，避免在回调中做重处理。"""

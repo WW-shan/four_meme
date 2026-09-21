@@ -142,6 +142,23 @@ class DeliveryTests(unittest.TestCase):
         self.assertTrue(sender.notify_decision(decision(), chain="base", token=TOKEN))
         self.assertEqual(2, len(session.calls))
 
+    def test_overlong_message_falls_back_to_plain_text(self):
+        # Truncating HTML mid-tag makes Telegram reject the message, so long bodies are
+        # downgraded to plain text instead of being cut blindly.
+        session = FakeSession()
+        sender = bot(session)
+        self.assertTrue(sender.send("<b>" + ("x" * 5_000) + "</b>"))
+        payload = session.calls[0]["json"]
+        self.assertNotIn("parse_mode", payload)
+        self.assertNotIn("<b>", payload["text"])
+        self.assertLessEqual(len(payload["text"]), 3_800)
+
+    def test_normal_message_keeps_html_parsing(self):
+        session = FakeSession()
+        sender = bot(session)
+        self.assertTrue(sender.send("<b>short</b>"))
+        self.assertEqual("HTML", session.calls[0]["json"]["parse_mode"])
+
     def test_min_interval_drops_a_burst(self):
         now = [100.0]
         session = FakeSession()
@@ -210,22 +227,41 @@ class EnvContractTests(unittest.TestCase):
         self.assertIn("cannot place a trade", content)
 
     def test_config_defaults_are_off_and_validate(self):
+        # Deliberately no importlib.reload here: reloading config.notify_config rebinds the
+        # module to a new NotifyConfig class while src/notify/telegram.py keeps the old one,
+        # which makes later tests depend on execution order.
+        from unittest.mock import patch
+
+        from config import notify_config
+
+        self.assertFalse(notify_config.NotifyConfig.TELEGRAM_SIGNAL_ENABLED)
+        self.assertEqual(("buy",), notify_config.NotifyConfig.TELEGRAM_SIGNAL_ACTIONS)
+        self.assertEqual("https://api.telegram.org", notify_config.NotifyConfig.TELEGRAM_API_BASE)
+        notify_config.NotifyConfig.validate()
+
+        with patch.object(notify_config.NotifyConfig, "TELEGRAM_SIGNAL_ENABLED", True):
+            with self.assertRaisesRegex(ValueError, "TELEGRAM_BOT_TOKEN"):
+                notify_config.NotifyConfig.validate()
+
+    def test_env_helpers_parse_values(self):
         import os
         from unittest.mock import patch
 
-        with patch.dict(os.environ, {}, clear=True):
-            import importlib
-            import config.notify_config as module
+        from config import notify_config
 
-            reloaded = importlib.reload(module)
-            self.assertFalse(reloaded.NotifyConfig.TELEGRAM_SIGNAL_ENABLED)
-            self.assertEqual(("buy",), reloaded.NotifyConfig.TELEGRAM_SIGNAL_ACTIONS)
-            reloaded.NotifyConfig.validate()
-            with patch.dict(os.environ, {"TELEGRAM_SIGNAL_ENABLED": "true"}, clear=True):
-                enabled = importlib.reload(module)
-                with self.assertRaisesRegex(ValueError, "TELEGRAM_BOT_TOKEN"):
-                    enabled.NotifyConfig.validate()
-            importlib.reload(module)
+        with patch.dict(os.environ, {"X_BOOL": "YES"}, clear=False):
+            self.assertTrue(notify_config._bool_env("X_BOOL", False))
+        with patch.dict(os.environ, {"X_BOOL": ""}, clear=False):
+            self.assertTrue(notify_config._bool_env("X_BOOL", True))
+        with patch.dict(os.environ, {"X_ACTIONS": "buy, watch ,reject"}, clear=False):
+            self.assertEqual(("buy", "watch", "reject"),
+                             notify_config._actions_env("X_ACTIONS", ("buy",)))
+        with patch.dict(os.environ, {"X_ACTIONS": "moon"}, clear=False):
+            with self.assertRaisesRegex(ValueError, "unsupported actions"):
+                notify_config._actions_env("X_ACTIONS", ("buy",))
+        with patch.dict(os.environ, {"X_NUM": "abc"}, clear=False):
+            with self.assertRaisesRegex(ValueError, "must be a number"):
+                notify_config._float_env("X_NUM", 1.0)
 
 
 if __name__ == "__main__":

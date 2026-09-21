@@ -482,3 +482,54 @@ class ScannerPipelineSignalTests(unittest.TestCase):
         self.assertEqual("reject", decision.action)
         self.assertEqual(1, len(recorder.calls))
         self.assertEqual("reject", recorder.calls[0].action)
+
+
+class ScannerPipelineScanTests(unittest.TestCase):
+    """scan() is the one call that runs snapshot -> safety -> decision -> signal."""
+
+    GOOD = ScannerPipelineSignalTests.GOOD
+
+    def _pipeline(self, notifier=None):
+        import tempfile
+        from config.scanner_config import ScannerConfig
+        from src.radar.pipeline import ScannerPipeline
+        from src.radar.store import ScannerStore
+
+        self._tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self._tmp.cleanup)
+        store = ScannerStore(Path(self._tmp.name) / "scanner.sqlite")
+        self.store = store
+        return ScannerPipeline(store, ScannerConfig(mode="safe"), clock=lambda: 100.0,
+                               chain="bsc", notifier=notifier)
+
+    def test_scan_uses_the_snapshot_market_cap_and_pushes(self):
+        class Recorder:
+            def __init__(self):
+                self.calls = []
+
+            def notify_decision(self, decision, **kwargs):
+                self.calls.append(decision)
+                return True
+
+        recorder = Recorder()
+        pipeline = self._pipeline(recorder)
+        decision = pipeline.scan("0x" + "77" * 20, funding_confirmed=True,
+                                 override=dict(self.GOOD), symbol="FOO")
+        self.assertEqual("buy", decision.action)
+        self.assertEqual(1, len(recorder.calls))
+        self.assertEqual(1, len(self.store.rows("snapshot", chain="bsc")))
+        self.assertEqual(1, len(self.store.rows("safety_report", chain="bsc")))
+        self.assertEqual(1, len(self.store.rows("decision", chain="bsc")))
+
+    def test_scan_without_market_cap_data_rejects_instead_of_guessing(self):
+        pipeline = self._pipeline()
+        decision = pipeline.scan("0x" + "77" * 20, funding_confirmed=True,
+                                 override={"honeypot_sim": True})
+        self.assertEqual("reject", decision.action)
+        self.assertIn("mcap_unknown", decision.reason_codes)
+
+    def test_scan_respects_an_explicit_market_cap(self):
+        pipeline = self._pipeline()
+        decision = pipeline.scan("0x" + "77" * 20, funding_confirmed=True,
+                                 override=dict(self.GOOD), mcap_usd=900_000)
+        self.assertEqual("reject", decision.action)

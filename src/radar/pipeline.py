@@ -116,6 +116,27 @@ class ScannerPipeline:
         self.notify(decision, token=token, snapshot=snapshot, symbol=symbol, name=name)
         return decision
 
+    def scan(self, token: str, *, funding_confirmed: bool, mode: str = "shadow",
+             override: Mapping[str, Any] | None = None, mcap_usd: float | None = None,
+             symbol: str | None = None, name: str | None = None,
+             budget: RiskBudget | None = None, state: PortfolioState | None = None) -> Decision:
+        """Run the whole read-only chain for one token: snapshot, safety, decision, signal.
+
+        Callers run this from a worker thread when they live on an event loop, because the
+        safety fetchers use synchronous HTTP.
+        """
+        snapshot = self.snapshot(token, override=override)
+        if mcap_usd is None:
+            mcap_usd = snapshot.get("mcap_usd")
+        report = build_report(token, snapshot, self.config.thresholds, mode=self.config.mode,
+                              now=self.clock())
+        payload = report.to_dict()
+        payload["chain"] = self.chain
+        self.store.append("safety_report", token, payload, report.created_at, self.clock())
+        return self.decide(token, report=report, funding_confirmed=funding_confirmed,
+                           mcap_usd=mcap_usd, budget=budget, state=state, mode=mode,
+                           snapshot=snapshot, symbol=symbol, name=name)
+
     def notify(self, decision: Decision, *, token: str | None = None,
                snapshot: Mapping[str, Any] | None = None, symbol: str | None = None,
                name: str | None = None) -> bool:

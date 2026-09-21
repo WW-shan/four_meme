@@ -18,6 +18,7 @@ from __future__ import annotations
 import html
 import logging
 import math
+import re
 import time
 from typing import Any, Callable, Mapping
 
@@ -36,6 +37,18 @@ ACTION_LABEL = {
     "watch": "🟡 WATCH",
     "reject": "⚪ REJECT",
 }
+
+_TAG_RE = re.compile(r"<[^>]*>")
+
+
+def strip_tags(text: str) -> str:
+    """Plain-text fallback: unescape entities and drop tags.
+
+    Truncating HTML at an arbitrary character can cut a tag in half, and Telegram
+    then rejects the whole message with 400 "can't parse entities". Anything over
+    the limit is therefore sent as plain text instead.
+    """
+    return html.unescape(_TAG_RE.sub("", text))
 
 
 def shorten_address(value: Any) -> str:
@@ -236,12 +249,16 @@ class TelegramSignalBot:
             return False
 
         url = f"{self.api_base}/bot{self.token}/sendMessage"
+        body = str(text)
         payload = {
             "chat_id": self.chat_id,
-            "text": str(text)[:MAX_MESSAGE_CHARS],
-            "parse_mode": "HTML",
+            "text": body[:MAX_MESSAGE_CHARS],
             "disable_web_page_preview": True,
         }
+        if len(body) > MAX_MESSAGE_CHARS:
+            payload["text"] = strip_tags(body)[:MAX_MESSAGE_CHARS]
+        else:
+            payload["parse_mode"] = "HTML"
         try:
             response = self.session.post(url, json=payload, timeout=self.timeout_seconds)
         except Exception as exc:
