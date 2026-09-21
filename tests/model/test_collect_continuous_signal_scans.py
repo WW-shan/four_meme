@@ -1,4 +1,5 @@
 import asyncio
+import time
 import unittest
 
 from tests.model.test_collect_continuous_cleanup import collect_continuous_module
@@ -14,18 +15,27 @@ class FakeNotifier:
 
 
 class FakeScanner:
-    def __init__(self, decision=None, error=None):
+    def __init__(self, decision=None, error=None, candidate_accepted=True):
         self.chain = "bsc"
         self.notifier = FakeNotifier()
         self.scanned = []
+        self.candidates = []
         self.decision = decision
         self.error = error
+        self.candidate_accepted = candidate_accepted
+
+    async def handle_event(self, event_name, event_data):
+        return True
 
     def scan(self, token, **kwargs):
         self.scanned.append((token, kwargs))
         if self.error is not None:
             raise self.error
         return self.decision
+
+    def announce_candidate(self, token, **kwargs):
+        self.candidates.append((token, kwargs))
+        return self.candidate_accepted
 
 
 class DecisionStub:
@@ -94,20 +104,29 @@ class FundingConfirmationTests(unittest.TestCase):
 
 class SchedulingTests(unittest.TestCase):
     def _event(self, event_name="LiquidityAdded"):
-        return {"args": {"base": TOKEN, "creator": "0x" + "55" * 20}, "timestamp": 1.0,
-                "received_at": 1.0, "blockNumber": 1, "logIndex": 0, "transactionHash": "0xabc"}
+        # TokenCreate carries the address as `token`, LiquidityAdded as `base`.
+        args = {"base": TOKEN} if event_name == "LiquidityAdded" else {"token": TOKEN}
+        args["creator"] = "0x" + "55" * 20
+        return {"args": args, "timestamp": 1.0, "received_at": 1.0,
+                "blockNumber": 1, "logIndex": 0, "transactionHash": "0xabc"}
+
+    @staticmethod
+    def _launch(event_data, event_name="LiquidityAdded"):
+        from src.radar.events import launch_from_event
+
+        return launch_from_event(event_name, event_data, chain="bsc")
 
     def test_without_a_notifier_nothing_is_scheduled(self):
         collector = ContinuousCollector()
 
         async def scenario():
             collector.scanner = None
-            collector._schedule_signal_scan("LiquidityAdded", self._event())
+            collector._schedule_signal_scan(self._launch(self._event()))
             self.assertEqual(set(), collector._signal_scan_tasks)
 
             collector.scanner = FakeScanner()
             collector.scanner.notifier = None
-            collector._schedule_signal_scan("LiquidityAdded", self._event())
+            collector._schedule_signal_scan(self._launch(self._event()))
             self.assertEqual(set(), collector._signal_scan_tasks)
 
         asyncio.run(scenario())
@@ -119,8 +138,8 @@ class SchedulingTests(unittest.TestCase):
         collector.scanner = scanner
 
         async def scenario():
-            collector._schedule_signal_scan("LiquidityAdded", self._event())
-            collector._schedule_signal_scan("LiquidityAdded", self._event())
+            collector._schedule_signal_scan(self._launch(self._event()))
+            collector._schedule_signal_scan(self._launch(self._event()))
             await asyncio.gather(*collector._signal_scan_tasks)
 
         asyncio.run(scenario())
@@ -134,10 +153,10 @@ class SchedulingTests(unittest.TestCase):
         collector.scanner = FakeScanner(DecisionStub())
 
         async def scenario():
-            collector._schedule_signal_scan("LiquidityAdded", self._event())
+            collector._schedule_signal_scan(self._launch(self._event()))
             second = dict(self._event())
             second["args"] = {"base": "0x" + "66" * 20, "creator": "0x" + "55" * 20}
-            collector._schedule_signal_scan("LiquidityAdded", second)
+            collector._schedule_signal_scan(self._launch(second))
             await asyncio.gather(*collector._signal_scan_tasks)
 
         asyncio.run(scenario())
@@ -167,21 +186,35 @@ class SchedulingTests(unittest.TestCase):
         collector.signal_scans_blocked_by_mode = True
 
         async def scenario():
-            collector._schedule_signal_scan("LiquidityAdded", self._event())
+            collector._schedule_signal_scan(self._launch(self._event()))
             self.assertEqual(set(), collector._signal_scan_tasks)
 
         asyncio.run(scenario())
         self.assertEqual([], collector.scanner.scanned)
 
-    def test_launch_event_without_a_token_is_ignored(self):
+    def test_event_without_a_token_is_ignored(self):
         collector = ContinuousCollector()
         collector.scanner = FakeScanner(DecisionStub())
+        collector.candidate_sweep_seconds = 60.0
+        collector.scanner_signal_events = {"LiquidityAdded"}
 
         async def scenario():
-            collector._schedule_signal_scan("LiquidityAdded", {"args": {}})
+            await collector._handle_scanner_event("LiquidityAdded", {"args": {}})
             self.assertEqual(set(), collector._signal_scan_tasks)
+            self.assertEqual({}, collector._candidate_watch)
 
         asyncio.run(scenario())
+
+    def test_launch_event_watches_the_token_for_candidates(self):
+        collector = ContinuousCollector()
+        collector.scanner = FakeScanner(DecisionStub())
+        collector.candidate_sweep_seconds = 60.0
+
+        async def scenario():
+            await collector._handle_scanner_event("TokenCreate", self._event("TokenCreate"))
+
+        asyncio.run(scenario())
+        self.assertEqual({TOKEN.lower()}, set(collector._candidate_watch))
 
 
 if __name__ == "__main__":
@@ -222,3 +255,271 @@ class ResumeWindowTests(unittest.TestCase):
         cursor = {"block_number": 100, "log_index": -1, "tx_hash": ""}
         bounded = collector._bound_resume_cursor(cursor, current_block=100_000)
         self.assertEqual(100_000 - 256, bounded["block_number"])
+
+
+class CandidateSweepTests(unittest.TestCase):
+    """The sweep is what actually scans the chain: it pushes tokens with real buyer flow."""
+
+    CHECKSUMMED = "0x" + "44" * 20  # the collector stores the address as the event carried it
+
+    def _collector(self, accepted=True):
+        collector = ContinuousCollector()
+        collector.scanner = FakeScanner(DecisionStub(), candidate_accepted=accepted)
+        collector.signal_min_unique_buyers = 3
+        collector.candidate_max_per_hour = 20
+        collector.candidate_max_age_seconds = 3600.0
+        collector._candidate_watch = {TOKEN.lower(): time.time()}
+        collector.collector.token_lifecycle = {TOKEN: {
+            "symbol": "FOO",
+            "name": "Foo Token",
+            "create_timestamp": int(time.time()) - 300,
+            "buys": [{"account": f"0x{i:040x}", "bnb_amount": 2.0} for i in range(4)],
+            "sells": [],
+        }}
+        return collector
+
+    def test_candidate_is_pushed_when_fresh_buyers_pass_the_bar(self):
+        collector = self._collector()
+        self.assertEqual(1, collector._sweep_candidates()["pushed"])
+        token, kwargs = collector.scanner.candidates[0]
+        self.assertEqual(TOKEN.lower(), token)
+        self.assertEqual(4, kwargs["stats"]["fresh_buyers"])
+        self.assertEqual("FOO", kwargs["symbol"])
+        self.assertTrue(kwargs["stats"]["funding_confirmed"])
+
+    def test_token_without_real_flow_is_not_pushed(self):
+        collector = self._collector()
+        collector.collector.token_lifecycle[TOKEN]["buys"] = [
+            {"account": "0x" + "01" * 20, "bnb_amount": 2.0}
+        ]
+        self.assertEqual(0, collector._sweep_candidates()["pushed"])
+        self.assertEqual([], collector.scanner.candidates)
+
+    def test_sellers_do_not_count_as_fresh_demand(self):
+        collector = self._collector()
+        collector.collector.token_lifecycle[TOKEN]["sells"] = [
+            {"account": f"0x{i:040x}", "bnb_amount": 1.0} for i in range(4)
+        ]
+        self.assertEqual(0, collector._sweep_candidates()["pushed"])
+
+    def test_a_token_is_alerted_only_once(self):
+        collector = self._collector()
+        self.assertEqual(1, collector._sweep_candidates()["pushed"])
+        self.assertEqual(0, collector._sweep_candidates()["pushed"])
+        self.assertEqual(1, len(collector.scanner.candidates))
+
+    def test_hourly_cap_stops_the_sweep(self):
+        collector = self._collector()
+        collector.candidate_max_per_hour = 1
+        second = "0x" + "77" * 20
+        collector._candidate_watch[second] = time.time()
+        collector.collector.token_lifecycle[second] = dict(
+            collector.collector.token_lifecycle[TOKEN], buys=[
+                {"account": f"0x{i:040x}", "bnb_amount": 2.0} for i in range(5)
+            ]
+        )
+        self.assertEqual(1, collector._sweep_candidates()["pushed"])
+        self.assertEqual(1, len(collector.scanner.candidates))
+
+    def test_stale_watched_tokens_are_pruned(self):
+        collector = self._collector()
+        collector.candidate_max_age_seconds = 60.0
+        collector._candidate_watch[TOKEN] = time.time() - 600
+        self.assertEqual(0, collector._sweep_candidates()["pushed"])
+        self.assertEqual({}, collector._candidate_watch)
+
+    def test_rejected_delivery_is_not_marked_as_alerted(self):
+        collector = self._collector(accepted=False)
+        self.assertEqual(0, collector._sweep_candidates()["pushed"])
+        self.assertEqual({}, collector._candidate_alerted)
+
+
+class AddressKeyTests(unittest.TestCase):
+    """The watch set is lowercase while the collector stores checksummed addresses."""
+
+    def test_lowercase_watch_key_still_finds_a_checksummed_lifecycle(self):
+        collector = ContinuousCollector()
+        collector.signal_min_unique_buyers = 3
+        checksummed = "0xAbCdEf0000000000000000000000000000000001"
+        collector.collector.token_lifecycle = {checksummed: {
+            "buys": [{"account": f"0x{i:040x}", "bnb_amount": 1.0} for i in range(3)],
+            "sells": [],
+            "create_timestamp": int(time.time()) - 60,
+        }}
+        stats = collector._flow_stats_for(checksummed.lower())
+        self.assertIsNotNone(stats)
+        self.assertEqual(3, stats["fresh_buyers"])
+        self.assertTrue(collector._funding_confirmed_for(checksummed.lower()))
+
+    def test_sweep_pushes_when_only_the_case_differs(self):
+        collector = ContinuousCollector()
+        collector.scanner = FakeScanner(DecisionStub())
+        collector.signal_min_unique_buyers = 3
+        checksummed = "0xAbCdEf0000000000000000000000000000000002"
+        collector._candidate_watch = {checksummed.lower(): time.time()}
+        collector.collector.token_lifecycle = {checksummed: {
+            "symbol": "CASE",
+            "buys": [{"account": f"0x{i:040x}", "bnb_amount": 1.0} for i in range(3)],
+            "sells": [],
+            "create_timestamp": int(time.time()) - 60,
+        }}
+        self.assertEqual(1, collector._sweep_candidates()["pushed"])
+        self.assertEqual("CASE", collector.scanner.candidates[0][1]["symbol"])
+
+
+class WatchSeedingTests(unittest.TestCase):
+    """A restart must not forget the tokens the previous run had already collected."""
+
+    def _collector_with_dir(self, rows, *, max_age=3600.0, tail_bytes=None):
+        import json as jsonlib
+        import tempfile
+        from pathlib import Path as PathlibPath
+
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        output = PathlibPath(tmp.name)
+        now = time.time()
+        with (output / "lifecycle_incremental_20260921_231626.jsonl").open("w", encoding="utf-8") as f:
+            for row in rows:
+                f.write(jsonlib.dumps(row) + "\n")
+        collector = ContinuousCollector()
+        collector.collector.output_dir = output
+        collector.candidate_max_age_seconds = max_age
+        return collector, now
+
+    def test_recent_tokens_are_seeded_and_old_ones_are_not(self):
+        now = time.time()
+        rows = [
+            {"token_address": "0xRecent1", "create_timestamp": int(now) - 60},
+            {"token_address": "0xRecent2", "create_timestamp": int(now) - 1800},
+            {"token_address": "0xAncient", "create_timestamp": int(now) - 7200},
+            {"token_address": "", "create_timestamp": int(now) - 60},
+        ]
+        collector, _ = self._collector_with_dir(rows)
+        self.assertEqual(2, collector._seed_candidate_watch())
+        self.assertEqual({"0xrecent1", "0xrecent2"}, set(collector._candidate_watch))
+
+    def test_older_files_are_read_too(self):
+        import json as jsonlib
+        import tempfile
+        from pathlib import Path as PathlibPath
+
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        output = PathlibPath(tmp.name)
+        now = time.time()
+        # The newest file only holds a fresh token; the qualifying one is in an older file.
+        with (output / "lifecycle_incremental_20260921_233322.jsonl").open("w", encoding="utf-8") as f:
+            f.write(jsonlib.dumps({"token_address": "0xNew", "create_timestamp": int(now) - 30}) + "\n")
+        with (output / "lifecycle_incremental_20260921_231010.jsonl").open("w", encoding="utf-8") as f:
+            f.write(jsonlib.dumps({
+                "token_address": "0xOld", "symbol": "OLD", "create_timestamp": int(now) - 2400,
+                "buys": [{"account": f"0x{i:040x}", "bnb_amount": 4.0} for i in range(4)], "sells": [],
+            }) + "\n")
+
+        collector = ContinuousCollector()
+        collector.collector.output_dir = output
+        collector.signal_min_unique_buyers = 3
+        collector.candidate_max_age_seconds = 3600.0
+        collector.scanner = FakeScanner(DecisionStub())
+        collector.collector.token_lifecycle = {}
+
+        self.assertEqual(2, collector._seed_candidate_watch())
+        summary = collector._sweep_candidates()
+        self.assertEqual(1, summary["pushed"])
+        self.assertEqual("0xold", collector.scanner.candidates[0][0])
+        self.assertEqual("OLD", collector.scanner.candidates[0][1]["symbol"])
+
+    def test_missing_directory_is_not_fatal(self):
+        collector = ContinuousCollector()
+        import tempfile
+        from pathlib import Path as PathlibPath
+
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        collector.collector.output_dir = PathlibPath(tmp.name)
+        self.assertEqual(0, collector._seed_candidate_watch())
+
+    def test_tail_read_skips_a_partial_first_line(self):
+        now = time.time()
+        rows = [{"token_address": f"0xTok{i}", "create_timestamp": int(now) - 60} for i in range(200)]
+        collector, _ = self._collector_with_dir(rows)
+        seeded = collector._seed_candidate_watch(max_bytes_per_file=200)
+        self.assertGreater(seeded, 0)
+        for token in collector._candidate_watch:
+            self.assertTrue(token.startswith("0xtok"))
+
+
+class SeededStatsTests(unittest.TestCase):
+    """A token flushed by the previous run can still qualify right after a restart."""
+
+    def test_seeded_flow_stats_are_used_when_memory_has_nothing(self):
+        import json as jsonlib
+        import tempfile
+        from pathlib import Path as PathlibPath
+
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        output = PathlibPath(tmp.name)
+        now = time.time()
+        row = {
+            "token_address": "0xSeed000000000000000000000000000000000001",
+            "symbol": "SEED",
+            "create_timestamp": int(now) - 300,
+            "buys": [{"account": f"0x{i:040x}", "bnb_amount": 5.0} for i in range(4)],
+            "sells": [],
+        }
+        with (output / "lifecycle_incremental_20260921_231626.jsonl").open("w", encoding="utf-8") as f:
+            f.write(jsonlib.dumps(row) + "\n")
+
+        collector = ContinuousCollector()
+        collector.collector.output_dir = output
+        collector.signal_min_unique_buyers = 3
+        collector.candidate_max_age_seconds = 3600.0
+        collector.scanner = FakeScanner(DecisionStub())
+        collector.collector.token_lifecycle = {}   # restart: memory is empty
+
+        self.assertEqual(1, collector._seed_candidate_watch())
+        summary = collector._sweep_candidates()
+        self.assertEqual(1, summary["qualifying"])
+        self.assertEqual(1, summary["pushed"])
+        token, kwargs = collector.scanner.candidates[0]
+        self.assertEqual(row["token_address"].lower(), token)
+        self.assertEqual("SEED", kwargs["symbol"])
+        self.assertEqual(4, kwargs["stats"]["fresh_buyers"])
+
+
+class SeededVersusLiveTests(unittest.TestCase):
+    """After a restart the in-memory record only holds post-restart buys."""
+
+    def test_richer_flushed_record_wins_over_a_thin_live_record(self):
+        import json as jsonlib
+        import tempfile
+        from pathlib import Path as PathlibPath
+
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        output = PathlibPath(tmp.name)
+        now = time.time()
+        token = "0xFeed000000000000000000000000000000000009"
+        row = {
+            "token_address": token, "symbol": "RICH", "create_timestamp": int(now) - 1800,
+            "buys": [{"account": f"0x{i:040x}", "bnb_amount": 3.0} for i in range(6)], "sells": [],
+        }
+        with (output / "lifecycle_incremental_20260921_231626.jsonl").open("w", encoding="utf-8") as f:
+            f.write(jsonlib.dumps(row) + "\n")
+
+        collector = ContinuousCollector()
+        collector.collector.output_dir = output
+        collector.signal_min_unique_buyers = 3
+        collector.candidate_max_age_seconds = 3600.0
+        collector.scanner = FakeScanner(DecisionStub())
+        # The live record only saw one buy since the restart.
+        collector.collector.token_lifecycle = {token: {
+            "symbol": "RICH", "create_timestamp": int(now) - 1800,
+            "buys": [{"account": "0x" + "aa" * 20, "bnb_amount": 3.0}], "sells": [],
+        }}
+        collector._seed_candidate_watch()
+        summary = collector._sweep_candidates()
+        self.assertEqual(1, summary["pushed"])
+        self.assertEqual(6, collector.scanner.candidates[0][1]["stats"]["fresh_buyers"])

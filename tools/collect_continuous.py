@@ -41,6 +41,10 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+# Events whose tokens are worth re-checking for real buyer flow. A brand-new token has no
+# buyers yet, so the candidate sweep looks again every SCANNER_CANDIDATE_SWEEP_SECONDS.
+CANDIDATE_WATCH_EVENTS = {"TokenCreate", "LiquidityAdded"}
+
 
 class ContinuousCollector:
     """持续数据收集器"""
@@ -94,6 +98,20 @@ class ContinuousCollector:
         self._signal_scan_tasks = set()
         self._signal_scan_seen = {}
         self.signal_scans_blocked_by_mode = False
+        # Candidate sweep: watch new tokens and push the ones that attract real buyers.
+        self.candidate_sweep_seconds = max(0.0, float(os.getenv('SCANNER_CANDIDATE_SWEEP_SECONDS', '0')))
+        self.candidate_max_per_hour = max(0, int(os.getenv('SCANNER_CANDIDATE_MAX_PER_HOUR', '20')))
+        self.candidate_max_age_seconds = max(
+            60.0, float(os.getenv('SCANNER_CANDIDATE_MAX_AGE_SECONDS', '3600'))
+        )
+        self.candidate_task = None
+        self._candidate_watch = {}
+        self._candidate_alerted = {}
+        # Flow stats for tokens the previous run had already flushed to disk: their addresses
+        # are restored, but their buys/sells are not in memory, so the numbers are kept here
+        # instead of re-injecting rows into the collected corpus.
+        self._candidate_seed_stats = {}
+        self._candidate_seed_meta = {}
 
     @staticmethod
     def _parse_signal_events(raw: str) -> set:
@@ -286,7 +304,11 @@ class ContinuousCollector:
                     else:
                         logger.info("📣 Telegram signals off: %s", notifier.not_ready_reason())
                 except Exception as exc:
-                    logger.warning("Telegram signal channel unavailable: %s", exc)
+                    # The switch is on, so a broken channel is an operator error, not noise.
+                    level = logging.ERROR if os.getenv(
+                        'TELEGRAM_SIGNAL_ENABLED', 'false'
+                    ).strip().lower() in {'1', 'true', 'yes', 'y', 'on'} else logging.WARNING
+                    logger.log(level, "Telegram signal channel unavailable: %s", exc)
 
                 self.scanner = ScannerPipeline(
                     ScannerStore(os.getenv('SCANNER_DB', 'data/scanner/evidence.sqlite')),
@@ -313,6 +335,14 @@ class ContinuousCollector:
                             "📡 Automatic signal scans enabled for: %s",
                             ", ".join(sorted(self.scanner_signal_events)),
                         )
+                if self.candidate_sweep_seconds > 0:
+                    seeded = self._seed_candidate_watch()
+                    logger.info(
+                        "🔎 Candidate sweep every %.0fs (max %s/hour, age <= %.0fmin, >= %s fresh buyers)"
+                        " | watch seeded from disk: %s",
+                        self.candidate_sweep_seconds, self.candidate_max_per_hour or "unlimited",
+                        self.candidate_max_age_seconds / 60.0, self.signal_min_unique_buyers, seeded,
+                    )
 
             restored_metadata = self.collector.load_token_metadata_index()
             if restored_metadata <= 0:
@@ -368,6 +398,8 @@ class ContinuousCollector:
             self.stats_task = asyncio.create_task(self._periodic_stats())  # 添加定期统计显示
             self.flush_task = asyncio.create_task(self._periodic_flush())
             self.checkpoint_task = asyncio.create_task(self._periodic_checkpoint())
+            if self.candidate_sweep_seconds > 0:
+                self.candidate_task = asyncio.create_task(self._candidate_sweep_loop())
 
             await asyncio.gather(
                 self.listener_task,
@@ -393,6 +425,7 @@ class ContinuousCollector:
                 self.stats_task,
                 self.flush_task,
                 self.checkpoint_task,
+                self.candidate_task,
             ]
             pending_background_tasks = [task for task in background_tasks if task and not task.done()]
             for task in pending_background_tasks:
@@ -494,23 +527,28 @@ class ContinuousCollector:
                 logger.error(f"保存 collector checkpoint 失败: {e}")
 
     async def _handle_scanner_event(self, event_name: str, event_data: dict):
-        """Persist launch/graduation evidence and optionally scan for a signal."""
+        """Persist launch/graduation evidence, watch candidates, optionally scan for a signal."""
         if self.scanner is None:
             return
         await self.scanner.handle_event(event_name, event_data)
-        if event_name in self.scanner_signal_events:
-            self._schedule_signal_scan(event_name, event_data)
-
-    def _schedule_signal_scan(self, event_name: str, event_data: dict):
-        """Queue a signal scan, bounded so a busy block cannot pile up scans."""
-        if self.scanner is None or self.scanner.notifier is None:
-            return
-        if self.signal_scans_blocked_by_mode:
+        watching = self.candidate_sweep_seconds > 0 and event_name in CANDIDATE_WATCH_EVENTS
+        if event_name not in self.scanner_signal_events and not watching:
             return
         from src.radar.events import launch_from_event
 
         launch = launch_from_event(event_name, event_data, chain=self.scanner.chain)
         if launch is None or not launch.token:
+            return
+        if watching:
+            self._candidate_watch.setdefault(launch.token.lower(), time.time())
+        if event_name in self.scanner_signal_events:
+            self._schedule_signal_scan(launch)
+
+    def _schedule_signal_scan(self, launch):
+        """Queue a signal scan, bounded so a busy block cannot pile up scans."""
+        if self.scanner is None or self.scanner.notifier is None:
+            return
+        if self.signal_scans_blocked_by_mode:
             return
         token = launch.token.lower()
         now = time.time()
@@ -528,25 +566,185 @@ class ContinuousCollector:
         self._signal_scan_tasks.add(task)
         task.add_done_callback(self._signal_scan_tasks.discard)
 
-    def _funding_confirmed_for(self, token_address: str) -> bool:
-        """Coarse on-chain funding check from the collector's own lifecycle record.
+    @staticmethod
+    def _lifecycle_index(lifecycles) -> dict:
+        """Lowercase-keyed view of the lifecycle map.
 
-        Not the wallet-flow model: it only asks whether more than the configured
-        minimum of distinct wallets bought and whether buy volume still exceeds sell
-        volume. A wallet that already sold does not count as fresh demand. The two
-        volumes are in the token's own quote asset, which is fine for a ratio.
+        The collector stores addresses in the checksummed form the event carried, while the
+        candidate watch set keys them lowercase; without this, every sweep lookup misses and
+        no candidate is ever pushed.
         """
-        lifecycle = getattr(self.collector, "token_lifecycle", {}).get(token_address)
+        return {str(key).lower(): value for key, value in (lifecycles or {}).items()}
+
+    @staticmethod
+    def _flow_stats_from_lifecycle(lifecycle: dict, *, min_unique_buyers: int) -> dict | None:
+        """Coarse on-chain demand numbers from one lifecycle record.
+
+        Not the wallet-flow model: it counts distinct wallets that bought and have not
+        sold, and compares buy volume with sell volume. A wallet that already sold does
+        not count as fresh demand. Both volumes are in the token's own quote asset, which
+        is fine for a ratio but is not a USD number.
+        """
         if not lifecycle:
-            return False
+            return None
         buys = lifecycle.get("buys") or []
         sells = lifecycle.get("sells") or []
         sold_by = {str(item.get("account", "")).lower() for item in sells if item.get("account")}
         buyers = {str(item.get("account", "")).lower() for item in buys if item.get("account")}
-        buyers -= sold_by
+        fresh = buyers - sold_by
         buy_volume = sum(float(item.get("bnb_amount", 0.0) or 0.0) for item in buys)
         sell_volume = sum(float(item.get("bnb_amount", 0.0) or 0.0) for item in sells)
-        return len(buyers) >= self.signal_min_unique_buyers and buy_volume > sell_volume
+        created = lifecycle.get("create_timestamp")
+        try:
+            age = max(0.0, time.time() - float(created)) if created else None
+        except (TypeError, ValueError):
+            age = None
+        return {
+            "fresh_buyers": len(fresh),
+            "buyers": len(buyers),
+            "buy_volume": buy_volume,
+            "sell_volume": sell_volume,
+            "age_seconds": age,
+            "funding_confirmed": len(fresh) >= int(min_unique_buyers) and buy_volume > sell_volume,
+        }
+
+    def _flow_stats_for(self, token_address: str) -> dict | None:
+        lifecycle = self._lifecycle_index(
+            getattr(self.collector, "token_lifecycle", None)
+        ).get(str(token_address).lower())
+        return self._flow_stats_from_lifecycle(
+            lifecycle, min_unique_buyers=self.signal_min_unique_buyers
+        )
+
+    def _funding_confirmed_for(self, token_address: str) -> bool:
+        stats = self._flow_stats_for(token_address)
+        return bool(stats and stats["funding_confirmed"])
+
+    async def _candidate_sweep_loop(self):
+        """Re-check watched tokens and push the ones that attracted real buyers."""
+        while self.running:
+            try:
+                await asyncio.sleep(self.candidate_sweep_seconds)
+                if not self.running or self.scanner is None:
+                    break
+                summary = await asyncio.to_thread(self._sweep_candidates)
+                logger.info(
+                    "🔎 Candidate sweep: watched={watched} qualifying={qualifying} pushed={pushed}".format(
+                        **summary
+                    )
+                )
+            except asyncio.CancelledError:
+                break
+            except Exception as exc:
+                logger.error(f"候选扫链失败: {exc}")
+
+    def _seed_candidate_watch(self, max_files: int = 5, max_bytes_per_file: int = 8 * 1024 * 1024) -> int:
+        """Rebuild the watch set from the most recent incremental files after a restart.
+
+        Each run flushes its in-memory tokens on shutdown, so a restart would otherwise start
+        with an empty watch set and ignore every token created in the preceding hour. One file
+        is not enough: the newest one only holds the tokens the previous run happened to see,
+        so the last few are read and deduplicated by address.
+        """
+        now = time.time()
+        try:
+            candidates = sorted(
+                self.collector.output_dir.glob("lifecycle_incremental_*.jsonl"),
+                key=lambda item: item.stat().st_mtime,
+                reverse=True,
+            )
+        except Exception:
+            return 0
+        # Only files written inside the watch window can hold a token that is still young
+        # enough to alert on, and the newest one is always worth reading.
+        fresh = [item for item in candidates
+                 if now - item.stat().st_mtime <= self.candidate_max_age_seconds]
+        files = (fresh or candidates[:1])[:max_files]
+        seeded = 0
+        for path in files:
+            try:
+                size = path.stat().st_size
+                with path.open("r", encoding="utf-8") as handle:
+                    if size > max_bytes_per_file:
+                        handle.seek(size - max_bytes_per_file)
+                        handle.readline()  # drop the partial line the seek landed in
+                    for line in handle:
+                        if '"create_timestamp"' not in line:
+                            continue
+                        try:
+                            row = json.loads(line)
+                        except Exception:
+                            continue
+                        token = str(row.get("token_address") or "").lower()
+                        created = row.get("create_timestamp")
+                        if not token or not created:
+                            continue
+                        try:
+                            age = now - float(created)
+                        except (TypeError, ValueError):
+                            continue
+                        if not 0 <= age <= self.candidate_max_age_seconds:
+                            continue
+                        if token not in self._candidate_watch:
+                            seeded += 1
+                        self._candidate_watch.setdefault(token, now)
+                        stats = self._flow_stats_from_lifecycle(
+                            row, min_unique_buyers=self.signal_min_unique_buyers
+                        )
+                        if stats and (token not in self._candidate_seed_stats
+                                      or stats["fresh_buyers"] >= self._candidate_seed_stats[token]["fresh_buyers"]):
+                            self._candidate_seed_stats[token] = stats
+                            self._candidate_seed_meta[token] = {
+                                "symbol": row.get("symbol"), "name": row.get("name"),
+                            }
+            except Exception as exc:
+                logger.warning(f"🔎 Candidate watch seed failed for {path.name}: {exc}")
+        return seeded
+
+    def _sweep_candidates(self) -> dict:
+        """Push candidates that crossed the on-chain demand bar. Runs in a worker thread."""
+        if self.scanner is None or self.scanner.notifier is None:
+            return {"watched": 0, "qualifying": 0, "pushed": 0}
+        now = time.time()
+        for token in [t for t, seen in self._candidate_watch.items()
+                      if now - seen > self.candidate_max_age_seconds]:
+            self._candidate_watch.pop(token, None)
+        pushed_this_hour = sum(1 for ts in self._candidate_alerted.values() if now - ts < 3600)
+        by_address = self._lifecycle_index(getattr(self.collector, "token_lifecycle", None))
+        pushed = 0
+        qualifying = 0
+        for token in list(self._candidate_watch):
+            if self.candidate_max_per_hour and pushed_this_hour >= self.candidate_max_per_hour:
+                logger.info("🔎 Candidate alert cap reached for this hour; skipping the rest")
+                break
+            if token in self._candidate_alerted:
+                continue
+            lifecycle = by_address.get(token)
+            # A restarted collector only sees the buys that arrived after the restart, so the
+            # in-memory record can be thinner than what the previous run already flushed.
+            # Take whichever record shows more distinct buyers.
+            live_stats = self._flow_stats_from_lifecycle(
+                lifecycle, min_unique_buyers=self.signal_min_unique_buyers
+            ) if lifecycle else None
+            seed_stats = self._candidate_seed_stats.get(token)
+            if seed_stats and (not live_stats or seed_stats["fresh_buyers"] > live_stats["fresh_buyers"]):
+                stats = seed_stats
+            else:
+                stats = live_stats
+            if not stats or not stats["funding_confirmed"]:
+                continue
+            meta = lifecycle or self._candidate_seed_meta.get(token) or {}
+            qualifying += 1
+            if self.scanner.announce_candidate(
+                token,
+                stats=stats,
+                symbol=str(meta.get("symbol") or "") or None,
+                name=str(meta.get("name") or "") or None,
+            ):
+                self._candidate_alerted[token] = now
+                pushed_this_hour += 1
+                pushed += 1
+        return {"watched": len(self._candidate_watch), "qualifying": qualifying, "pushed": pushed}
 
     async def _run_signal_scan(self, launch):
         """Run the read-only scan off the event loop: the safety fetchers use sync HTTP."""
@@ -791,6 +989,7 @@ class ContinuousCollector:
             self.stats_task,
             self.flush_task,
             self.checkpoint_task,
+            self.candidate_task,
         ):
             if task and not task.done():
                 task.cancel()
