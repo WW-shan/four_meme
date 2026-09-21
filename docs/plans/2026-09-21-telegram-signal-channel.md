@@ -152,6 +152,37 @@ the token is good.
 - After a restart the watch set and its flow numbers are seeded from the incremental files written
   inside the watch window, because the previous run flushes its in-memory tokens on shutdown.
 
+## What the scanner actually scans (2026-09-22 correction)
+
+The first version of the sweep watched tokens by **creation**: a watch list fed by create events
+plus a 60 minute age window. The operator asked whether that was scanning the right thing, and the
+chain said no.
+
+Ground truth was taken straight from Four.meme logs, independent of our collector. In a 30 minute
+window, 15 tokens traded and exactly one met any reasonable demand bar:
+`0x612b22e8493efd91b9cbf9cac715658e5a8c4444` with 7 distinct buyers and 42.27 in buy volume. Every
+one of those tokens had been created **hours** earlier, so:
+
+- an age filter on creation time excluded all of them;
+- a watch list built from create events never saw them at all, because the process had not been
+  running when they were created;
+- the tokens that were visible — brand new, one buyer, 0.05 volume — were exactly the dust the
+  channel was pushing.
+
+The sweep now follows a **rolling activity window**:
+
+| Piece | Behaviour |
+|---|---|
+| Window | every purchase/sale event (all ABI versions) appends to a per-token trade list, trimmed on append and pruned by the sweep |
+| Startup | the window is replayed from the chain (`eth_getLogs` over the window), so a restart does not begin blind |
+| Bar | fresh buyers (bought and not sold) `>= SCANNER_SIGNAL_MIN_UNIQUE_BUYERS`, buy volume `>= SCANNER_CANDIDATE_MIN_BUY_VOLUME`, and buy volume above sell volume |
+| Age | printed on the card, never used as a filter |
+| Dedupe | per token per hour, carried across restarts from the `candidate_alert` rows |
+
+Verification after the rewrite: the same ground-truth query over the same window returned that one
+token, and the scanner pushed exactly it — no dust, nothing missed. Sent alerts are also written to
+the scanner database, so "what did the channel send?" has a durable answer.
+
 ## What this is not
 
 It is not evidence of profitability, not a trading authorisation, and not the shadow run. Signals are

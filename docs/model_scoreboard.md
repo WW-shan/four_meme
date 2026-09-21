@@ -2,6 +2,13 @@
 
 This file records accepted and rejected model candidates for live FourMeme trading. Selection is based on live-sized replay with 10% position sizing, gas costs, current execution delay assumptions, walk-forward checks, and stress replay.
 
+## 2026-09-22 Scanner Selectivity Corrected Against Chain Ground Truth
+
+- **What was wrong:** the candidate sweep watched tokens by creation time (create-event watch list plus a 60 minute age window). Ground truth from raw Four.meme logs for a 30 minute window: 15 tokens traded, exactly one met the bar (`0x612b22e8493e…`, 7 buyers, 42.27 buy volume), and every one of them had been created hours earlier. The age window excluded all of them and the channel was pushing 0.05 dust instead. The biggest mover of the previous hour (352 in buy volume) was sitting in the collector's memory the whole time, invisible to a watch list fed only by creation events.
+- **Fix:** the scanner now follows a rolling activity window built from purchase/sale events (all ABI versions), replayed from the chain at startup, with the bar evaluated on the window (fresh buyers, minimum buy volume, net inflow) and age reported but never filtered. A second defect found while making it live: the chain seed sent bare topic hashes to `eth_getLogs`, which the node rejects, so the first seed silently returned nothing.
+- **Verification:** after the rewrite the same ground-truth query returned that one token, and the scanner pushed exactly it. Alerts are now persisted as `candidate_alert` rows, which also carries the hourly dedupe across restarts.
+- **Decision:** no model trained or promoted, no threshold, sizing or trading switch changed, and no on-chain transaction sent. Candidate alerts remain labelled as scan results, not trade authorisations. Scoreboard updated because the scanner's selection rule changed materially and its selectivity is now measured against the chain rather than assumed.
+
 ## 2026-09-21 Live Candidate Scanning
 
 - **Operating state:** the collector now scans continuously instead of only reacting to graduations. Every 60s it re-checks watched tokens and pushes the ones with real buyer flow; 5 candidate alerts were delivered to Telegram during the run, and the scanner database holds 1314 launches, 635 snapshots, 511 safety reports and 511 decisions from the same window.
