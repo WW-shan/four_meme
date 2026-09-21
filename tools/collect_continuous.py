@@ -62,7 +62,12 @@ class ContinuousCollector:
         self.state_checkpoint_interval_seconds = 30
         self.flush_max_listener_lag_blocks = 16
         self.resume_max_age_seconds = 21600
-        self.resume_max_catchup_blocks = 256
+        # On restart, a checkpoint further behind than this window is truncated to the chain
+        # head, which silently drops that block range from collection. 0 disables the
+        # truncation so a restart keeps backfilling from the checkpoint.
+        self.resume_max_catchup_blocks = max(
+            0, int(os.getenv('COLLECTOR_RESUME_MAX_CATCHUP_BLOCKS', '256'))
+        )
         self.save_interval_hours = 1  # 每小时保存一次
         self.flush_check_interval_seconds = 60  # 每分钟检查一次可刷盘代币
         self.flush_inactivity_seconds = 15 * 60  # 超过15分钟无更新则刷盘

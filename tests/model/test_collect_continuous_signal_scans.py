@@ -186,3 +186,39 @@ class SchedulingTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class ResumeWindowTests(unittest.TestCase):
+    """A restart must not silently drop a large block range."""
+
+    def _collector_with(self, value):
+        import os
+        from unittest.mock import patch
+
+        with patch.dict(os.environ, {"COLLECTOR_RESUME_MAX_CATCHUP_BLOCKS": value}, clear=False):
+            return ContinuousCollector()
+
+    def test_default_window_is_256_blocks(self):
+        import os
+        from unittest.mock import patch
+
+        with patch.dict(os.environ, {}, clear=False):
+            os.environ.pop("COLLECTOR_RESUME_MAX_CATCHUP_BLOCKS", None)
+            collector = ContinuousCollector()
+        self.assertEqual(256, collector.resume_max_catchup_blocks)
+
+    def test_window_can_be_widened_from_the_environment(self):
+        collector = self._collector_with("50000")
+        self.assertEqual(50000, collector.resume_max_catchup_blocks)
+
+    def test_zero_disables_the_truncation(self):
+        collector = self._collector_with("0")
+        self.assertEqual(0, collector.resume_max_catchup_blocks)
+        cursor = {"block_number": 100, "log_index": -1, "tx_hash": ""}
+        self.assertEqual(cursor, collector._bound_resume_cursor(cursor, current_block=100_000))
+
+    def test_a_large_gap_is_truncated_at_the_default_window(self):
+        collector = self._collector_with("256")
+        cursor = {"block_number": 100, "log_index": -1, "tx_hash": ""}
+        bounded = collector._bound_resume_cursor(cursor, current_block=100_000)
+        self.assertEqual(100_000 - 256, bounded["block_number"])
