@@ -149,12 +149,23 @@ class ScannerPipeline:
             logger.warning("Candidate snapshot failed for %s: %s", token, exc)
             snapshot = {}
         try:
-            return bool(self.notifier.notify_candidate(
+            sent = bool(self.notifier.notify_candidate(
                 token, chain=self.chain, symbol=symbol, name=name, stats=stats, snapshot=snapshot,
             ))
         except Exception as exc:
             logger.warning("Candidate notify failed for %s: %s", token, exc)
             return False
+        if sent:
+            # Keep a durable record of what was pushed: without it there is no way to answer
+            # "what did the channel send?" after the log rotates.
+            try:
+                payload = dict(stats)
+                payload.update({"chain": self.chain, "symbol": symbol, "name": name,
+                                "snapshot": snapshot})
+                self.store.append("candidate_alert", token, payload, self.clock(), self.clock())
+            except Exception as exc:
+                logger.warning("Candidate alert record failed for %s: %s", token, exc)
+        return sent
 
     def notify(self, decision: Decision, *, token: str | None = None,
                snapshot: Mapping[str, Any] | None = None, symbol: str | None = None,
