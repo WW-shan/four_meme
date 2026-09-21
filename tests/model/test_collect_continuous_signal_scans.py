@@ -47,7 +47,13 @@ class EventParsingTests(unittest.TestCase):
             ContinuousCollector._parse_signal_events("moon")
 
     def test_automatic_scans_are_off_by_default(self):
-        collector = ContinuousCollector()
+        # Constructed with the switch blanked: a developer's own .env may enable scans, and
+        # this test is about the shipped default, not about that machine.
+        import os
+        from unittest.mock import patch
+
+        with patch.dict(os.environ, {"SCANNER_SIGNAL_EVENTS": ""}, clear=False):
+            collector = ContinuousCollector()
         self.assertEqual(set(), collector.scanner_signal_events)
         self.assertIsNone(collector.scanner)
 

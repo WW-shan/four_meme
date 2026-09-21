@@ -8,7 +8,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 from src.radar.store import ScannerStore
-from src.safety.fetchers import FetchResult, SnapshotFetcher
+from src.safety.fetchers import SnapshotFetcher
 
 SOL_MINT = "So11111111111111111111111111111111111111112"
 
@@ -172,3 +172,37 @@ class SignalScanModeTests(unittest.TestCase):
         help_text = buffer.getvalue()
         self.assertIn("--safety-mode {safe,learning}", help_text)
         self.assertIn("required for a buy", help_text)
+
+
+class SignalCredentialLoadingTests(unittest.TestCase):
+    """The CLI reads TELEGRAM_* from the environment, so it has to load .env itself."""
+
+    def test_cli_loads_dotenv_before_reading_credentials(self):
+        source = (Path(__file__).resolve().parents[2] / "scripts" / "run_scanner.py").read_text(
+            encoding="utf-8")
+        self.assertIn("load_dotenv(PROJECT_ROOT", source)
+
+    def test_notifier_is_built_from_environment_credentials(self):
+        # NotifyConfig reads the environment at import time, so patch the resolved class
+        # attributes instead of os.environ; patching os.environ afterwards would be ignored.
+        from unittest.mock import patch
+
+        from config.notify_config import NotifyConfig
+        from scripts.run_scanner import _signal_notifier
+
+        with patch.object(NotifyConfig, "TELEGRAM_SIGNAL_ENABLED", True), \
+             patch.object(NotifyConfig, "TELEGRAM_BOT_TOKEN", "123456:fake-token"), \
+             patch.object(NotifyConfig, "TELEGRAM_CHAT_ID", "-100123"):
+            bot = _signal_notifier()
+        self.assertIsNotNone(bot)
+        self.assertTrue(bot.ready)
+        self.assertEqual("-100123", bot.chat_id)
+
+    def test_notifier_is_none_when_the_switch_is_off(self):
+        from unittest.mock import patch
+
+        from config.notify_config import NotifyConfig
+        from scripts.run_scanner import _signal_notifier
+
+        with patch.object(NotifyConfig, "TELEGRAM_SIGNAL_ENABLED", False):
+            self.assertIsNone(_signal_notifier())

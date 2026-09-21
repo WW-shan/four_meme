@@ -14,6 +14,17 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
+# The signal commands read TELEGRAM_* straight from the environment, and this script does
+# not import config.config (which loads .env for the runtime services). Without this call
+# the CLI would report missing credentials while a valid .env sits in the repo root.
+# python-dotenv honours PYTHON_DOTENV_DISABLED, so tests can still run without a .env.
+try:
+    from dotenv import load_dotenv
+
+    load_dotenv(PROJECT_ROOT / ".env")
+except Exception:  # pragma: no cover - dotenv is optional for a plain snapshot run
+    pass
+
 from config.scanner_config import ScannerConfig  # noqa: E402
 from src.radar.api import make_scanner_server  # noqa: E402
 from src.radar.events import launch_from_event  # noqa: E402
@@ -380,7 +391,8 @@ def main(argv=None) -> int:
     signal_scan.add_argument("--token", required=True)
     signal_scan.add_argument("--chain", default="bsc")
     signal_scan.add_argument("--db", default="data/scanner/evidence.sqlite")
-    signal_scan.add_argument("--config", help="Optional scanner config JSON")
+    signal_scan.add_argument("--config", default=os.getenv("SCANNER_CONFIG") or None,
+                             help="Optional scanner config JSON (defaults to $SCANNER_CONFIG)")
     signal_scan.add_argument("--mode", choices=("shadow", "live"), default="shadow")
     signal_scan.add_argument("--safety-mode", choices=("safe", "learning"), default="safe",
                              help="Scanner safety mode; safe is required for a buy to be possible")
