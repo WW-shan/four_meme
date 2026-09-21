@@ -493,3 +493,29 @@ class AlertPersistenceTests(unittest.TestCase):
             loaded = collector._load_recent_alerts()
         self.assertEqual(1, loaded)
         self.assertIn(MOVER.lower(), collector._candidate_alerted)
+
+
+class SweepLoopTests(unittest.TestCase):
+    """The loop must survive its own logging: a format collision once stopped every push."""
+
+    def test_sweep_loop_logs_a_summary_without_raising(self):
+        collector = ContinuousCollector()
+        collector.scanner = FakeScanner(DecisionStub())
+        collector.candidate_sweep_seconds = 0.01
+        collector.activity_window_seconds = 1800.0
+        collector._recent_trades = {MOVER: trades(buyers=6, volume=158.1)}
+        collector._recent_trade_meta = {MOVER: {"symbol": "MOV", "name": "Mover"}}
+
+        async def scenario():
+            task = asyncio.create_task(collector._candidate_sweep_loop())
+            await asyncio.sleep(0.05)
+            collector.running = False
+            await asyncio.wait_for(task, timeout=2)
+
+        with self.assertLogs("root", level="INFO") as captured:
+            asyncio.run(scenario())
+        joined = "\n".join(captured.output)
+        self.assertIn("Candidate sweep: watched=", joined)
+        self.assertIn("top by volume", joined)
+        self.assertNotIn("候选扫链失败", joined)
+        self.assertEqual(1, len(collector.scanner.candidates))

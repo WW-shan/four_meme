@@ -669,11 +669,11 @@ class ContinuousCollector:
                 if not self.running or self.scanner is None:
                     break
                 summary = await asyncio.to_thread(self._sweep_candidates)
+                detail = (" -> " + ", ".join(summary["tokens"])) if summary.get("tokens") else ""
+                top = (" | top by volume: " + summary["top"]) if summary.get("top") else ""
                 logger.info(
-                    "🔎 Candidate sweep: watched={watched} qualifying={qualifying} pushed={pushed}{detail}".format(
-                        detail=(" -> " + ", ".join(summary["tokens"])) if summary.get("tokens") else "",
-                        **summary,
-                    )
+                    f"🔎 Candidate sweep: watched={summary['watched']} over_bar={summary['over_bar']} "
+                    f"suppressed={summary['suppressed']} pushed={summary['pushed']}{detail}{top}"
                 )
             except asyncio.CancelledError:
                 break
@@ -794,13 +794,15 @@ class ContinuousCollector:
         excluded all of them, and a creation-event watch list never saw them at all.
         """
         if self.scanner is None or self.scanner.notifier is None:
-            return {"watched": 0, "qualifying": 0, "pushed": 0, "tokens": []}
+            return {"watched": 0, "over_bar": 0, "suppressed": 0, "pushed": 0, "tokens": [], "top": ""}
         now = time.time()
         cutoff = now - self.activity_window_seconds
         pushed_this_hour = sum(1 for ts in self._candidate_alerted.values() if now - ts < 3600)
         pushed = 0
-        qualifying = 0
+        over_bar = 0
+        suppressed = 0
         pushed_tokens = []
+        seen = []
         for token in list(self._recent_trades):
             trades = [trade for trade in self._recent_trades.get(token, []) if trade["ts"] >= cutoff]
             if not trades:
@@ -811,11 +813,20 @@ class ContinuousCollector:
             fresh_buyers = buyers - sellers
             buy_volume = sum(trade["amount"] for trade in trades if trade["side"] == "buy")
             sell_volume = sum(trade["amount"] for trade in trades if trade["side"] == "sell")
+            seen.append((buy_volume, token, len(fresh_buyers), len(trades)))
             if len(fresh_buyers) < self.signal_min_unique_buyers:
                 continue
             if buy_volume < self.candidate_min_buy_volume or buy_volume <= sell_volume:
+                if len(fresh_buyers) >= self.signal_min_unique_buyers:
+                    logger.info(
+                        f"🔎 Not alerting {token[:12]}: buy_volume={buy_volume:.2f} "
+                        f"sell_volume={sell_volume:.2f} fresh_buyers={len(fresh_buyers)} "
+                        f"trades={len(trades)}"
+                    )
                 continue
+            over_bar += 1
             if token in self._candidate_alerted:
+                suppressed += 1
                 continue
             if self.candidate_max_per_hour and pushed_this_hour >= self.candidate_max_per_hour:
                 logger.info("🔎 Candidate alert cap reached for this hour; skipping the rest")
@@ -829,7 +840,6 @@ class ContinuousCollector:
                 "age_seconds": now - min(trade["ts"] for trade in trades),
                 "funding_confirmed": True,
             }
-            qualifying += 1
             meta = self._recent_trade_meta.get(token) or {}
             if self.scanner.announce_candidate(
                 token,
@@ -841,8 +851,10 @@ class ContinuousCollector:
                 pushed_this_hour += 1
                 pushed += 1
                 pushed_tokens.append(f"{token[:12]}({stats['fresh_buyers']}b/{buy_volume:.1f})")
-        return {"watched": len(self._recent_trades), "qualifying": qualifying, "pushed": pushed,
-                "tokens": pushed_tokens}
+        top = ", ".join(f"{token[:12]}({buyers}b/{volume:.1f})"
+                        for volume, token, buyers, _ in sorted(seen, reverse=True)[:3])
+        return {"watched": len(self._recent_trades), "over_bar": over_bar,
+                "suppressed": suppressed, "pushed": pushed, "tokens": pushed_tokens, "top": top}
 
     async def _run_signal_scan(self, launch):
         """Run the read-only scan off the event loop: the safety fetchers use sync HTTP."""
