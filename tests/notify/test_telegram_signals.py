@@ -1,7 +1,7 @@
 import unittest
 from pathlib import Path
 
-from src.notify.telegram import TelegramSignalBot, format_signal, shorten_address
+from src.notify.telegram import TelegramSignalBot, format_candidate, format_signal, shorten_address
 
 TOKEN = "0x" + "ab" * 20
 BOT_TOKEN = "123456:FAKE-TOKEN-FOR-TESTS"
@@ -266,3 +266,71 @@ class EnvContractTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class CandidateMessageTests(unittest.TestCase):
+    """A candidate carries measured buyer flow and is never labelled as a trade."""
+
+    STATS = {"fresh_buyers": 7, "buyers": 19, "buy_volume": 1234.5, "sell_volume": 210.0,
+             "age_seconds": 480.0, "funding_confirmed": True}
+
+    def test_candidate_renders_flow_and_the_read_only_footer(self):
+        text = format_candidate(TOKEN, chain="bsc", symbol="FOO", name="Foo",
+                                stats=self.STATS,
+                                snapshot={"mcap_usd": 45_000, "liquidity_usd": 12_000})
+        self.assertIn("🔎 候选", text)
+        self.assertIn("未卖出的买家: 7", text)
+        self.assertIn("$1.2k", text)
+        self.assertIn("买卖比: 5.88", text)
+        self.assertIn("上线时长: 8.0 分钟", text)
+        self.assertIn("不是交易授权", text)
+        self.assertNotIn("🟢", text)
+
+    def test_candidate_without_market_data_stays_honest(self):
+        text = format_candidate(TOKEN, chain="bsc", stats={"fresh_buyers": 4})
+        self.assertIn("市值: unknown", text)
+        self.assertNotIn("$0.00", text)
+
+    def test_candidate_is_sent_when_subscribed(self):
+        session = FakeSession()
+        sender = bot(session, actions=("candidate",))
+        self.assertTrue(sender.notify_candidate(TOKEN, chain="bsc", symbol="FOO", stats=self.STATS))
+        payload = session.calls[0]["json"]
+        self.assertIn("🔎 候选", payload["text"])
+
+    def test_candidate_is_dropped_when_not_subscribed(self):
+        session = FakeSession()
+        sender = bot(session, actions=("buy",))
+        self.assertFalse(sender.notify_candidate(TOKEN, chain="bsc", stats=self.STATS))
+        self.assertEqual([], session.calls)
+
+    def test_candidate_dedupe_is_separate_from_buy(self):
+        now = [100.0]
+        session = FakeSession()
+        sender = bot(session, actions=("buy", "candidate"), min_interval_seconds=0.0,
+                     dedupe_seconds=900.0, clock=lambda: now[0])
+        self.assertTrue(sender.notify_candidate(TOKEN, chain="bsc", stats=self.STATS))
+        self.assertTrue(sender.notify_decision(decision(), chain="bsc", token=TOKEN))
+        self.assertFalse(sender.notify_candidate(TOKEN, chain="bsc", stats=self.STATS))
+        self.assertEqual(2, len(session.calls))
+
+
+class ActionContractTests(unittest.TestCase):
+    """Every action the formatter can emit must be accepted by the env contract."""
+
+    def test_config_accepts_every_rendered_action(self):
+        from config.notify_config import SIGNAL_ACTIONS
+        from src.notify.telegram import ACTION_LABEL
+
+        for action in ACTION_LABEL:
+            self.assertIn(action, SIGNAL_ACTIONS, action)
+
+    def test_candidate_can_be_subscribed_through_the_environment(self):
+        import os
+        from unittest.mock import patch
+
+        from config import notify_config
+
+        with patch.dict(os.environ, {"X_ACTIONS": "candidate,buy"}, clear=False):
+            self.assertEqual(("candidate", "buy"),
+                             notify_config._actions_env("X_ACTIONS", ("buy",)))

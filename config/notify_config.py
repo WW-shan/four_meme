@@ -8,7 +8,8 @@ from __future__ import annotations
 
 import os
 
-SIGNAL_ACTIONS = ("buy", "watch", "reject")
+# "candidate" is an on-chain scan result (see format_candidate), not a trade authorisation.
+SIGNAL_ACTIONS = ("buy", "watch", "reject", "candidate")
 
 
 def _bool_env(name: str, default: bool = False) -> bool:

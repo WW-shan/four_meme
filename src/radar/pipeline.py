@@ -137,6 +137,25 @@ class ScannerPipeline:
                            mcap_usd=mcap_usd, budget=budget, state=state, mode=mode,
                            snapshot=snapshot, symbol=symbol, name=name)
 
+    def announce_candidate(self, token: str, *, stats: Mapping[str, Any],
+                           symbol: str | None = None, name: str | None = None,
+                           override: Mapping[str, Any] | None = None) -> bool:
+        """Push an on-chain candidate with a fresh market snapshot. Never raises."""
+        if self.notifier is None or not hasattr(self.notifier, "notify_candidate"):
+            return False
+        try:
+            snapshot = self.snapshot(token, override=override)
+        except Exception as exc:
+            logger.warning("Candidate snapshot failed for %s: %s", token, exc)
+            snapshot = {}
+        try:
+            return bool(self.notifier.notify_candidate(
+                token, chain=self.chain, symbol=symbol, name=name, stats=stats, snapshot=snapshot,
+            ))
+        except Exception as exc:
+            logger.warning("Candidate notify failed for %s: %s", token, exc)
+            return False
+
     def notify(self, decision: Decision, *, token: str | None = None,
                snapshot: Mapping[str, Any] | None = None, symbol: str | None = None,
                name: str | None = None) -> bool:

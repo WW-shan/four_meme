@@ -36,6 +36,7 @@ ACTION_LABEL = {
     "buy": "🟢 BUY",
     "watch": "🟡 WATCH",
     "reject": "⚪ REJECT",
+    "candidate": "🔎 候选",
 }
 
 _TAG_RE = re.compile(r"<[^>]*>")
@@ -141,6 +142,61 @@ def format_signal(
         lines.append(f"信号时间: {time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(created_at))}")
     lines.append("")
     lines.append("<i>只读信号 · 不含自动交易 · 自行判断</i>")
+    return "\n".join(lines)[:MAX_MESSAGE_CHARS]
+
+
+def format_candidate(
+    token: str,
+    *,
+    chain: str = "bsc",
+    symbol: str | None = None,
+    name: str | None = None,
+    stats: Mapping[str, Any] | None = None,
+    snapshot: Mapping[str, Any] | None = None,
+    now: float | None = None,
+) -> str:
+    """Render an on-chain candidate: who is buying, not what we think it is worth.
+
+    A candidate is a scan result, not a trade authorisation. It carries the numbers the
+    collector measured itself, so the reader can judge the demand rather than trust a label.
+    """
+    stats = stats or {}
+    snapshot = snapshot or {}
+    lines = [
+        f"<b>{ACTION_LABEL['candidate']}</b> · {escape(chain)}",
+        f"CA: <code>{escape(token)}</code>",
+    ]
+    title = " / ".join(part for part in (escape(name or ""), escape(symbol or "")) if part)
+    if title:
+        lines.append(f"名称: {title}")
+    lines.append(
+        "市值: {mcap} | 流动性: {liq}".format(
+            mcap=_money(snapshot.get("mcap_usd")),
+            liq=_money(snapshot.get("liquidity_usd")),
+        )
+    )
+    fresh_buyers = stats.get("fresh_buyers")
+    buyers = stats.get("buyers")
+    if fresh_buyers is not None:
+        lines.append(f"未卖出的买家: {escape(fresh_buyers)} (累计 {escape(buyers if buyers is not None else '?')})")
+    buy_volume = _number(stats.get("buy_volume"))
+    sell_volume = _number(stats.get("sell_volume"))
+    if buy_volume is not None and sell_volume is not None:
+        ratio = (buy_volume / sell_volume) if sell_volume > 0 else None
+        lines.append(
+            "买入量: {buy} | 卖出量: {sell}".format(
+                buy=_money(buy_volume), sell=_money(sell_volume)
+            )
+            + (f" | 买卖比: {ratio:.2f}" if ratio is not None else "")
+        )
+    age = _number(stats.get("age_seconds"))
+    if age is not None:
+        lines.append(f"上线时长: {age / 60:.1f} 分钟")
+    verdict = snapshot.get("safety_verdict")
+    if verdict:
+        lines.append(f"安全检查: {escape(verdict)}")
+    lines.append("")
+    lines.append("<i>候选 · 只读 · 不是交易授权</i>")
     return "\n".join(lines)[:MAX_MESSAGE_CHARS]
 
 
@@ -304,6 +360,22 @@ class TelegramSignalBot:
                 body = "<unreadable body>"
         return str(body)[:200]
 
+    def _dispatch(self, key: tuple[str, str, str], text: str) -> bool:
+        """Apply the action filter, dedupe and send. Shared by every message type."""
+        action = key[2]
+        if action not in self.actions:
+            return False
+        now = self.clock()
+        previous = self._last_signal_at.get(key)
+        if previous is not None and now - previous < self.dedupe_seconds:
+            logger.debug("Duplicate %s signal for %s suppressed", action, shorten_address(key[1]))
+            self.skipped_count += 1
+            return False
+        if not self.send(text):
+            return False
+        self._last_signal_at[key] = now
+        return True
+
     def notify_decision(
         self,
         decision: Any,
@@ -319,18 +391,25 @@ class TelegramSignalBot:
         if action not in self.actions:
             return False
         address = str(token or _field(decision, "token", "") or "").lower()
-        now = self.clock()
-        key = (str(chain), address, action)
-        previous = self._last_signal_at.get(key)
-        if previous is not None and now - previous < self.dedupe_seconds:
-            logger.debug("Duplicate %s signal for %s suppressed", action, shorten_address(address))
-            self.skipped_count += 1
-            return False
-        text = format_signal(decision, chain=chain, symbol=symbol, name=name, snapshot=snapshot, now=now)
-        if not self.send(text):
-            return False
-        self._last_signal_at[key] = now
-        return True
+        text = format_signal(decision, chain=chain, symbol=symbol, name=name, snapshot=snapshot,
+                             now=self.clock())
+        return self._dispatch((str(chain), address, action), text)
+
+    def notify_candidate(
+        self,
+        token: str,
+        *,
+        chain: str = "bsc",
+        symbol: str | None = None,
+        name: str | None = None,
+        stats: Mapping[str, Any] | None = None,
+        snapshot: Mapping[str, Any] | None = None,
+    ) -> bool:
+        """Push an on-chain candidate (real buyer flow), not a trade authorisation."""
+        address = str(token or "").lower()
+        text = format_candidate(token, chain=chain, symbol=symbol, name=name, stats=stats,
+                                snapshot=snapshot, now=self.clock())
+        return self._dispatch((str(chain), address, "candidate"), text)
 
     def notify_text(self, text: str) -> bool:
         """Send an operator message (channel test, outage notice)."""
