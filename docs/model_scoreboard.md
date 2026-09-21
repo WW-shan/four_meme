@@ -2,6 +2,12 @@
 
 This file records accepted and rejected model candidates for live FourMeme trading. Selection is based on live-sized replay with 10% position sizing, gas costs, current execution delay assumptions, walk-forward checks, and stress replay.
 
+## 2026-09-21 Telegram Signal Channel
+
+- **Delivered:** a read-only signal delivery layer — `config/notify_config.py` (`TELEGRAM_*` contract, defaults off), `src/notify/telegram.py` (`format_signal`, `TelegramSignalBot` with dedupe, min-interval, 429 backoff and token redaction), a `notifier` hook in `src/radar/pipeline.py` called from `decide()`, collector wiring behind `SCANNER_ENABLED`, and the `signal-preview` / `signal-test` CLI commands. Design: `docs/plans/2026-09-21-telegram-signal-channel.md`.
+- **Evidence:** 21 new tests (`tests/notify/test_telegram_signals.py`, `ScannerPipelineSignalTests`) covering rendering, escaping, disabled/missing-credential paths, dedupe, burst control, 429 backoff, a broken HTTP session, and that the bot token and chat id never reach a log line. Full suite: 1577 tests, 1 skipped, 0 failures with `PYTHON_DOTENV_DISABLED=1`.
+- **Decision:** no model trained or promoted, no threshold, sizing, `.env` trading switch or live-risk interpretation changed, and no on-chain transaction sent. The channel is off by default and carries an explicit "no automatic trading" footer; it has no import path to the executor or a private key. Scoreboard updated intentionally to record the new signal-delivery surface and its off-by-default contract.
+
 ## 2026-09-21 Full-Repository Code Audit — Fail-Open And Chain-Routing Fixes
 
 - **Audit:** Static and manual review of every module under `src/`, `config/`, `tools/` and `scripts/` (≈79k lines) plus the live data directories. Evidence: `docs/research/20260921-code-audit/README.md` and `evidence.json`. Full suite moved from 1538 tests (baseline, 1 skipped, 0 failures) to 1556 tests, 1 skipped, 0 failures; `compileall` clean; pyflakes shows only three intentional re-exports.
