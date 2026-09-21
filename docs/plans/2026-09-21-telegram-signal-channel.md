@@ -132,6 +132,26 @@ Two defects were found by this run and fixed: the CLI never called `load_dotenv(
 missing credentials while a valid `.env` sat in the repo root, and `--config` ignored
 `SCANNER_CONFIG`, so it silently ran in the default `learning` mode.
 
+## Live scanning (candidate sweep)
+
+Buy signals require the safety side to pass, and with provider gaps it rarely does, so the channel
+also carries **candidate** alerts: what the collector measured on chain, with no claim about whether
+the token is good.
+
+- Every `SCANNER_CANDIDATE_SWEEP_SECONDS` (60s in operation) the collector re-checks the tokens it
+  is watching and pushes the ones with at least `SCANNER_SIGNAL_MIN_UNIQUE_BUYERS` distinct wallets
+  that bought and have not sold, plus buy volume above sell volume.
+- The bar is measured, not assumed. On 2026-09-21, over 459 tokens in one hour: `>=1` fresh buyer
+  matched 36 tokens, `>=2` matched 4, `>=3` matched 0. The documented default is 2; raise it for a
+  quieter channel.
+- Volume figures are in the token's own quote asset, which is fine for the buy/sell ratio but is not
+  a USD number. Age and the safety verdict are printed so a stale or unknown state is visible.
+- `SCANNER_CANDIDATE_MAX_PER_HOUR` (20) and the 3-second send interval keep the channel readable.
+- The sweep runs in a worker thread because the safety fetchers use synchronous HTTP, and it logs
+  `watched / qualifying / pushed` every pass so a quiet scanner is visible rather than silent.
+- After a restart the watch set and its flow numbers are seeded from the incremental files written
+  inside the watch window, because the previous run flushes its in-memory tokens on shutdown.
+
 ## What this is not
 
 It is not evidence of profitability, not a trading authorisation, and not the shadow run. Signals are

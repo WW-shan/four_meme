@@ -2,6 +2,13 @@
 
 This file records accepted and rejected model candidates for live FourMeme trading. Selection is based on live-sized replay with 10% position sizing, gas costs, current execution delay assumptions, walk-forward checks, and stress replay.
 
+## 2026-09-21 Live Candidate Scanning
+
+- **Operating state:** the collector now scans continuously instead of only reacting to graduations. Every 60s it re-checks watched tokens and pushes the ones with real buyer flow; 5 candidate alerts were delivered to Telegram during the run, and the scanner database holds 1314 launches, 635 snapshots, 511 safety reports and 511 decisions from the same window.
+- **Bar chosen from measurement:** over 459 tokens in one hour on 2026-09-21, `>=1` fresh buyer (bought and not sold) plus net inflow matched 36 tokens, `>=2` matched 4, `>=3` matched 0. The default is therefore 2, with the measurement recorded in `.env.example`. This is an operating choice for a readable feed, not a validated edge.
+- **Defects found while making it live:** the watch set keyed tokens lowercase while the collector stores the checksummed address (every lookup missed, nothing pushed); a restart started with an empty watch set and ignored the preceding hour; seeding only the newest file missed tokens held by earlier runs; and after a restart the in-memory record is thinner than the flushed one, so the sweep now takes whichever shows more distinct buyers. A separate defect disabled the whole Telegram channel: `candidate` was missing from the env action whitelist, and a test now asserts every action the formatter can emit is accepted by the contract.
+- **Decision:** no model trained or promoted, no threshold, sizing or trading switch changed, and no on-chain transaction sent. Candidate alerts are explicitly labelled as scan results, not trade authorisations, and buy signals keep the fail-closed safe-mode requirement. Scoreboard updated because the scanner's live operating mode and its bar are risk-relevant facts.
+
 ## 2026-09-21 Collector Restart: Backfill Gap Closed
 
 - **What happened:** restarting the collector to load the audited code exposed a silent data-loss path. `resume_max_catchup_blocks` was hard-coded to 256, so a checkpoint 38037 blocks behind was truncated to the chain head and that whole range was skipped from collection — one warning line, no other signal.
