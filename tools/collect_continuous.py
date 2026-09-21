@@ -236,9 +236,32 @@ class ContinuousCollector:
                 from src.radar.store import ScannerStore
 
                 scanner_config = ScannerConfig.load(os.getenv('SCANNER_CONFIG') or None)
+
+                # Optional Telegram signal channel. Read-only: it can only send messages,
+                # never place an order, and it stays disabled unless explicitly enabled.
+                notifier = None
+                try:
+                    import requests
+
+                    from config.notify_config import NotifyConfig
+                    from src.notify.telegram import TelegramSignalBot
+
+                    NotifyConfig.validate()
+                    notifier = TelegramSignalBot.from_config(session=requests.Session())
+                    if notifier.ready:
+                        logger.info(
+                            "📣 Telegram signals enabled (actions=%s, dedupe=%.0fs)",
+                            ",".join(notifier.actions), notifier.dedupe_seconds,
+                        )
+                    else:
+                        logger.info("📣 Telegram signals off: %s", notifier.not_ready_reason())
+                except Exception as exc:
+                    logger.warning("Telegram signal channel unavailable: %s", exc)
+
                 self.scanner = ScannerPipeline(
                     ScannerStore(os.getenv('SCANNER_DB', 'data/scanner/evidence.sqlite')),
                     scanner_config,
+                    notifier=notifier,
                 )
                 self.listener.register_handler('TokenCreate', self._handle_scanner_event)
                 self.listener.register_handler('LiquidityAdded', self._handle_scanner_event)

@@ -25,6 +25,7 @@ from src.walletflow.gmgn import GmgnOpenApiClient  # noqa: E402
 from src.safety.orchestrator import build_report  # noqa: E402
 from src.shadow.executor import shadow_buy, shadow_sell  # noqa: E402
 from src.shadow.report import ShadowGateConfig, build_gate_report, records_from_store  # noqa: E402
+from src.notify.telegram import TelegramSignalBot, format_signal  # noqa: E402
 
 
 def _load(path: str) -> dict:
@@ -198,6 +199,49 @@ def command_live_check(args) -> int:
     return 0 if result.allowed else 2
 
 
+def command_signal_preview(args) -> int:
+    """Render the exact Telegram message for a decision without sending it."""
+    now = time.time()
+    decision = {
+        "token": args.token,
+        "action": args.action,
+        "mode": args.mode,
+        "size_quote": args.size_quote,
+        "reason_codes": tuple(args.reason or ()),
+        "safety_verdict": args.safety_verdict,
+        "funding_confirmed": bool(args.funding_confirmed),
+        "expires_at": now + args.ttl,
+        "created_at": now,
+    }
+    snapshot = {"mcap_usd": args.mcap_usd, "liquidity_usd": args.liquidity_usd}
+    print(format_signal(decision, chain=args.chain, symbol=args.symbol, name=args.name,
+                        snapshot=snapshot))
+    return 0
+
+
+def command_signal_test(args) -> int:
+    """Send one operator message through the configured Telegram credentials."""
+    from config.notify_config import NotifyConfig
+
+    try:
+        NotifyConfig.validate()
+    except ValueError as exc:
+        print(f"Telegram config invalid: {exc}", file=sys.stderr)
+        return 2
+    import requests
+
+    bot = TelegramSignalBot.from_config(session=requests.Session(), enabled=True)
+    if not bot.ready:
+        print(f"Telegram signals are not ready: {bot.not_ready_reason()}", file=sys.stderr)
+        return 2
+    if not bot.notify_text(args.text):
+        print("Telegram rejected the test message; check the token, chat id and log output",
+              file=sys.stderr)
+        return 2
+    print("Test message sent.")
+    return 0
+
+
 def command_serve(args) -> int:
     store = ScannerStore(args.db)
     server = make_scanner_server(store, args.host, args.port)
@@ -261,6 +305,24 @@ def main(argv=None) -> int:
     live_check.add_argument("--enabled", action="store_true")
     live_check.add_argument("--confirmed", action="store_true")
     live_check.set_defaults(func=command_live_check)
+    preview = sub.add_parser("signal-preview", help="Render a Telegram signal without sending it")
+    preview.add_argument("--chain", default="bsc")
+    preview.add_argument("--token", required=True)
+    preview.add_argument("--action", choices=("buy", "watch", "reject"), default="buy")
+    preview.add_argument("--mode", choices=("shadow", "live"), default="shadow")
+    preview.add_argument("--symbol")
+    preview.add_argument("--name")
+    preview.add_argument("--mcap-usd", type=float)
+    preview.add_argument("--liquidity-usd", type=float)
+    preview.add_argument("--size-quote", type=float, default=0.0)
+    preview.add_argument("--reason", action="append", default=[])
+    preview.add_argument("--safety-verdict")
+    preview.add_argument("--funding-confirmed", action="store_true")
+    preview.add_argument("--ttl", type=float, default=45.0)
+    preview.set_defaults(func=command_signal_preview)
+    signal_test = sub.add_parser("signal-test", help="Send one test message to the configured chat")
+    signal_test.add_argument("--text", default="meme scanner 信号通道测试")
+    signal_test.set_defaults(func=command_signal_test)
     serve = sub.add_parser("serve", help="Serve the read-only scanner API")
     serve.add_argument("--db", default="data/scanner/evidence.sqlite")
     serve.add_argument("--host", default="127.0.0.1")

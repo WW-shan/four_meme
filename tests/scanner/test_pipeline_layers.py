@@ -398,3 +398,87 @@ class ScannerPipelineChainIdTests(unittest.TestCase):
             store = ScannerStore(Path(tmp) / "scanner.sqlite")
             pipeline = ScannerPipeline(store, ScannerConfig(mode="safe"), chain="bsc", chain_id=1)
         self.assertEqual(1, pipeline.chain_id)
+
+
+class ScannerPipelineSignalTests(unittest.TestCase):
+    """The pipeline pushes decisions to the signal sink without ever letting it fail a decision."""
+
+    def _pipeline(self, notifier):
+        import tempfile
+        from config.scanner_config import ScannerConfig
+        from src.radar.pipeline import ScannerPipeline
+        from src.radar.store import ScannerStore
+
+        self._tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self._tmp.cleanup)
+        store = ScannerStore(Path(self._tmp.name) / "scanner.sqlite")
+        pipeline = ScannerPipeline(store, ScannerConfig(mode="safe"), clock=lambda: 100.0,
+                                   notifier=notifier)
+        self.store = store
+        return pipeline
+
+    GOOD = {
+        "liquidity_usd": 25_000, "dev_holding_pct": 0.5, "buy_tax_pct": 1.0, "sell_tax_pct": 1.0,
+        "trades_recent": 42, "mcap_usd": 45_000, "mint_authority": None, "freeze_authority": None,
+        "owner_renounced": True, "blacklist": False, "pausable": False, "top1_pct": 8.0,
+        "top10_pct": 22.0, "non_lp_max_pct": 5.0, "lp_burned": True, "lp_locked_pct": None,
+        "honeypot_sim": True, "bundle_current_held_pct": 5.0, "bundle_wallet_count": 2,
+        "bundle_total_pct": 8.0, "deployer_rug_rate": 0.1, "early_sniper_count": 3,
+    }
+
+    def _report(self, mode="safe"):
+        from src.safety.orchestrator import build_report
+        from config.scanner_config import FilterThresholds
+
+        return build_report("0x" + "33" * 20, dict(self.GOOD), FilterThresholds(), mode=mode)
+
+    def test_buy_decision_is_pushed_to_the_notifier(self):
+        class Recorder:
+            def __init__(self):
+                self.calls = []
+
+            def notify_decision(self, decision, **kwargs):
+                self.calls.append((decision, kwargs))
+                return True
+
+        recorder = Recorder()
+        pipeline = self._pipeline(recorder)
+        decision = pipeline.decide("0x" + "33" * 20, report=self._report(), funding_confirmed=True,
+                                   mcap_usd=45_000, snapshot={"mcap_usd": 45_000}, symbol="FOO")
+        self.assertEqual("buy", decision.action)
+        self.assertEqual(1, len(recorder.calls))
+        pushed, kwargs = recorder.calls[0]
+        self.assertEqual(decision.token, pushed.token)
+        self.assertEqual("bsc", kwargs["chain"])
+        self.assertEqual("FOO", kwargs["symbol"])
+        self.assertEqual(1, len(self.store.rows("decision", chain="bsc")))
+
+    def test_notifier_failure_does_not_break_the_decision(self):
+        class Exploding:
+            def notify_decision(self, decision, **kwargs):
+                raise RuntimeError("telegram exploded")
+
+        pipeline = self._pipeline(Exploding())
+        with self.assertLogs("src.radar.pipeline", level="WARNING") as captured:
+            decision = pipeline.decide("0x" + "33" * 20, report=self._report(), funding_confirmed=True,
+                                       mcap_usd=45_000)
+        self.assertEqual("buy", decision.action)
+        self.assertIn("Signal notifier failed", "\n".join(captured.output))
+        self.assertEqual(1, len(self.store.rows("decision", chain="bsc")))
+
+    def test_rejected_decision_is_still_recorded_and_pushed(self):
+        class Recorder:
+            def __init__(self):
+                self.calls = []
+
+            def notify_decision(self, decision, **kwargs):
+                self.calls.append(decision)
+                return True
+
+        recorder = Recorder()
+        pipeline = self._pipeline(recorder)
+        decision = pipeline.decide("0x" + "33" * 20, report=self._report(), funding_confirmed=True,
+                                   mcap_usd=900_000)
+        self.assertEqual("reject", decision.action)
+        self.assertEqual(1, len(recorder.calls))
+        self.assertEqual("reject", recorder.calls[0].action)

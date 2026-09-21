@@ -4,9 +4,10 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 import json
+import logging
 from pathlib import Path
 import time
-from typing import Callable, Mapping
+from typing import Any, Callable, Mapping
 
 from config.scanner_config import ScannerConfig
 from src.decision.engine import Decision, PortfolioState, RiskBudget, decide
@@ -15,6 +16,8 @@ from src.radar.store import ScannerStore
 from src.safety.fetchers import SnapshotFetcher
 from src.safety.orchestrator import SafetyReport, build_report
 from src.safety.snapshot import build_snapshot
+
+logger = logging.getLogger(__name__)
 
 
 # Fallback chain ids, used only when config/chains.json cannot be read. Provider endpoints
@@ -60,6 +63,9 @@ class ScannerPipeline:
     clock: Callable[[], float] = time.time
     chain: str = "bsc"
     chain_id: int | None = None
+    # Duck-typed signal sink (src/notify/telegram.py). Optional: the pipeline is
+    # useful without it, and a delivery failure must never affect a decision.
+    notifier: Any | None = None
 
     def __post_init__(self):
         if self.chain_id is None:
@@ -93,7 +99,9 @@ class ScannerPipeline:
 
     def decide(self, token: str, *, report: SafetyReport, funding_confirmed: bool,
                mcap_usd: float | None, budget: RiskBudget | None = None,
-               state: PortfolioState | None = None, mode: str = "shadow") -> Decision:
+               state: PortfolioState | None = None, mode: str = "shadow",
+               snapshot: Mapping[str, Any] | None = None, symbol: str | None = None,
+               name: str | None = None) -> Decision:
         budget = budget or RiskBudget()
         state = state or PortfolioState()
         decision = decide(
@@ -105,4 +113,20 @@ class ScannerPipeline:
         payload = decision.to_dict()
         payload["chain"] = self.chain
         self.store.append("decision", token, payload, decision.created_at, self.clock())
+        self.notify(decision, token=token, snapshot=snapshot, symbol=symbol, name=name)
         return decision
+
+    def notify(self, decision: Decision, *, token: str | None = None,
+               snapshot: Mapping[str, Any] | None = None, symbol: str | None = None,
+               name: str | None = None) -> bool:
+        """Push a decision to the configured signal sink. Never raises."""
+        if self.notifier is None:
+            return False
+        try:
+            return bool(self.notifier.notify_decision(
+                decision, chain=self.chain, token=token or decision.token,
+                symbol=symbol, name=name, snapshot=snapshot,
+            ))
+        except Exception as exc:
+            logger.warning("Signal notifier failed for %s: %s", token or decision.token, exc)
+            return False
