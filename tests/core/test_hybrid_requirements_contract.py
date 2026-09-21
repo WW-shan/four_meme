@@ -2450,8 +2450,19 @@ class TestPredReturnFilterStartupContract(unittest.TestCase):
         self.assertTrue(pos["action_policy_router_used"])
         self.assertEqual(pos["action_policy_router_route"], "continue_hold")
         self.assertEqual(pos["action_policy_router_confidence"], 0.91)
-        self.assertEqual(pos["action_policy_continue_hold_activation_pct"], 0.35)
-        self.assertEqual(pos["action_policy_continue_hold_release_pct"], 0.75)
+        # The activation/release percentages come from TradingConfig, which a local .env may
+        # override. Assert that the position stores the configured value; the shipped defaults
+        # are asserted against .env.example elsewhere.
+        from config.trading_config import TradingConfig
+
+        self.assertEqual(
+            pos["action_policy_continue_hold_activation_pct"],
+            TradingConfig.BUY_ACTION_POLICY_CONTINUE_HOLD_ACTIVATION_PCT,
+        )
+        self.assertEqual(
+            pos["action_policy_continue_hold_release_pct"],
+            TradingConfig.BUY_ACTION_POLICY_CONTINUE_HOLD_RELEASE_PCT,
+        )
 
     def test_action_policy_shadow_audit_load_failure_is_nonfatal_and_does_not_enable_flow_features(self):
         from src.trader.bot import MemeBot

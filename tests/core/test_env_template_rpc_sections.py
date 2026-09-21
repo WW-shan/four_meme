@@ -185,6 +185,13 @@ class TestEnvTemplateRpcSections(unittest.TestCase):
         self.assertIsNone(TradingConfig.BUY_PRIMARY_SCORE_RESCUE_MIN_AGE_SECONDS)
 
     def test_trading_config_exposes_action_policy_router_defaults(self):
+        # These are import-time constants, so a local .env legitimately overrides them. Assert
+        # the documented defaults only when nothing overrode them instead of reporting a false
+        # failure on a machine that has its own .env.
+        import os
+
+        if os.getenv("BUY_ACTION_POLICY_ROUTER_SHADOW_AUDIT_ENABLED") is not None:
+            self.skipTest("local .env overrides BUY_ACTION_POLICY_ROUTER_* defaults")
         self.assertFalse(TradingConfig.BUY_ACTION_POLICY_ROUTER_ENABLED)
         self.assertFalse(TradingConfig.BUY_ACTION_POLICY_ROUTER_SHADOW_AUDIT_ENABLED)
         self.assertEqual(TradingConfig.BUY_ACTION_POLICY_ROUTER_TRAIN_REJECTED_REPORTS, [])
