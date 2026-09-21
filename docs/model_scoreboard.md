@@ -2,6 +2,13 @@
 
 This file records accepted and rejected model candidates for live FourMeme trading. Selection is based on live-sized replay with 10% position sizing, gas costs, current execution delay assumptions, walk-forward checks, and stress replay.
 
+## 2026-09-21 Telegram Channel Live Run
+
+- **Live verification:** with the operator's own bot and chat, `getMe`/`getChat` succeeded and five real messages were delivered across four paths: `signal-test`, a full-chain `buy` on a synthetic safe snapshot, a rate-limit/dedupe probe (2 delivered, 2 dropped as designed), and the collector path (`LiquidityAdded` → schedule → `asyncio.to_thread` → scan → push). A real `signal-scan` on a live Four.meme token queried GoPlus (200), DexScreener (200), honeypot.is (404 for that token) and GMGN (`gmgn_api_key_missing`) and correctly rejected.
+- **Defects found by the live run:** the CLI never called `load_dotenv()`, so `signal-test`/`signal-scan` reported missing credentials while a valid `.env` sat in the repo root; and `--config` ignored `SCANNER_CONFIG`, so the CLI silently ran in the default `learning` mode that cannot authorise a buy. Both fixed and covered by tests.
+- **Runtime state:** the collector was restarted on the audited code with `SCANNER_ENABLED=true`, `SCANNER_CONFIG=config/scanner_signal.json` (mode `safe`) and `SCANNER_SIGNAL_EVENTS=graduation`. Automatic scans were proven live by temporarily scanning `launch` as well (18 scans in 75s, in-flight cap enforced, all `reject`), then reverted. Telegram credentials live only in the gitignored `.env`; a leak check found the token in no tracked file and in neither log.
+- **Decision:** no model trained or promoted, no threshold, sizing or trading switch changed, and no on-chain transaction sent. Signal supply is now limited by provider coverage (missing GMGN key, honeypot.is 404s, and market caps that arrive only once DexScreener indexes a token), not by the delivery layer. Scoreboard updated intentionally because live delivery and the collector's signal wiring are now operational facts.
+
 ## 2026-09-21 Telegram Channel Verification Round
 
 - **Verification:** full suite run with both the system interpreter and `./venv/bin/python` (1599 tests, 1 skipped, 0 failures each), `compileall` clean, pyflakes clean apart from three intentional re-exports, and every module under `src/`, `config/`, `tools/` and `scripts/` imported in the venv (239 modules, 0 failures). Static scans: 0 mutable default arguments, 0 blocking `time.sleep` inside an async function, 0 `requests` calls without a timeout.

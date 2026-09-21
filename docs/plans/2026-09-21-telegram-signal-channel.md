@@ -101,6 +101,37 @@ channel instead of looking like a dead token.
   `TELEGRAM_SIGNAL_DEDUPE_SECONDS` (default 15 minutes).
 - **Disabled means silent.** With the switch off the notifier logs at debug and drops messages.
 
+## Live verification (2026-09-21)
+
+Run against the operator's own bot and chat. The token lives only in the gitignored `.env`; it does
+not appear in this document, in any tracked file, or in either log.
+
+| Step | Result |
+|---|---|
+| `getMe` / `getChat` | token valid, private chat reachable |
+| `signal-test` | test message delivered |
+| `signal-preview` | renders the message, sends nothing |
+| `signal-scan` on a live Four.meme token | real providers queried, decision `reject` (`safety_reject`, `funding_not_confirmed`, `mcap_out_of_band`) |
+| full chain with a synthetic safe snapshot | decision `buy`, message delivered |
+| collector path (`LiquidityAdded` → schedule → thread → scan → push) | message delivered |
+| rate limit and dedupe | second send inside the interval dropped, repeat token suppressed |
+| leak check | bot token appears only in `.env`: 0 hits in the working tree, in git, in `logs/collector.log` and `data/collection.log` |
+
+Provider status for the scanned token: GoPlus 200, DexScreener 200, honeypot.is 404 for that token,
+GMGN `gmgn_api_key_missing`. That is why safe-mode filters come back as `error` and the decision
+rejects — the channel is wired correctly, but how many signals arrive depends on provider coverage
+and on tokens old enough for DexScreener to have a market cap.
+
+The live collector now runs the audited code with `SCANNER_ENABLED=true` and
+`SCANNER_SIGNAL_EVENTS=graduation`. Automatic scans were verified live by temporarily also scanning
+`launch`: 18 scans in 75 seconds, the in-flight cap enforced, every decision `reject`, and no
+message sent. The setting was then reverted to graduation only, because launch volume is far too
+high to scan by default.
+
+Two defects were found by this run and fixed: the CLI never called `load_dotenv()`, so it reported
+missing credentials while a valid `.env` sat in the repo root, and `--config` ignored
+`SCANNER_CONFIG`, so it silently ran in the default `learning` mode.
+
 ## What this is not
 
 It is not evidence of profitability, not a trading authorisation, and not the shadow run. Signals are
